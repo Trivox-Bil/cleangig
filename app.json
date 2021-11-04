@@ -1,10 +1,13 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
-    "version": "1.0.0",
+    "name": "CleanGig",
+    "slug": "cleangig",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "description": "",
+    "githubUrl": "https://github.com/stadochtradgard",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -17,13 +20,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "buildNumber": "1.3.0",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Denna app använder kameran för att fånga och ladda upp användarprofilbild och jobbbilder.",
+        "NSPhotoLibraryUsageDescription": "Denna app använder kameran för att fånga och ladda upp användarprofilbild och jobbbilder.",
+        "NSPhotoLibraryAddUsageDescription": "Denna app använder kameran för att fånga och ladda upp användarprofilbild och jobbbilder"
+      },
+      "supportsTablet": true,
+      "userInterfaceStyle": "light",
+      "usesIcloudStorage": true,
+      "bundleIdentifier": "com.trivox.cleangig"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.quodline.cleangig",
+      "userInterfaceStyle": "dark"
     },
     "web": {
       "favicon": "./assets/favicon.png"
