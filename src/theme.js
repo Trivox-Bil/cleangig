@@ -1,4 +1,4 @@
-import {extendTheme} from 'native-base';
+import {extendTheme, useContrastText} from 'native-base';
 
 export const defaultTheme = extendTheme({
     config: {

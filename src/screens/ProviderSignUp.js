@@ -5,7 +5,6 @@ import {
     Button,
     Center,
     Checkbox,
-    CheckIcon,
     CloseIcon,
     Collapse,
     Divider,
@@ -17,11 +16,9 @@ import {
     Input,
     Link,
     Progress,
-    Select,
     Text,
     VStack
 } from "native-base";
-import counties from "../data/counties";
 import validator from "validator";
 import {cleangigApi} from "../network";
 import {useDispatch} from "react-redux";
@@ -31,15 +28,13 @@ import {resetRoute} from "../helpers";
 
 export default function ({navigation}) {
     const [stage, setStage] = useState(1);
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+    const [businessName, setBusinessName] = useState('');
+    const [contactName, setContactName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passConfirm, setPassConfirm] = useState('');
-    const [county, setCounty] = useState('AB');
-    const [city, setCity] = useState('');
-    const [street, setStreet] = useState('');
-    const [phone, setPhone] = useState('');
+    const [orgNumber, setOrgNumber] = useState('');
+    const [insurance, setInsurance] = useState(false);
     const [terms, setTerms] = useState(false);
     const [stage1Error, setStage1Error] = useState('');
     const [stage2Error, setStage2Error] = useState('');
@@ -47,20 +42,20 @@ export default function ({navigation}) {
     const dispatch = useDispatch();
 
     function validateStage1() {
-        if ([firstName, lastName, email, password, phone].some(field => field.trim() === '')) {
+        if ([businessName, contactName, orgNumber].some(field => field.trim() === '')) {
             setStage1Error('Vänligen ange alla obligatoriska fält');
-        } else if (!validator.isEmail(email)) {
-            setStage1Error('Ange en giltig e-postadress');
-        } else if (password !== passConfirm) {
-            setStage1Error('Lösenorden matchar inte');
         } else {
             setStage(2);
         }
     }
 
     function validateStage2() {
-        if (city.length === 0) {
-            setStage2Error('Ange en giltig stad');
+        if ([email, password].some(field => field.trim() === '')) {
+            setStage2Error('Vänligen ange alla obligatoriska fält');
+        } else if (!validator.isEmail(email)) {
+            setStage2Error('Ange en giltig e-postadress');
+        } else if (password !== passConfirm) {
+            setStage2Error('Lösenorden matchar inte');
         } else if (!terms) {
             setStage2Error('Du måste acceptera villkoren för att fortsätta');
         } else {
@@ -72,24 +67,22 @@ export default function ({navigation}) {
         try {
             setSubmitting(true);
             const request = new FormData();
-            request.append('first_name', firstName);
-            request.append('last_name', lastName);
+            request.append('business_name', businessName);
+            request.append('contact_name', contactName);
             request.append('email', email);
             request.append('password', password);
-            request.append('street', street);
-            request.append('city', city);
-            request.append('county', county);
-            request.append('phone_number', phone);
-            const {data: response} = await cleangigApi.post('customers', request);
+            request.append('insurance', insurance);
+            request.append('organisation_number', orgNumber);
+            const {data: response} = await cleangigApi.post('providers', request);
             if (response.success) {
                 dispatch(login(request));
-                navigation.dispatch(resetRoute('Customer'));
+                navigation.dispatch(resetRoute('Provider'));
             } else {
-                setStage2Error('Ett fel inträffade. Försök igen');
+                setStage1Error('Ett fel inträffade. Försök igen');
             }
         } catch (e) {
             console.error(e);
-            setStage2Error('Ett fel inträffade. Försök igen');
+            setStage1Error('Ett fel inträffade. Försök igen');
         } finally {
             setSubmitting(false);
         }
@@ -97,34 +90,24 @@ export default function ({navigation}) {
 
     const part1 = <VStack bg="#fff" p={4} space={2} m={5} rounded="md" shadow={2}>
         <FormControl isRequired>
-            <FormControl.Label>Förnamn</FormControl.Label>
-            <Input value={firstName} onChangeText={setFirstName} autoCompleteType="name"/>
+            <FormControl.Label>Ditt företags namn</FormControl.Label>
+            <Input value={businessName} onChangeText={setBusinessName}/>
+        </FormControl>
+        <FormControl isRequired>
+            <FormControl.Label>Konto ägare</FormControl.Label>
+            <Input value={contactName} onChangeText={setContactName} autoCompleteType="name"/>
+        </FormControl>
+        <FormControl isRequired>
+            <FormControl.Label>Organisationsnummer</FormControl.Label>
+            <Input value={orgNumber} onChangeText={setOrgNumber} keyboardType="numeric"/>
         </FormControl>
         <FormControl>
-            <FormControl.Label>Efternamn</FormControl.Label>
-            <Input value={lastName} onChangeText={setLastName} autoCompleteType="name"/>
-        </FormControl>
-        <FormControl isRequired>
-            <FormControl.Label>E-post adress</FormControl.Label>
-            <Input value={email} onChangeText={setEmail} autoCompleteType="email"/>
-        </FormControl>
-        <FormControl isRequired>
-            <FormControl.Label>Telefonnummer</FormControl.Label>
-            <Input value={phone} onChangeText={setPhone} autoCompleteType="tel" keyboardType="numeric"/>
-        </FormControl>
-        <FormControl isRequired>
-            <FormControl.Label>Lösenord</FormControl.Label>
-            <Input value={password} onChangeText={setPassword} autoCompleteType="password" secureTextEntry/>
-        </FormControl>
-        <FormControl isRequired>
-            <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
-            <Input value={passConfirm} onChangeText={setPassConfirm} autoCompleteType="password"
-                   secureTextEntry/>
+            <Checkbox value={insurance} onChange={setInsurance}>Försäkring?</Checkbox>
         </FormControl>
 
         <Collapse isOpen={stage1Error.length > 0}>
             <Alert status="error">
-                <HStack space={4}>
+                <HStack space={4} flexWrap="wrap">
                     <Alert.Icon/>
                     <Heading size="sm">Fel</Heading>
                     <Text>{stage1Error}</Text>
@@ -141,9 +124,11 @@ export default function ({navigation}) {
     const part2 = <>
         <HStack bg="accent.200" mt={0} m={5} p={3} rounded="xl" alignItems="center">
             <VStack flex={1} space={1}>
-                <Text fontSize="md">{firstName} {lastName}</Text>
+                <Text fontSize="md">{businessName}</Text>
+                <Text fontSize="md">{contactName}</Text>
+                <Text fontSize="md">{orgNumber}</Text>
+                <Text fontSize="md">Försäkring - {insurance ? 'Ja' : 'Nej'}</Text>
                 <Text fontSize="md">{email}</Text>
-                <Text fontSize="md">{phone}</Text>
             </VStack>
             <Divider orientation="vertical" mx={2} bg="brand.700"/>
             <Button variant="ghost" colorScheme="brand" onPress={() => setStage(1)}>Ändra</Button>
@@ -151,24 +136,17 @@ export default function ({navigation}) {
 
         <VStack bg="#fff" p={4} space={2} m={5} rounded="md" shadow={2}>
             <FormControl isRequired>
-                <FormControl.Label>Län</FormControl.Label>
-                <Select selectedValue={county} onValueChange={setCounty}
-                        _selectedItem={{bg: "brand.300", endIcon: <CheckIcon size={4}/>}}>
-                    {counties.map(({code, name}) => <Select.Item key={code} label={name} value={code}/>)}
-                </Select>
+                <FormControl.Label>E-post adress</FormControl.Label>
+                <Input value={email} onChangeText={setEmail} autoCompleteType="email"/>
             </FormControl>
             <FormControl isRequired>
-                <FormControl.Label>Stad</FormControl.Label>
-                <Select selectedValue={city} onValueChange={setCity}
-                        _selectedItem={{bg: "brand.300", endIcon: <CheckIcon size={4}/>}}>
-                    {counties.find(c => c.code === county).cities.map((city, i) => {
-                        return <Select.Item key={i} label={city} value={city}/>;
-                    })}
-                </Select>
+                <FormControl.Label>Lösenord</FormControl.Label>
+                <Input value={password} onChangeText={setPassword} autoCompleteType="password" secureTextEntry/>
             </FormControl>
-            <FormControl>
-                <FormControl.Label>Gatuadress</FormControl.Label>
-                <Input value={street} onChangeText={setStreet} autoCompleteType="street-address"/>
+            <FormControl isRequired>
+                <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
+                <Input value={passConfirm} onChangeText={setPassConfirm} autoCompleteType="password"
+                       secureTextEntry/>
             </FormControl>
             <FormControl>
                 <Checkbox value={terms} onChange={setTerms} colorScheme="accent" my={4}>
@@ -187,8 +165,8 @@ export default function ({navigation}) {
                 </Alert>
             </Collapse>
 
-            <Button colorScheme="brand" isLoading={submitting} onPress={validateStage2} isLoadingText="Laddar, vänta..."
-                    alignSelf="stretch">
+            <Button colorScheme="brand" disabled={stage2Error.length} isLoading={submitting} onPress={validateStage2}
+                    isLoadingText="Laddar, vänta..." alignSelf="stretch" _disabled={{bg: 'light.300'}}>
                 Slutföra registreringen
             </Button>
         </VStack>
@@ -201,7 +179,7 @@ export default function ({navigation}) {
             </VStack>
 
             <VStack mx={2} mt={5} space={2} alignItems="center">
-                <Heading size="md">Registrering av privatpersoner</Heading>
+                <Heading size="md">Registrering av företag</Heading>
                 <Center p="3">
                     <Link onPress={() => navigation.replace('Login')}>
                         Har du redan ett konto?
@@ -217,7 +195,7 @@ export default function ({navigation}) {
             {stage === 1 ? part1 : part2}
 
             <Center>
-                <Link onPress={() => navigation.replace('ProviderSignUp')}>Registrera dig som företag</Link>
+                <Link onPress={() => navigation.replace('CustomerSignUp')}>Registrera dig som privatperson</Link>
             </Center>
         </VStack>
     </SafeScrollView>;

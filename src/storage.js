@@ -1,10 +1,10 @@
 import NativeAsyncStorage from "@react-native-async-storage/async-storage";
 
-export const USER_ID_KEY = '@userId';
+export const USER_DATA_KEY = '@user';
 
 export async function storeLocal(key, value) {
     try {
-        await NativeAsyncStorage.setItem(JSON.stringify(key), value.toString());
+        await NativeAsyncStorage.setItem(JSON.stringify(key), JSON.stringify(value));
         return true;
     } catch (e) {
         console.error(e);

@@ -29,6 +29,9 @@ import CustomerSignUp from "./src/screens/CustomerSignUp";
 import {SET_NOTIFICATION, SET_PUSH_TOKEN} from "./src/actions/types";
 import * as Notifications from "expo-notifications";
 import {registerForPushNotificationsAsync} from "./src/notifications";
+import ProviderSignUp from "./src/screens/ProviderSignUp";
+import CustomerTabs from "./src/screens/CustomerTabs";
+import ProviderTabs from "./src/screens/ProviderTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -79,6 +82,9 @@ export default function App() {
                         <Stack.Screen name="Splash" component={Splash}/>
                         <Stack.Screen name="Login" component={Login}/>
                         <Stack.Screen name="CustomerSignUp" component={CustomerSignUp}/>
+                        <Stack.Screen name="ProviderSignUp" component={ProviderSignUp}/>
+                        <Stack.Screen name="Customer" component={CustomerTabs}/>
+                        <Stack.Screen name="Provider" component={ProviderTabs}/>
                     </Stack.Navigator>
                 </NavigationContainer>
             </NativeBaseProvider>
