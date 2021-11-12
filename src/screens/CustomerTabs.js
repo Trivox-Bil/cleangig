@@ -3,7 +3,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {FontAwesome5} from '@expo/vector-icons';
 import ServicesStack from "./Customer/ServicesStack";
 import BrowseStack from "./Customer/BrowseStack";
-import HistoryTab from "./Customer/HistoryTab";
+import JobStack from "./Customer/JobStack";
 import ChatStack from "./Customer/ChatStack";
 import Profile from "./Customer/Profile";
 
@@ -24,7 +24,7 @@ export default function () {
                                 options={options('Tjänster', 'briefcase')}/>
             <Tab.Screen name="Browse" component={BrowseStack}
                                 options={options('Leverantörer', 'search')}/>
-            <Tab.Screen name="History" component={HistoryTab} options={options('Jobb', 'tasks')}/>
+            <Tab.Screen name="Job" component={JobStack} options={options('Jobb', 'tasks')}/>
             <Tab.Screen name="Chat" component={ChatStack} options={options('Chatt', 'comments')}/>
             <Tab.Screen name="Profile" component={Profile} options={options('Profil', 'user')}/>
         </Tab.Navigator>

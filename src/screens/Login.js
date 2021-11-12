@@ -39,7 +39,6 @@ export default function ({navigation}) {
             setPassword('');
         } else {
             setShowError(false);
-            console.warn(user);
             await storeLocal(USER_DATA_KEY, user);
             navigation.dispatch(resetRoute(userType === 'private' ? 'Customer' : 'Provider'));
         }
