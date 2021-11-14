@@ -6,6 +6,11 @@
       "distribution": "internal"
     }
   },
+  "preview": {
+    "ios": {
+      "simulator": true
+    }
+  },
   "submit": {
     "release": {}
   }
