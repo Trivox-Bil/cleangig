@@ -4,11 +4,11 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal"
-    }
-  },
-  "preview": {
-    "ios": {
-      "simulator": true
+    },
+    "preview": {
+      "ios": {
+        "simulator": true
+      }
     }
   },
   "submit": {
