@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {Image, Picker, Platform, RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
+import {Image, Platform, RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
 import {BottomSheet, Button, ListItem, SearchBar, Text} from 'react-native-elements';
 import counties from "../../../data/counties";
 import services from "../../../data/services";
-import axios from "axios";
+import {sotApi} from "../../../network";
+import SafeScrollView from "../../../components/SafeScrollView";
+import {Picker} from "@react-native-picker/picker";
 
 export default function ({navigation}) {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [providers, setProviders] = useState([]);
     const [filterLocation, setFilterLocation] = useState(false);
     const [filterService, setFilterService] = useState(false);
@@ -23,36 +25,20 @@ export default function ({navigation}) {
         {
             title: 'Plats',
             component: (
-                <Picker
-                    selectedValue={filterLocation}
-                    style={{flex: 1}}
-                    onValueChange={value => setFilterLocation(value)}
-                >
-                    <Picker.Item label="Alla platser" value={null} key={-1}/>
-                    {counties.map((item, index) => {
-                        return (
-                            <Picker.Item label={item.name} value={item.code} key={index}/>
-                        );
-                    })
-                    }
+                <Picker selectedValue={filterLocation} style={{flex: 1}} onValueChange={setFilterLocation}>
+                    <Picker.Item label="Alla platser" value={null}/>
+                    {counties.map((item, index) => <Picker.Item label={item.name} value={item.code} key={index}/>)}
                 </Picker>
             ),
         },
         {
             title: 'Tjänster',
             component: (
-                <Picker
-                    selectedValue={filterService}
-                    style={{flex: 1}}
-                    onValueChange={value => setFilterService(value)}
-                >
-                    <Picker.Item label="Alla tjänster" value={false} key={-1}/>
-                    {services.map((item, index) => {
-                        return (
-                            <Picker.Item label={item.name} value={item.id} key={index}/>
-                        );
-                    })
-                    }
+                <Picker selectedValue={filterService} style={{flex: 1}} onValueChange={setFilterService}>
+                    <Picker.Item label="Alla tjänster" value={false}/>
+                    {services.map((item, index) => (
+                        <Picker.Item label={item.name} value={item.id} key={index}/>
+                    ))}
                 </Picker>
             ),
         },
@@ -70,7 +56,7 @@ export default function ({navigation}) {
 
     const searchProviders = async () => {
         setSearching(true);
-        const result = await axios.get(`https://stadochtradgard.se/sot_api/providers/search?token=${searchToken}`);
+        const result = await sotApi.get(`providers/search?token=${searchToken}`);
         if (result.success) {
             setProviders(result.providers);
             setSearching(false);
@@ -80,13 +66,9 @@ export default function ({navigation}) {
     const fetchProviders = async () => {
         setLoading(true);
         const {location, service} = filter;
-        const result = await axios.get(
-            `https://stadochtradgard.se/sot_api/providers/get_all?location=${location||''}&service=${service||''}`
-        );
-        if (result.success) {
-            setProviders(result.providers);
-            setLoading(false);
-        }
+        const {data} = await sotApi.get(`providers/get_all?location=${location||''}&service=${service||''}`);
+        setProviders(data.providers);
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -94,7 +76,7 @@ export default function ({navigation}) {
     }, []);
 
     return (<>
-            <ScrollView
+            <SafeScrollView
                 contentContainerStyle={styles.container}
                 refreshControl={
                     <RefreshControl refreshing={loading} onRefresh={fetchProviders}/>
@@ -102,35 +84,34 @@ export default function ({navigation}) {
                 <SearchBar
                     placeholder="Sök"
                     platform={Platform.OS}
-                    onChangeText={value => setSearchToken(value)}
+                    onChangeText={setSearchToken}
                     value={searchToken}
                     showLoading={searching}
                     onSubmitEditing={searchProviders}
                 />
-                <Button title="Filtrera" titleStyle={{color: colors.blue}} type="clear"
+                <Button title="Filtrera" titleStyle={{color: '#ff7000'}} type="clear"
                         onPress={() => setShowFilter(true)}/>
                 {filter.location && <Text style={{
-                    color: colors.blue,
+                    color: '#ff7000',
                     fontSize: 14,
                     textAlign: 'center'
                 }}>Län: {counties.find(c => c.code === filterLocation).name()}</Text>}
 
                 <View style={styles.mainBody}>
-                    {providers.map(provider => (
-                        <ListItem key={provider.id} bottomDivider
+                    {providers.map((provider, i) => (
+                        <ListItem key={i}
                                   onPress={() => navigation.push('ProviderProfile', {provider: provider.id})}>
                             <Image
                                 source={{uri: provider.picture}}
                                 style={{width: 50, height: 50, borderRadius: 25, marginHorizontal: 10}}/>
-                            <ListItem.Content bottomDivider>
+                            <ListItem.Content>
                                 <ListItem.Title>{provider.name}</ListItem.Title>
-                                <ListItem.Subtitle>{provider.insurance == 1 ? 'Försäkring' : 'Ingen försäkring'}</ListItem.Subtitle>
-                                <ListItem.Subtitle>{provider.county_code ? countyName(counties, provider.county_code) : 'Plats ej specificerad'}</ListItem.Subtitle>
+                                <ListItem.Subtitle>{provider.county_code ? counties.find(c => c.code === provider.county_code).name : 'Plats ej specificerad'}</ListItem.Subtitle>
                             </ListItem.Content>
                         </ListItem>
                     ))}
                 </View>
-            </ScrollView>
+            </SafeScrollView>
             <BottomSheet
                 isVisible={showFilter}
                 containerStyle={{backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)'}}>
@@ -143,7 +124,7 @@ export default function ({navigation}) {
                     ))}
                     <Button
                         title="Välj"
-                        buttonStyle={{backgroundColor: colors.blue}}
+                        buttonStyle={{backgroundColor: '#ff7000'}}
                         titleStyle={{color: '#fff'}}
                         onPress={() => {
                             filter.location = filterLocation;
@@ -156,13 +137,13 @@ export default function ({navigation}) {
                         <Button
                             title="Avbryt"
                             type="clear"
-                            titleStyle={{color: '#846'}}
+                            titleStyle={{color: '#ff7000'}}
                             onPress={() => setShowFilter(false)}
                         />
                         <Button
                             title="Återställa"
                             type="clear"
-                            titleStyle={{color: '#846'}}
+                            titleStyle={{color: '#ff7000'}}
                             onPress={resetFilter}
                         />
                     </View>

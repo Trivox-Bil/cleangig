@@ -45,11 +45,13 @@ export default function ({navigation}) {
     }
 
     function submit() {
-        setShowError(true);
-        const request = new FormData();
-        request.append('email', email);
-        request.append('password', password);
-        dispatch(login(userType, request));
+        if (userType === 'private') {
+            setShowError(true);
+            const request = new FormData();
+            request.append('email', email);
+            request.append('password', password);
+            dispatch(login(userType, request));
+        }
     }
 
     return <SafeScrollView margin="5%" flex={1} width="90%">

@@ -1,6 +1,7 @@
-import {LOGIN, LOGIN_ERROR, LOGIN_ERROR_NOT_FOUND, LOGIN_SUCCESS} from "./types";
+import {LOGIN, LOGIN_ERROR, LOGIN_ERROR_NOT_FOUND, LOGIN_SUCCESS, LOGOUT} from "./types";
 import {cleangigApi} from "../network";
 import {storeLocal, USER_DATA_KEY} from "../storage";
+import {resetRoute} from "../helpers";
 
 export const login = (userType, formData) => async dispatch => {
     const endPoint = userType === 'private' ? 'customers/login' : 'providers/login';
@@ -18,4 +19,10 @@ export const login = (userType, formData) => async dispatch => {
         console.error(e);
         dispatch({type: LOGIN_ERROR});
     }
+}
+
+export const logOut = (navigation) => async dispatch => {
+    dispatch({type: LOGOUT});
+    await storeLocal(USER_DATA_KEY, '{}');
+    navigation.dispatch(resetRoute('Login'));
 }

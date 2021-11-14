@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
-import counties from '../../../../lib/counties';
+import counties from '../../../data/counties';
 import {Button, Card, Divider, Image, ListItem, Text} from 'react-native-elements';
-import {colors, formatOrgNumber, sotApi} from '../../../../lib/helpers';
+import {colors, formatOrgNumber} from '../../../helpers';
+import {sotApi} from "../../../network";
+import AppBar from "../../../components/AppBar";
 
 export default function ({navigation, route}) {
     const providerId = route.params.provider;
@@ -45,7 +47,8 @@ export default function ({navigation, route}) {
         fetchRatings();
     }, []);
 
-    return (
+    return <>
+        <AppBar screenTitle="Leverantör" navigation={navigation} backButton/>
         <ScrollView
             contentContainerStyle={styles.container}
             refreshControl={
@@ -83,44 +86,6 @@ export default function ({navigation, route}) {
                     }
 
                 </Card>
-
-                <Card>
-                    <Card.Title>Tjänster</Card.Title>
-                    <Card.Divider/>
-                    <Text style={{fontWeight: 'bold'}}>Klicka på någon tjänst för att lägga upp ett jobb</Text>
-                    {services.map(service => {
-                        return (
-                            <ListItem
-                                key={service.id}
-                                onPress={() => navigation.push('CustomerTab', {
-                                    screen: 'Services',
-                                    params: {
-                                        screen: 'PostJob', params: {
-                                            service,
-                                            postedFor: {
-                                                id: provider.id,
-                                                name: provider.name,
-                                            }
-                                        }
-                                    }
-                                })}>
-                                <View style={{padding: 6.25, backgroundColor: colors.blue}}>
-                                    <Image
-                                        source={{uri: 'https://stadochtradgard.se/sot_api/images/' + service.icon}}
-                                        style={{width: 25, height: 25}}/>
-                                </View>
-                                <ListItem.Content>
-                                    <ListItem.Title>{service.name}</ListItem.Title>
-                                </ListItem.Content>
-                            </ListItem>
-                        );
-                    })
-                    }
-                    {services.length < 1 && (
-                        <Text style={{textAlign: 'center', color: colors.gray}}>Inget att visa</Text>
-                    )}
-                </Card>
-
                 <Card>
                     <Card.Title>Tidigare arbete</Card.Title>
                     <Card.Divider/>
@@ -158,20 +123,9 @@ export default function ({navigation, route}) {
                         <Text style={{textAlign: 'center', color: colors.gray}}>Inget att visa</Text>
                     )}
                 </Card>
-
-                <Card>
-                    <Button
-                        title="Chatt"
-                        buttonStyle={{backgroundColor: colors.orange}}
-                        onPress={() => navigation.push('CustomerTab', {
-                            screen: 'Chat',
-                            params: {screen: 'ChatScreen', params: {provider: provider.id}}
-                        })}
-                    />
-                </Card>
             </>}
         </ScrollView>
-    );
+    </>;
 }
 
 const styles = StyleSheet.create({

@@ -9,10 +9,9 @@ import {cleangigApi} from "../../../network";
 import {CheckBox} from "react-native-elements";
 import SafeScrollView from "../../../components/SafeScrollView";
 import ImageCarousel from "../../../components/ImageCarousel";
-import format from "date-fns/format";
 
 export default function ({route, navigation}) {
-    const service = useState(route.params.service)[0];
+    const service = route.params.service;
     const user = useSelector(state => state.user.data);
     const [title, setTitle] = useState(route.params.title || '');
     const [description, setDescription] = useState(route.params.description || '');
@@ -27,22 +26,9 @@ export default function ({route, navigation}) {
     const [loading, setLoading] = useState(false);
 
     function choosePictures() {
-        navigation.navigate(
+        navigation.replace(
             'ImageBrowser',
-            {
-                job: {
-                    title,
-                    description,
-                    deadlineFrom,
-                    deadlineTo,
-                    service,
-                    editAddress,
-                    street,
-                    city,
-                    county,
-                    visibility
-                }
-            }
+            {title, description, deadlineFrom, deadlineTo, service, editAddress, street, city, county, visibility}
         );
     }
 
@@ -50,21 +36,24 @@ export default function ({route, navigation}) {
         try {
             setLoading(true);
             const pics = await uploadPictures();
-            const request = new FormData();
-            request.append('customer', user.id);
-            request.append('service', service.id);
-            request.append('county', county.code);
-            request.append('street', street);
-            request.append('city', city);
-            request.append('title', title);
-            request.append('description', description);
-            request.append('deadline_begin', format(deadlineFrom, 'yyyy-MM-dd HH:mm:ss'));
-            request.append('deadline_end', format(deadlineTo, 'yyyy-MM-dd HH:mm:ss'));
-            request.append('visibility', visibility);
-            request.append('pictures', JSON.stringify(pics));
-            const {data} = await cleangigApi.post('/jobs', request, {
-                transformRequest: [data => data],
+            const request = {
+                customer: user.id,
+                service: service.id,
+                county: county.code,
+                street, city, title, description,
+                deadline_begin: deadlineFrom,
+                deadline_end: deadlineFrom,
+                visibility,
+                pictures: JSON.stringify(pics),
+            };
+            const resp = await fetch('https://cleangig.se/api/jobs', {
+                method: 'POST',
+                body: JSON.stringify(request),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
+            const data = await resp.json();
             if (data.id) {
                 navigation.replace('Customer', {
                     screen: 'Job',
@@ -101,12 +90,12 @@ export default function ({route, navigation}) {
 
                 <FormControl isRequired>
                     <FormControl.Label>Rubrik</FormControl.Label>
-                    <Input value={title} onChange={setTitle}/>
+                    <Input value={title} onChangeText={setTitle}/>
                 </FormControl>
 
                 <FormControl isRequired>
                     <FormControl.Label>Beskrivande text</FormControl.Label>
-                    <Input value={description} onChange={setDescription} multiline numberOfLines={4}/>
+                    <Input value={description} onChangeText={setDescription} multiline numberOfLines={4}/>
                 </FormControl>
 
                 {pictures.length > 0 && (

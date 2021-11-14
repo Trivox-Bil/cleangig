@@ -21,7 +21,7 @@ export default function () {
     return (
         <Tab.Navigator screenOptions={{headerShown: false}} tabBarOptions={{activeTintColor: '#ff7e1a'}}>
             <Tab.Screen name="Services" component={ServicesStack}
-                                options={options('Tjänster', 'briefcase')}/>
+                                options={options('Hem', 'home')}/>
             <Tab.Screen name="Browse" component={BrowseStack}
                                 options={options('Leverantörer', 'search')}/>
             <Tab.Screen name="Job" component={JobStack} options={options('Jobb', 'tasks')}/>

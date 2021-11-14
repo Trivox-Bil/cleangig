@@ -1,15 +1,17 @@
 import React, {useCallback, useState} from 'react';
 import AppBar from "../../components/AppBar";
 import {useDispatch, useSelector} from "react-redux";
-import {LOGIN, LOGIN_SUCCESS, LOGOUT} from "../../actions/types";
+import {LOGIN_SUCCESS, LOGOUT} from "../../actions/types";
 import {storeLocal, USER_DATA_KEY} from "../../storage";
 import {resetRoute} from "../../helpers";
-import {Divider, Heading, HStack, Image, Pressable, Select, Text, VStack} from "native-base";
+import {Heading, HStack, Image, Pressable, Text, VStack} from "native-base";
 import counties from "../../data/counties";
 import HoshiInput from "../../components/HoshiInput";
 import * as ImagePicker from 'expo-image-picker';
 import lodash from "lodash";
 import {cleangigApi} from "../../network";
+import SafeScrollView from "../../components/SafeScrollView";
+import HoshiSelectControl from "../../components/HoshiSelectControl";
 
 export default function ({navigation}) {
     const user = useSelector(state => state.user.data);
@@ -54,44 +56,28 @@ export default function ({navigation}) {
             isSaved() ? {action: logOut, icon: 'sign-out-alt'} : {action: saveAll, icon: 'save'}
         ]}/>
 
-        <HStack m={4} space={2}>
-            <Pressable onPress={selectPicture}>
-                <Image source={{uri: picture}} w={100} h={100} rounded="md" alt=" "/>
-            </Pressable>
-            <VStack space={2}>
-                <Heading size="md" isTruncated noOfLines={2} maxWidth="300">{user.fname} {user.lname}</Heading>
-                <Text>{user.email}</Text>
-                <Text>{counties.find(c => c.code === user.county).name}</Text>
+        <SafeScrollView flex={1}>
+            <HStack m={4} space={2}>
+                <Pressable onPress={selectPicture}>
+                    <Image source={{uri: picture}} w={100} h={100} rounded="md" alt=" "/>
+                </Pressable>
+                <VStack space={2}>
+                    <Heading size="md" isTruncated noOfLines={2} maxWidth="300">{user.fname} {user.lname}</Heading>
+                    <Text>{user.email}</Text>
+                    <Text>{counties.find(c => c.code === user.county).name}</Text>
+                </VStack>
+            </HStack>
+
+            <VStack my={4}>
+                <HoshiInput value={fname} label="Förnamn" onChangeText={setFname}/>
+                <HoshiInput value={lname} label="Efternamn" onChangeText={setLname}/>
+                <HoshiInput value={phone} label="Telefonnummer" onChangeText={setPhone} keyboardType="numeric"/>
+                <HoshiSelectControl label="Län" selectedValue={county} onValueChange={setCounty}
+                                    collection={counties.map(c => ({label: c.name, value: c.code}))}/>
+                <HoshiSelectControl label="Stad" selectedValue={city} onValueChange={setCity}
+                                    collection={counties.find(c => c.code === county).cities.map(c => ({label: c, value: c}))}/>
+                <HoshiInput value={street} label="Gatuadress" onChangeText={setStreet}/>
             </VStack>
-        </HStack>
-
-        <VStack my={4}>
-            <HoshiInput value={fname} label="Förnamn" onChangeText={setFname}/>
-            <HoshiInput value={lname} label="Efternamn" onChangeText={setLname}/>
-            <HoshiInput value={phone} label="Telefonnummer" onChangeText={setPhone} keyboardType="numeric"/>
-        </VStack>
-
-        <VStack my={4}>
-            <SelectControl label="Län" selectedValue={county} onValueChange={setCounty}
-                           collection={counties.map(c => ({label: c.name, value: c.code}))}/>
-            <SelectControl label="Stad" selectedValue={city} onValueChange={setCity}
-                           collection={counties.find(c => c.code === county).cities.map(c => ({label: c, value: c}))}/>
-            <HoshiInput value={street} label="Gatuadress" onChangeText={setStreet}/>
-        </VStack>
+        </SafeScrollView>
     </>;
 };
-
-function SelectControl({label, collection, ...selectProps}) {
-    return <>
-        <VStack px={4} borderColor="brand.400" borderBottomWidth={3}>
-            <Text color="dark.400" fontSize="md" fontWeight={200}>{label}</Text>
-            <Select fontSize="lg" color="dark.400" fontWeight="bold" variant="unstyled" h={10}
-                    _selectedItem={{bg: 'accent.400'}} {...selectProps}>
-                {collection.map((c, i) => {
-                    return <Select.Item key={i} label={c.label} value={c.value}/>;
-                })}
-            </Select>
-        </VStack>
-        <Divider height={.5} bg="dark.600"/>
-    </>;
-}

@@ -19,19 +19,9 @@ export default function ({navigation}) {
     const [jobs, setJobs] = useState([]);
     const [statusFilter, setStatusFilter] = useState(STATUS_ALL);
 
-    useEffect(() => {
-        fetchProjects().then(() => {
-            setInterval(fetchProjects, 20000);
-        });
-    }, []);
-
-    const filteredJobs = useCallback(() => {
-        return jobs.filter(j => statusFilter.includes(j.status));
-    }, [jobs, statusFilter]);
-
-    async function fetchProjects() {
+    async function fetchChats() {
         setLoading(true);
-        const {data} = await cleangigApi.get(`customers/${user.id}/jobs`);
+        const {data} = await cleangigApi.get(`jobs/${user.id}/jobs`);
         setJobs(data.jobs);
         setLoading(false);
     }

@@ -22,7 +22,7 @@ export default function ImagePicker({route, navigation}) {
                         type: mime.getType(pPhoto.uri),
                     });
                 }
-                navigation.push('NewJob', {photos: cPhotos, ...route.params.job});
+                navigation.replace('NewJob', {photos: cPhotos, ...route.params});
             })
             .catch((e) => console.log(e));
     }
