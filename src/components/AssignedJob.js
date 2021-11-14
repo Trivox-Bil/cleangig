@@ -5,8 +5,16 @@ import {formatDate} from "../helpers";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
 
-export default function ({job, onDelete, pictures}) {
+export default function ({job, onDelete, pictures, navigation}) {
     const [warnDelete, setWarnDelete] = useState(false);
+
+    function goToChat() {
+        navigation.navigate('Chat', {screen: 'Chat', params: {job}});
+    }
+
+    function goToProvider() {
+        navigation.navigate('Browse', {screen: 'ProviderProfile', params: {provider: job.provider.id}});
+    }
 
     return <VStack m={4} space={4}>
         <Heading>{job.title}</Heading>
@@ -20,7 +28,12 @@ export default function ({job, onDelete, pictures}) {
             </HStack>
         )}
 
-        <Button colorScheme="red" onPress={() => setWarnDelete(true)} my={4}>Ta bort jobb</Button>
+        <HStack space={4} justifyContent="center">
+            <Button variant="link" onPress={goToChat}>Chatt</Button>
+            <Button variant="link" onPress={goToProvider}>Leverantör</Button>
+            <Button variant="link" colorScheme="dark" onPress={() => setWarnDelete(true)}>Radera</Button>
+        </HStack>
+
         <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}
                        message="Är du säker att du vill radera"/>
     </VStack>;

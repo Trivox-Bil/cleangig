@@ -5,12 +5,11 @@ import {VStack} from "native-base";
 import PendingJob from "../../../components/PendingJob";
 import UnassignedJob from "../../../components/UnassignedJob";
 import voca from "voca";
+import AssignedJob from "../../../components/AssignedJob";
 
 export default function ({navigation, route}) {
     const [job, setJob] = useState(route.params.data || null);
     const [pictures, setPictures] = useState([]);
-    const [proposals, setProposals] = useState([]);
-    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         if (job) {
@@ -33,11 +32,6 @@ export default function ({navigation, route}) {
         setJob(data.job);
     }
 
-    const fetchProposals = async (id) => {
-        const result = await sotApi.get(`proposals/get_all?job=${job.id}`);
-        result.success && setProposals(result.proposals);
-    };
-
     async function deleteJob() {
         await cleangigApi.delete(`jobs/${job.id}`);
         navigation.goBack();
@@ -46,9 +40,9 @@ export default function ({navigation, route}) {
     return <VStack flex={1}>
         <AppBar screenTitle={job ? job.title : 'loading...'} navigation={navigation} backButton/>
 
-        {job && job.status === 'pending' && <PendingJob id={job.id} pictures={pictures} navigation={navigation}
-                                                        onDelete={deleteJob}/>}
-        {job && job.status === 'initial' && <UnassignedJob job={job} pictures={pictures} navigation={navigation}
+        {job && job.status === 'pending' && <PendingJob pictures={pictures} onDelete={deleteJob}/>}
+        {job && job.status === 'initial' && <UnassignedJob job={job} pictures={pictures} onDelete={deleteJob}/>}
+        {job && job.status === 'assigned' && <AssignedJob job={job} pictures={pictures} navigation={navigation}
                                                            onDelete={deleteJob}/>}
     </VStack>;
 }

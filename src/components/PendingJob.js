@@ -6,7 +6,7 @@ import WarningDialog from '../components/WarningDialog';
 import counties from "../data/counties";
 import {formatDate} from "../helpers";
 
-export default function ({id, navigation, onDelete, pictures}) {
+export default function ({onDelete, pictures}) {
     const [warnDelete, setWarnDelete] = useState(false);
 
     return <Center p={4}>
