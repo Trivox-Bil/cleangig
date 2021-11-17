@@ -1,12 +1,41 @@
 import React, {useState} from 'react';
-import {Button, Heading, HStack, Text, VStack} from "native-base";
+import {Button, Center, Heading, HStack, Text, VStack} from "native-base";
 import counties from "../data/counties";
 import {formatDate} from "../helpers";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
+import {sotApi} from "../network";
+import FetchContent from "./FetchContent";
+import Proposal from "./Proposal";
 
-export default function ({job, onDelete, pictures}) {
+export default function ({job, onDelete, pictures, navigation}) {
     const [warnDelete, setWarnDelete] = useState(false);
+    const [proposals, setProposals] = useState([]);
+
+    const fetchProposals = async (id) => {
+        const {data: result} = await sotApi.get(`proposals/get_all?job=${job.id}`);
+        result.success && setProposals(result.proposals);
+    };
+
+    const assignJob = async (proposal) => {
+        const formData = new FormData();
+        formData.append('job', job.id);
+        formData.append('provider', proposal.provider.id);
+        formData.append('proposal', proposal.id);
+        await sotApi.post(`proposals/approve`, formData);
+        navigation.goBack();
+    }
+
+    const assignDirect = async (provider) => {
+        const formData = new FormData();
+        formData.append('job', job.id);
+        formData.append('provider', provider);
+        await sotApi.post(`jobs/assign-direct`, formData);
+        navigation.replace('CustomerTab', {
+            screen: 'History',
+            params: {screen: 'Ongoing'},
+        });
+    }
 
     return <VStack m={4} space={4}>
         <Heading>{job.title}</Heading>
@@ -19,6 +48,19 @@ export default function ({job, onDelete, pictures}) {
                 <ImageCarousel images={pictures}/>
             </HStack>
         )}
+
+        <FetchContent fetch={fetchProposals}>
+            <VStack>
+                <Heading size="sm">Prisförslag på jobbet</Heading>
+                {proposals.map(proposal =>
+                    <Proposal navigation={navigation} proposal={proposal} onAssign={assignJob}/>)}
+                {proposals.length > 0 || (
+                    <Center>
+                        <Text style={{fontSize: 18, textAlign: 'center', color: '#555'}}>Inga förslag ännu</Text>
+                    </Center>
+                )}
+            </VStack>
+        </FetchContent>
 
         <Button colorScheme="red" onPress={() => setWarnDelete(true)} my={4}>Ta bort jobb</Button>
         <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}

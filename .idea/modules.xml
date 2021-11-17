@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../apiv2/.idea/apiv2.iml" filepath="$PROJECT_DIR$/../apiv2/.idea/apiv2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../landing/.idea/landing.iml" filepath="$PROJECT_DIR$/../landing/.idea/landing.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/mobile.iml" filepath="$PROJECT_DIR$/.idea/mobile.iml" />
     </modules>
   </component>

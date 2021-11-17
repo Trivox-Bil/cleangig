@@ -2,7 +2,7 @@ import React, {useRef, useState} from 'react';
 import {cleangigApi} from "../../../network";
 import AppBar from "../../../components/AppBar";
 import {useSelector} from "react-redux";
-import {Center, Divider, FlatList, HStack, Icon, IconButton, Image, Text, VStack} from "native-base";
+import {Box, Center, Divider, FlatList, HStack, Icon, IconButton, Image, Text, VStack} from "native-base";
 import ChatItem from "../../../components/ChatItem";
 import FetchContent from "../../../components/FetchContent";
 import FumiInput from "../../../components/FumiInput";
@@ -29,7 +29,7 @@ export default function ({navigation, route}) {
 
     async function choosePicture() {
         const file = await askForPicture();
-        if (!file.cancelled) {
+        if (! file.cancelled) {
             const filePaths = file.uri.split('/');
             const request = new FormData();
             request.append('files[]', {

@@ -5,7 +5,7 @@ import {formatDate} from "../helpers";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
 
-export default function ({job, onDelete, pictures, navigation}) {
+export default function ({job, onDelete, pictures, navigation, isProvider = false}) {
     const [warnDelete, setWarnDelete] = useState(false);
 
     function goToChat() {
@@ -20,6 +20,7 @@ export default function ({job, onDelete, pictures, navigation}) {
         <Heading>{job.title}</Heading>
         <Text color="dark.400">{job.street}, {job.city}, {counties.find(c => c.code === job.county_code).name}</Text>
         <Text color="dark.400">Publicerad ons {formatDate(job.created_at)}</Text>
+        <Text color="dark.400">Deadline {formatDate(job.deadline)}</Text>
         <Text m={4} borderLeftWidth={2} borderColor="dark.600" p={4}>{job.description}</Text>
 
         {pictures.length > 0 && (
@@ -30,8 +31,8 @@ export default function ({job, onDelete, pictures, navigation}) {
 
         <HStack space={4} justifyContent="center">
             <Button variant="link" onPress={goToChat}>Chatt</Button>
-            <Button variant="link" onPress={goToProvider}>Leverantör</Button>
-            <Button variant="link" colorScheme="dark" onPress={() => setWarnDelete(true)}>Radera</Button>
+            {isProvider || <Button variant="link" onPress={goToProvider}>Leverantör</Button>}
+            {isProvider || <Button variant="link" colorScheme="dark" onPress={() => setWarnDelete(true)}>Radera</Button>}
         </HStack>
 
         <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}

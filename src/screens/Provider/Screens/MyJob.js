@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {cleangigApi, sotApi} from "../../../network";
 import AppBar from "../../../components/AppBar";
-import {ScrollView, VStack} from "native-base";
+import {Button, HStack, VStack} from "native-base";
 import PendingJob from "../../../components/PendingJob";
 import UnassignedJob from "../../../components/UnassignedJob";
 import voca from "voca";
 import AssignedJob from "../../../components/AssignedJob";
-import SafeScrollView from "../../../components/SafeScrollView";
 import ClosedJob from "../../../components/ClosedJob";
 
 export default function ({navigation, route}) {
@@ -42,12 +41,14 @@ export default function ({navigation, route}) {
     return <VStack flex={1}>
         <AppBar screenTitle={job ? job.title : 'loading...'} navigation={navigation} backButton/>
 
-        <SafeScrollView flex={1}>
-            {job && job.status === 'pending' && <PendingJob pictures={pictures} onDelete={deleteJob}/>}
-            {job && job.status === 'initial' && <UnassignedJob job={job} pictures={pictures} onDelete={deleteJob} navigation={navigation}/>}
-            {job && job.status === 'assigned' && <AssignedJob job={job} pictures={pictures} navigation={navigation}
-                                                               onDelete={deleteJob}/>}
-            {job && job.status === 'done' && <ClosedJob id={job.id} pictures={pictures}/>}
-        </SafeScrollView>
+        {job && job.status === 'assigned' && <>
+            <AssignedJob job={job} pictures={pictures} navigation={navigation} onDelete={deleteJob} isProvider/>
+
+            <HStack justifyContent="center">
+                <Button variant="link" onPress={() => navigation.navigate('CloseJob', {job})}>Fakturera färdigt arbete</Button>
+            </HStack>
+        </>}
+
+        {job && job.status === 'done' && <ClosedJob id={job.id} pictures={pictures}/>}
     </VStack>;
 }

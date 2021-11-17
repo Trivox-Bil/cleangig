@@ -24,6 +24,7 @@ import {login} from "../actions/user";
 export default function ({navigation}) {
     const loggedInStatus = useSelector(state => state.user.loggedInStatus);
     const user = useSelector(state => state.user.data);
+    const pushToken = useSelector(state => state.notification.pushToken);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [userType, setUserType] = useState('private');
@@ -45,13 +46,12 @@ export default function ({navigation}) {
     }
 
     function submit() {
-        if (userType === 'private') {
-            setShowError(true);
-            const request = new FormData();
-            request.append('email', email);
-            request.append('password', password);
-            dispatch(login(userType, request));
-        }
+        setShowError(true);
+        const request = new FormData();
+        request.append('email', email);
+        request.append('password', password);
+        request.append('pushToken', pushToken);
+        dispatch(login(userType, request));
     }
 
     return <SafeScrollView margin="5%" flex={1} width="90%">

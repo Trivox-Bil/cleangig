@@ -30,7 +30,7 @@ export default function ({item: message}) {
         </>
     ) : (
         <>
-            <HStack space={2} bg="dark.600" mr={20} m={4} px={2} py={2} rounded="2xl">
+            <HStack space={2} bg="dark.700" mr={20} m={4} px={2} py={2} rounded="2xl">
                 <Image source={{uri: message.sender.picture}} w={10} h={10} rounded="full" alt=" "/>
                 <TextContent/>
             </HStack>

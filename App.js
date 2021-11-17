@@ -32,6 +32,7 @@ import {registerForPushNotificationsAsync} from "./src/notifications";
 import ProviderSignUp from "./src/screens/ProviderSignUp";
 import CustomerTabs from "./src/screens/CustomerTabs";
 import ProviderTabs from "./src/screens/ProviderTabs";
+import config from "./src/config";
 
 const Stack = createNativeStackNavigator();
 
@@ -76,7 +77,7 @@ export default function App() {
         return <AppLoading/>;
     } else {
         return <Provider store={store}>
-            <NativeBaseProvider theme={defaultTheme}>
+            <NativeBaseProvider config={config} theme={defaultTheme}>
                 <NavigationContainer>
                     <Stack.Navigator initialRouteName="Splash" screenOptions={{headerShown: false}}>
                         <Stack.Screen name="Splash" component={Splash}/>

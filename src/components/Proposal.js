@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {Button, Image, ListItem, Overlay, Text} from "react-native-elements";
 import {TouchableOpacity, View} from "react-native";
-import {defaultTheme} from "../theme";
 
 export default function ({onAssign, proposal, navigation}) {
     const [confirmAssign, setConfirmAssign] = useState(false);
@@ -28,14 +27,14 @@ export default function ({onAssign, proposal, navigation}) {
                         title="Chatt"
                         type="outline"
                         containerStyle={{flex: 1, marginRight: 5}}
-                        buttonStyle={{borderColor: defaultTheme.colors.brand['400']}}
-                        titleStyle={{color: defaultTheme.colors.brand['400']}}
+                        buttonStyle={{borderColor: '#ff7e1a'}}
+                        titleStyle={{color: '#ff7e1a'}}
                         onPress={() => navigateTo('Chat', 'ChatScreen', {provider: proposal.provider.id})}
                     />
                     <Button
                         title="Tilldela"
                         containerStyle={{flex: 1, marginLeft: 5}}
-                        buttonStyle={{backgroundColor: defaultTheme.colors.brand['400']}}
+                        buttonStyle={{backgroundColor: '#ff7e1a'}}
                         onPress={() => setConfirmAssign(true)}
                     />
                 </View>

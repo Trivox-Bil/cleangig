@@ -1,10 +1,7 @@
 import React, {useState} from 'react';
 import {Button, Center, Heading, HStack, Text} from "native-base";
-import {cleangigApi} from "../network";
 import ImageCarousel from "./ImageCarousel";
-import WarningDialog from '../components/WarningDialog';
-import counties from "../data/counties";
-import {formatDate} from "../helpers";
+import WarningDialog from "./WarningDialog";
 
 export default function ({onDelete, pictures}) {
     const [warnDelete, setWarnDelete] = useState(false);
@@ -19,7 +16,7 @@ export default function ({onDelete, pictures}) {
         )}
 
         <Button colorScheme="red" onPress={() => setWarnDelete(true)} my={4}>Ta bort jobb</Button>
-        <WarningDialog isVisible={warnDelete}action={onDelete} onCancel={() => setWarnDelete(false)}
+        <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}
                        message="Är du säker att du vill radera"/>
     </Center>;
 }

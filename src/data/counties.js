@@ -1,4 +1,4 @@
-export default [
+const counties = [
     {
         "code": "AB",
         "name": "Stockholm",
@@ -105,3 +105,10 @@ export default [
         "cities": ["Ragunda", "Bräcke", "Krokom", "Strömsund", "Åre", "Berg", "Härjedalen", "Östersund"],
     }
 ];
+
+export function county(code) {
+    const county = counties.find(c => c.code === code);
+    return county || {code: '', name: '', cities: []};
+}
+
+export default counties;

@@ -1,13 +1,12 @@
-import React, {useCallback, useState} from 'react';
+import React, {useState} from 'react';
 import AppBar from "../../components/AppBar";
 import {useDispatch, useSelector} from "react-redux";
 import {Button, Heading, HStack, Image, Pressable, Text, VStack} from "native-base";
 import counties from "../../data/counties";
 import {logOut} from "../../actions/user";
-import {isEqual} from "lodash";
 import * as ImagePicker from 'expo-image-picker';
 import {cleangigApi, sotApi} from "../../network";
-import {LOGIN_SUCCESS} from "../../actions/types";
+import {LOGIN_SUCCESS, LOGOUT} from "../../actions/types";
 import {storeLocal, USER_DATA_KEY} from "../../storage";
 import HoshiInput from "../../components/HoshiInput";
 import SafeScrollView from "../../components/SafeScrollView";
@@ -15,6 +14,7 @@ import HoshiSelectControl from "../../components/HoshiSelectControl";
 import {ListItem} from "react-native-elements";
 import services from "../../data/services";
 import FetchContent from "../../components/FetchContent";
+import {resetRoute} from "../../helpers";
 
 export default function ({navigation}) {
     const user = useSelector(state => state.user.data);
@@ -33,6 +33,12 @@ export default function ({navigation}) {
     async function fetchServices() {
         const {data} = await sotApi.get(`services/get_all?provider=${user.id}`);
         setOfferedServices(data.services);
+    }
+
+    async function logOut() {
+        dispatch({type: LOGOUT});
+        await storeLocal(USER_DATA_KEY, {});
+        navigation.dispatch(resetRoute('Login'));
     }
 
     async function selectPicture() {
@@ -105,7 +111,8 @@ export default function ({navigation}) {
             <VStack my={4}>
                 <HoshiInput value={businessName} label="Förnamn" onChangeText={setBusinessName}/>
                 <HoshiInput value={phone} label="Telefonnummer" onChangeText={setPhone} keyboardType="numeric"/>
-                <HoshiInput value={description} label="Företagsbeskrivning" onChangeText={setDescription} multiline height={100}/>
+                <HoshiInput value={description} label="Företagsbeskrivning" onChangeText={setDescription} multiline
+                            height={100}/>
                 <HoshiSelectControl label="Plats" selectedValue={county} onValueChange={setCounty}
                                     collection={counties.map(c => ({label: c.name, value: c.code}))}/>
             </VStack>

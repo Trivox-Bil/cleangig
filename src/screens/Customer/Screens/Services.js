@@ -15,7 +15,8 @@ export default function ({navigation}) {
         <StatusBar backgroundColor="#ff7e1a"/>
 
         <VStack flexGrow={1} bg="dark.400">
-            <Center flexBasis={Dimensions.get('window').height * .35} bg="brand.400" roundedBottomRight="full" alignItems="flex-start" px={2} shadow={4}>
+            <Center flexBasis={Dimensions.get('window').height * .35} bg="brand.400" roundedBottomRight="full"
+                    alignItems="flex-start" px={2} shadow={4}>
                 <Text fontSize="2xl" color="light.100" bold>Hur kan vi hjälpa dig?</Text>
             </Center>
 

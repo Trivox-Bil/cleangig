@@ -8,6 +8,8 @@ export default function ({label, color, ...props}) {
         borderColor={color || defaultTheme.colors.brand["400"]}
         borderHeight={3}
         inputPadding={16}
+        labelStyle={{fontWeight: 'bold'}}
+        inputStyle={{fontWeight: 'light'}}
         backgroundColor={'#F9F7F600'}
         {...props}
     />;
