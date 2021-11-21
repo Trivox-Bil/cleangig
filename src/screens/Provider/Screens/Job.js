@@ -24,7 +24,6 @@ export default function ({route, navigation}) {
         let pictures;
         try {
             pictures = JSON.parse(voca.unescapeHtml(job.picture));
-            pictures = pictures.map(pic => `https://cleangig.se/uploads/${pic}`)
         } catch (e) {
             console.error(e);
         }

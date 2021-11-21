@@ -26,12 +26,7 @@ export default function askForPicture() {
 export async function downloadFile(url) {
     const fileUri = FileSystem.documentDirectory + url.split('/').pop();
 
-    const downloadObject = FileSystem.createDownloadResumable(
-        url,
-        fileUri,
-    );
-    const response = await downloadObject.downloadAsync();
-
+    const response = await FileSystem.createDownloadResumable(url, fileUri).downloadAsync();
     await Sharing.shareAsync(response.uri);
 }
 
@@ -42,7 +37,7 @@ export function resetRoute(name) {
 export function formatDate(dateStr, showTime) {
     const date = parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date());
     let result = date.toLocaleDateString('sv-SE');
-    if (showTime) result += '     ' + date.toLocaleTimeString('sv-SE');
+    if (showTime) result += '    ' + date.toLocaleTimeString('sv-SE');
 
     return result;
 }
@@ -59,10 +54,8 @@ export function totalPayment(milestones) {
 export async function createAndSavePdf(html, filename) {
     const {uri} = await Print.printToFileAsync({html});
     const pdfName = `${uri.slice(0, uri.lastIndexOf('/') + 1)}${filename}.pdf`;
-    await FileSystem.moveAsync({
-        from: uri,
-        to: pdfName,
-    });
+
+    await FileSystem.moveAsync({from: uri, to: pdfName,});
     await Sharing.shareAsync(pdfName);
 }
 
@@ -185,4 +178,3 @@ export function invoiceHtml({job, invoice}) {
         </html>
         `;
 }
-

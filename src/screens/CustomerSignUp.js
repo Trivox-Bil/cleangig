@@ -26,7 +26,6 @@ import validator from "validator";
 import {cleangigApi} from "../network";
 import {useDispatch} from "react-redux";
 import {login} from "../actions/user";
-import {storeLocal, USER_DATA_KEY} from "../storage";
 import {resetRoute} from "../helpers";
 
 export default function ({navigation}) {
@@ -197,7 +196,7 @@ export default function ({navigation}) {
     return <SafeScrollView flex={1}>
         <VStack safeArea mb={100}>
             <VStack alignItems="center" my={4}>
-                <Image source={require("../../assets/logo-small.png")} size="lg" alt="CleanGig" resizeMode="center"/>
+                <Image source={require("../../assets/logo-small.png")} h={150} alt="CleanGig" resizeMode="center"/>
             </VStack>
 
             <VStack mx={2} mt={5} space={2} alignItems="center">

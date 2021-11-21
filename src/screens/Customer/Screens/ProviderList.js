@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Image, Platform, RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
 import {BottomSheet, Button, ListItem, SearchBar, Text} from 'react-native-elements';
-import counties from "../../../data/counties";
+import counties, {county} from "../../../data/counties";
 import services from "../../../data/services";
 import {sotApi} from "../../../network";
 import SafeScrollView from "../../../components/SafeScrollView";
@@ -95,7 +95,7 @@ export default function ({navigation}) {
                     color: '#ff7000',
                     fontSize: 14,
                     textAlign: 'center'
-                }}>Län: {counties.find(c => c.code === filterLocation).name()}</Text>}
+                }}>Län: {county(filterLocation).name}</Text>}
 
                 <View style={styles.mainBody}>
                     {providers.map((provider, i) => (
@@ -106,7 +106,7 @@ export default function ({navigation}) {
                                 style={{width: 50, height: 50, borderRadius: 25, marginHorizontal: 10}}/>
                             <ListItem.Content>
                                 <ListItem.Title>{provider.name}</ListItem.Title>
-                                <ListItem.Subtitle>{provider.county_code ? counties.find(c => c.code === provider.county_code).name : 'Plats ej specificerad'}</ListItem.Subtitle>
+                                <ListItem.Subtitle>{provider.county_code ? county(provider.county_code).name : 'Plats ej specificerad'}</ListItem.Subtitle>
                             </ListItem.Content>
                         </ListItem>
                     ))}

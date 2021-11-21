@@ -5,12 +5,14 @@ import {
     CloseIcon,
     Collapse,
     FormControl,
-    Heading, HStack,
+    Heading,
+    HStack,
     Icon,
     IconButton,
     Image,
     Input,
-    Radio, Text,
+    Radio,
+    Text,
     VStack
 } from 'native-base';
 import SafeScrollView from "../components/SafeScrollView";
@@ -57,7 +59,7 @@ export default function ({navigation}) {
     return <SafeScrollView margin="5%" flex={1} width="90%">
         <VStack safeArea mb={100}>
             <VStack alignItems="center" p="10" space={3}>
-                <Image source={require("../../assets/logo-small.png")} size="lg" alt="CleanGig" resizeMode="center"/>
+                <Image source={require("../../assets/logo-small.png")} h={150} alt="CleanGig" resizeMode="center"/>
             </VStack>
 
             <VStack bg="light.200" p={4} space={2} my={5}>

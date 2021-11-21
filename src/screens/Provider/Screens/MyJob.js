@@ -7,6 +7,7 @@ import UnassignedJob from "../../../components/UnassignedJob";
 import voca from "voca";
 import AssignedJob from "../../../components/AssignedJob";
 import ClosedJob from "../../../components/ClosedJob";
+import SafeScrollView from "../../../components/SafeScrollView";
 
 export default function ({navigation, route}) {
     const [job, setJob] = useState(route.params.data || null);
@@ -41,14 +42,12 @@ export default function ({navigation, route}) {
     return <VStack flex={1}>
         <AppBar screenTitle={job ? job.title : 'loading...'} navigation={navigation} backButton/>
 
-        {job && job.status === 'assigned' && <>
-            <AssignedJob job={job} pictures={pictures} navigation={navigation} onDelete={deleteJob} isProvider/>
+        <SafeScrollView flex={1} paddingBottom={20}>
+            {job && job.status === 'assigned' && <>
+                <AssignedJob job={job} pictures={pictures} navigation={navigation} onDelete={deleteJob} isProvider/>
+            </>}
 
-            <HStack justifyContent="center">
-                <Button variant="link" onPress={() => navigation.navigate('CloseJob', {job})}>Fakturera färdigt arbete</Button>
-            </HStack>
-        </>}
-
-        {job && job.status === 'done' && <ClosedJob id={job.id} pictures={pictures}/>}
+            {job && job.status === 'done' && <ClosedJob id={job.id} pictures={pictures}/>}
+        </SafeScrollView>
     </VStack>;
 }

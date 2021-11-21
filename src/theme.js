@@ -43,9 +43,11 @@ export const defaultTheme = extendTheme({
         },
         Input: {
             baseStyle: {
-                fontSize: 16,
                 borderColor: 'accent.200',
             },
+            defaultProps: {
+                fontSize:"md",
+            }
         },
     },
     fontConfig: {

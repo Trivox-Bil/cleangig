@@ -5,7 +5,20 @@ import {sotApi} from "../../../network";
 import SafeScrollView from "../../../components/SafeScrollView";
 import {totalPayment} from "../../../helpers";
 import AppBar from "../../../components/AppBar";
-import {AddIcon, Button, CloseIcon, Heading, HStack, IconButton, Image, Modal, Radio, Text, VStack} from "native-base";
+import {
+    AddIcon,
+    Button,
+    CloseIcon,
+    Heading,
+    HStack,
+    IconButton,
+    Image,
+    Input,
+    Modal,
+    Radio,
+    Text,
+    VStack
+} from "native-base";
 
 export default function ({navigation, route}) {
     const job = route.params.job;
@@ -108,15 +121,12 @@ export default function ({navigation, route}) {
                             ]}/>
                         })}
 
-                        <Row cells={[
-                            <CheckBox checked={deduction === 50}
-                                      onPress={() => setDeduction(deduction === 50 ? '0' : 50)}
-                                      checkedColor="#ff7e1a"/>,
-                            <TextInput value={description} onChangeText={setDescription} multiline numberOfLines={4}/>,
-                            <TextInput style={{height: 'auto'}} onChangeText={setHours} value={hours}
-                                       keyboardType="number-pad"/>,
-                            <TextInput style={{height: 'auto'}} onChangeText={setRate} value={rate}
-                                       keyboardType="number-pad"/>,
+                        <InputRow cells={[
+                            <CheckBox checked={deduction === 50} checkedColor="#ff7e1a"
+                                      onPress={() => setDeduction(deduction === 50 ? '0' : 50)}/>,
+                            {value: description, onChangeText: setDescription, multiline: true},
+                            {value: hours, onChangeText: setHours, keyboardType: 'number-pad'},
+                            {value: rate, onChangeText: setRate, keyboardType: 'number-pad'},
                             <IconButton icon={<AddIcon size="xs" color="brand.400"/>} onPress={addMilestone}/>,
                         ]}/>
                     </View>
@@ -176,6 +186,7 @@ const styles = StyleSheet.create({
         borderColor: '#aaa',
         paddingVertical: 5,
         paddingHorizontal: 2,
+        borderRadius: 0,
     },
     summaryItem: {
         flexDirection: 'row',
@@ -202,6 +213,16 @@ function Row({cells}) {
         <View style={{...styles.rowItem, width: 70}}>{cells[3]}</View>
         <View style={{...styles.rowItem, width: 60}}>{cells[4]}</View>
     </View>
+}
+
+function InputRow({cells}) {
+    return <View style={styles.row}>
+        <View style={{...styles.rowItem, width: 50}}>{cells[0]}</View>
+        <Input style={{...styles.rowItem}} flex={1} h={20} {...cells[1]}/>
+        <Input style={{...styles.rowItem}} w={50} h={20} {...cells[2]}/>
+        <Input style={{...styles.rowItem}} w={70} h={20} {...cells[3]}/>
+        <View style={{...styles.rowItem, width: 60}}>{cells[4]}</View>
+    </View>;
 }
 
 class Milestone {

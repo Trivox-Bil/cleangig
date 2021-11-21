@@ -2,7 +2,7 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import Services from "./Screens/Services";
 import NewJob from "./Screens/NewJob";
-import ImagePicker from "./Screens/ImagePicker";
+import ImageBrowser from "./Screens/ImageBrowser";
 
 const Stack = createStackNavigator();
 
@@ -11,7 +11,7 @@ export default function () {
         <Stack.Navigator initialRouteName="Services" screenOptions={{headerShown: false}}>
             <Stack.Screen name="Services" component={Services}/>
             <Stack.Screen name="NewJob" component={NewJob}/>
-            <Stack.Screen name="ImageBrowser" component={ImagePicker}/>
+            <Stack.Screen name="ImageBrowser" component={ImageBrowser}/>
         </Stack.Navigator>
     );
 };

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import AppBar from "../../../components/AppBar";
-import {Button, Center, FormControl, HStack, Input, Pressable, Select, Text, VStack} from "native-base";
+import {Button, Center, FormControl, Heading, HStack, Input, Pressable, Select, Text, VStack} from "native-base";
 import {useSelector} from "react-redux";
 import counties from "../../../data/counties";
 import addDays from 'date-fns/addDays';
@@ -28,7 +28,7 @@ export default function ({route, navigation}) {
     function choosePictures() {
         navigation.replace(
             'ImageBrowser',
-            {title, description, deadlineFrom, deadlineTo, service, editAddress, street, city, county, visibility}
+            {title, description, deadlineFrom, deadlineTo, service, editAddress, street, city, county, visibility, pictures},
         );
     }
 
@@ -42,7 +42,7 @@ export default function ({route, navigation}) {
                 county: county.code,
                 street, city, title, description,
                 deadline_begin: deadlineFrom,
-                deadline_end: deadlineFrom,
+                deadline_end: deadlineTo,
                 visibility,
                 pictures: JSON.stringify(pics),
             };
@@ -80,13 +80,11 @@ export default function ({route, navigation}) {
 
         <SafeScrollView flex={1}>
             <VStack space={2} m={4}>
-                <Center bg="accent.400" p={4} rounded="lg">
-                    <Text>Enbart Swish används som betalningsalternativ</Text>
-                </Center>
+                <Heading>{service.name}</Heading>
 
-                <FormControl>
-                    <Input editable={false} value={service.name}/>
-                </FormControl>
+                <Center bg="accent.400" p={4} rounded="lg" my={4}>
+                    <Text color="dark.200">Enbart Swish används som betalningsalternativ</Text>
+                </Center>
 
                 <FormControl isRequired>
                     <FormControl.Label>Rubrik</FormControl.Label>

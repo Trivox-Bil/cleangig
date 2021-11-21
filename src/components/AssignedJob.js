@@ -29,10 +29,15 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
             </HStack>
         )}
 
-        <HStack space={4} justifyContent="center">
+        <HStack space={4} justifyContent="center" flexWrap="wrap">
             <Button variant="link" onPress={goToChat}>Chatt</Button>
             {isProvider || <Button variant="link" onPress={goToProvider}>Leverantör</Button>}
-            {isProvider || <Button variant="link" colorScheme="dark" onPress={() => setWarnDelete(true)}>Radera</Button>}
+            {isProvider || <Button variant="link" colorScheme="dark" onPress={() => setWarnDelete(true)}>
+                Radera
+            </Button>}
+            {isProvider && <Button variant="link" onPress={() => navigation.navigate('CloseJob', {job})}>
+                Fakturera färdigt arbete
+            </Button>}
         </HStack>
 
         <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}

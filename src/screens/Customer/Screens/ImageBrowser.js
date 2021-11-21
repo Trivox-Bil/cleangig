@@ -6,7 +6,7 @@ import mime from "mime";
 import AppBar from "../../../components/AppBar";
 import {Heading, Text, VStack} from "native-base";
 
-export default function ImagePicker({route, navigation}) {
+export default function({route, navigation}) {
     const [customOptions, setCustomOptions] = useState([]);
     const [count, setCount] = useState(0);
 
@@ -22,7 +22,7 @@ export default function ImagePicker({route, navigation}) {
                         type: mime.getType(pPhoto.uri),
                     });
                 }
-                navigation.replace('NewJob', {photos: cPhotos, ...route.params});
+                navigation.replace('NewJob', {photos: route.params.pictures.concat(cPhotos), ...route.params});
             })
             .catch((e) => console.log(e));
     }

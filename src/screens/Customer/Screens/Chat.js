@@ -2,13 +2,14 @@ import React, {useRef, useState} from 'react';
 import {cleangigApi} from "../../../network";
 import AppBar from "../../../components/AppBar";
 import {useSelector} from "react-redux";
-import {Center, Divider, FlatList, HStack, Icon, IconButton, Image, Text, VStack} from "native-base";
+import {Center, Divider, HStack, Icon, IconButton, Image, Text, VStack} from "native-base";
 import ChatItem from "../../../components/ChatItem";
 import FetchContent from "../../../components/FetchContent";
 import FumiInput from "../../../components/FumiInput";
 import {FontAwesome, FontAwesome5} from "@expo/vector-icons";
 import askForPicture from "../../../helpers";
 import mime from "mime";
+import SafeFlatList from "../../../components/SafeFlatList";
 
 export default function ({navigation, route}) {
     const job = route.params.job;
@@ -61,7 +62,7 @@ export default function ({navigation, route}) {
                 customOptions={[{action: loadChats, icon: 'sync'}]}/>
 
         <FetchContent fetch={loadChats}>
-            <FlatList
+            <SafeFlatList
                 flex={1}
                 refreshing={isLoading}
                 onRefresh={loadChats}
