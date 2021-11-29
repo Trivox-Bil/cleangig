@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import AppBar from "../../../components/AppBar";
-import {Button, Center, FormControl, Heading, HStack, Input, Pressable, Select, Text, VStack} from "native-base";
+import {Button, Center, FormControl, Heading, HStack, Input, Pressable, Select, Text, VStack, Checkbox} from "native-base";
 import {useSelector} from "react-redux";
 import counties from "../../../data/counties";
 import addDays from 'date-fns/addDays';
@@ -24,6 +24,7 @@ export default function ({route, navigation}) {
     const [deadlineTo, setDeadlineTo] = useState(route.params.deadlineTo || addDays(new Date(), 14));
     const [visibility, setVisibility] = useState(route.params.visibility || 'public');
     const [loading, setLoading] = useState(false);
+    const [noPictures, setNoPictures] = useState(false);
 
     function choosePictures() {
         navigation.replace(
@@ -35,7 +36,7 @@ export default function ({route, navigation}) {
     async function create() {
         try {
             setLoading(true);
-            const pics = await uploadPictures();
+            const pics = noPictures ? null : await uploadPictures();
             const request = {
                 customer: user.id,
                 service: service.id,
@@ -44,7 +45,7 @@ export default function ({route, navigation}) {
                 deadline_begin: deadlineFrom,
                 deadline_end: deadlineTo,
                 visibility,
-                pictures: JSON.stringify(pics),
+                pictures: noPictures ? null : JSON.stringify(pics),
             };
             const resp = await fetch('https://cleangig.se/api/jobs', {
                 method: 'POST',
@@ -109,6 +110,11 @@ export default function ({route, navigation}) {
                            onPress={choosePictures}>
                     <Text fontSize="md">Lägg till bilder</Text>
                 </Pressable>
+                <FormControl>
+                    <Checkbox value={noPictures} onChange={setNoPictures} colorScheme="accent" my={4}>
+                        <Text fontSize="md" mx={4}>Vill inte lägga till bilder</Text>
+                    </Checkbox>
+                </FormControl>
 
                 {editAddress ? (
                     <>

@@ -21,11 +21,12 @@ import {
 } from "native-base";
 import validator from "validator";
 import {cleangigApi} from "../network";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {login} from "../actions/user";
 import {resetRoute} from "../helpers";
 
 export default function ({navigation}) {
+    const pushToken = useSelector(state => state.notification.pushToken);
     const [stage, setStage] = useState(1);
     const [businessName, setBusinessName] = useState('');
     const [contactName, setContactName] = useState('');
@@ -74,6 +75,7 @@ export default function ({navigation}) {
             request.append('organisation_number', orgNumber);
             const {data: response} = await cleangigApi.post('providers', request);
             if (response.success) {
+                request.append('pushToken', pushToken);
                 dispatch(login(request));
                 navigation.dispatch(resetRoute('Provider'));
             } else {

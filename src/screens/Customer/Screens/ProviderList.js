@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Image, Platform, RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
 import {BottomSheet, Button, ListItem, SearchBar, Text} from 'react-native-elements';
+import { VStack } from 'native-base';
 import counties, {county} from "../../../data/counties";
 import services from "../../../data/services";
 import {sotApi} from "../../../network";
@@ -81,6 +82,7 @@ export default function ({navigation}) {
                 refreshControl={
                     <RefreshControl refreshing={loading} onRefresh={fetchProviders}/>
                 }>
+                <VStack safeArea>
                 <SearchBar
                     placeholder="Sök"
                     platform={Platform.OS}
@@ -111,6 +113,7 @@ export default function ({navigation}) {
                         </ListItem>
                     ))}
                 </View>
+                </VStack>
             </SafeScrollView>
             <BottomSheet
                 isVisible={showFilter}

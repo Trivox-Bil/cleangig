@@ -22,11 +22,12 @@ export default function ({navigation}) {
     const [city, setCity] = useState(user.city);
     const [picture, setPicture] = useState(user.picture);
     const [street, setStreet] = useState(user.street);
+    const [postalCode, setPostalCode] = useState(user.postal_code);
     const dispatch = useDispatch();
 
     const isSaved = useCallback(() => {
-        return lodash.isEqual(user, {...user, fname, lname, phone_number: phone, county, city, picture, street});
-    }, [fname, lname, phone, county, city, picture, street, user]);
+        return lodash.isEqual(user, {...user, fname, lname, phone_number: phone, county, city, picture, street, postal_code: postalCode});
+    }, [fname, lname, phone, county, city, picture, street, postalCode, user]);
 
     async function selectPicture() {
         const image = await ImagePicker.launchImageLibraryAsync({
@@ -45,7 +46,7 @@ export default function ({navigation}) {
     }
 
     async function saveAll() {
-        const request = {id: user.id, fname, lname, phone_number: phone, county, city, street};
+        const request = {id: user.id, fname, lname, phone_number: phone, county, city, street, postal_code: postalCode};
         const {data} = await cleangigApi.put('customers', request);
         dispatch({type: LOGIN_SUCCESS, payload: data});
         await storeLocal(USER_DATA_KEY, data);
@@ -76,6 +77,7 @@ export default function ({navigation}) {
                                     collection={counties.map(c => ({label: c.name, value: c.code}))}/>
                 <HoshiSelectControl label="Stad" selectedValue={city} onValueChange={setCity}
                                     collection={counties.find(c => c.code === county).cities.map(c => ({label: c, value: c}))}/>
+                <HoshiInput value={postalCode} label="Postnummer" onChangeText={setPostalCode}/>
                 <HoshiInput value={street} label="Gatuadress" onChangeText={setStreet}/>
             </VStack>
         </SafeScrollView>

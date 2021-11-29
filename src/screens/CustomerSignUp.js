@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import SafeScrollView from "../components/SafeScrollView";
 import {
     Alert,
@@ -24,11 +24,12 @@ import {
 import counties from "../data/counties";
 import validator from "validator";
 import {cleangigApi} from "../network";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {login} from "../actions/user";
 import {resetRoute} from "../helpers";
 
 export default function ({navigation}) {
+    const pushToken = useSelector(state => state.notification.pushToken);
     const [stage, setStage] = useState(1);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -38,12 +39,17 @@ export default function ({navigation}) {
     const [county, setCounty] = useState('AB');
     const [city, setCity] = useState('');
     const [street, setStreet] = useState('');
-    const [phone, setPhone] = useState('');
+    const [postalCode, setPostalCode] = useState('');
+    const [phone, setPhone] = useState('+46 ');
     const [terms, setTerms] = useState(false);
     const [stage1Error, setStage1Error] = useState('');
     const [stage2Error, setStage2Error] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        console.log('pushToken ===>>>', pushToken)
+    }, [])
 
     function validateStage1() {
         if ([firstName, lastName, email, password, phone].some(field => field.trim() === '')) {
@@ -79,9 +85,11 @@ export default function ({navigation}) {
             request.append('city', city);
             request.append('county', county);
             request.append('phone_number', phone);
+            request.append('postal_code', postalCode);
             const {data: response} = await cleangigApi.post('customers', request);
             if (response.success) {
-                dispatch(login(request));
+                request.append('pushToken', pushToken);
+                dispatch(login('private' ,request));
                 navigation.dispatch(resetRoute('Customer'));
             } else {
                 setStage2Error('Ett fel inträffade. Försök igen');
@@ -164,6 +172,10 @@ export default function ({navigation}) {
                         return <Select.Item key={i} label={city} value={city}/>;
                     })}
                 </Select>
+            </FormControl>
+            <FormControl>
+                <FormControl.Label>Postnummer</FormControl.Label>
+                <Input value={postalCode} onChangeText={setPostalCode}/>
             </FormControl>
             <FormControl>
                 <FormControl.Label>Gatuadress</FormControl.Label>

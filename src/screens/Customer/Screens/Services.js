@@ -22,9 +22,11 @@ export default function ({navigation}) {
 
             <ScrollView flex={1}>
                 <HStack flexWrap="wrap">
+                    { console.log('services', services) }
                     {services.map(service => (
                         <Pressable key={service.id} p={4} bg="dark.700" rounded="md" flexBasis="40%" m={4} flex={1}
                                    alignItems="center" onPress={() => setChosenService(service)}>
+                                       { console.log(service.icon) }
                             <Image source={service.icon} w={75} h={75} alt=" "/>
                             <Text mt={4} fontSize="md" bold>{service.name}</Text>
                         </Pressable>
