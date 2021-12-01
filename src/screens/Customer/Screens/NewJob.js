@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import AppBar from "../../../components/AppBar";
-import {Button, Center, FormControl, Heading, HStack, Input, Pressable, Select, Text, VStack, Checkbox} from "native-base";
+import { Actionsheet, Button, Center, useDisclose, FormControl, Heading, HStack, Input, Pressable, Select, Text, VStack, Checkbox} from "native-base";
 import {useSelector} from "react-redux";
 import counties from "../../../data/counties";
 import addDays from 'date-fns/addDays';
@@ -25,9 +25,12 @@ export default function ({route, navigation}) {
     const [visibility, setVisibility] = useState(route.params.visibility || 'public');
     const [loading, setLoading] = useState(false);
     const [noPictures, setNoPictures] = useState(false);
+    const [showActionSheet, setShowActionSheet] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclose()
 
     function choosePictures() {
-        navigation.replace(
+        setShowActionSheet(false)
+        navigation.navigate(
             'ImageBrowser',
             {title, description, deadlineFrom, deadlineTo, service, editAddress, street, city, county, visibility, pictures},
         );
@@ -76,6 +79,24 @@ export default function ({route, navigation}) {
         return data.files;
     }
 
+    const deadLineFormHandler = (value) => {
+        setDeadlineFrom(value);
+        if (value > deadlineTo) {
+            setDeadlineTo(value);
+        }
+    }
+
+    const removePicHandler = (index) => {
+        console.log(index)
+        let tempPictures = [...pictures];
+        tempPictures.splice(index, 1);
+        setPictures(tempPictures);
+    }
+
+    const chooseCompany = () => {
+        console.log('yes clicked');
+    }
+
     return <>
         <AppBar backButton navigation={navigation} screenTitle="Skapa nytt jobb"/>
 
@@ -100,7 +121,7 @@ export default function ({route, navigation}) {
                 {pictures.length > 0 && (
                     <>
                         <HStack minH={200} ml={5} my={10}>
-                            <ImageCarousel images={pictures.map(pic => pic.uri)}/>
+                            <ImageCarousel images={pictures.map(pic => pic.uri)} isNewJob={true} removePic={removePicHandler}/>
                         </HStack>
                         <Button variant="subtle" onPress={() => setPictures([])}>Ta bort bilder</Button>
                     </>
@@ -110,6 +131,13 @@ export default function ({route, navigation}) {
                            onPress={choosePictures}>
                     <Text fontSize="md">Lägg till bilder</Text>
                 </Pressable>
+                <Actionsheet isOpen={isOpen} onClose={onClose}>
+                    <Actionsheet.Content>
+                    <Actionsheet.Item>Open Camera</Actionsheet.Item>
+                    <Actionsheet.Item onPress={choosePictures}>Select from library</Actionsheet.Item>
+                    <Actionsheet.Item onPress={onClose}>Cancel</Actionsheet.Item>
+                    </Actionsheet.Content>
+                </Actionsheet>
                 <FormControl>
                     <Checkbox value={noPictures} onChange={setNoPictures} colorScheme="accent" my={4}>
                         <Text fontSize="md" mx={4}>Vill inte lägga till bilder</Text>
@@ -150,9 +178,9 @@ export default function ({route, navigation}) {
 
                 <FormControl>
                     <FormControl.Label>När vill du ha jobbet utfört?</FormControl.Label>
-                    <DatePicker value={deadlineFrom} onChange={setDeadlineFrom}/>
+                    <DatePicker value={deadlineFrom} onChange={deadLineFormHandler}/>
                     <Text style={{textAlign: 'center'}}>till</Text>
-                    <DatePicker value={deadlineTo} onChange={setDeadlineTo}/>
+                    <DatePicker value={deadlineTo} minimumDate={new Date(deadlineFrom)} onChange={setDeadlineTo}/>
                 </FormControl>
 
                 <FormControl>
@@ -167,6 +195,15 @@ export default function ({route, navigation}) {
                                   onPress={() => setVisibility('private')}/>
                     </VStack>
                 </FormControl>
+                {
+                    // visibility === 'private'
+                    // ? <Pressable bg="light.200" p={4} alignItems="center" rounded="md" _pressed={{bg: 'dark.700'}}
+                    //             onPress={chooseCompany}>
+                    //         <Text fontSize="md">välj företag</Text>
+                    //     </Pressable>
+                    // : <></>
+                }
+                
 
                 <Button _text={{color: 'light.200'}} my={5} onPress={create} isLoading={loading}
                         isLoadingText="Läser in...">

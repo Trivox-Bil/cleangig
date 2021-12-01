@@ -18,7 +18,7 @@ export default function ({navigation, route}) {
     const [isLoading, setIsLoading] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     const [attachment, setAttachment] = useState('');
-    const [sending, setSending] = useState(true);
+    const [isSendDisabled, setisSendDisabled] = useState(true);
     const listRef = useRef();
 
     async function loadChats() {
@@ -41,23 +41,23 @@ export default function ({navigation, route}) {
             const {data} = await cleangigApi.post('files', request);
 
             setAttachment(data.files[0]);
+            setisSendDisabled(false);
         }
     }
 
     async function sendMessage() {
-        setSending(true);
         const request = new FormData();
         request.append('sender', user.id);
         request.append('content', newMessage);
         request.append('attachment', attachment);
         await cleangigApi.post(`jobs/${job.id}/messages`, request);
-        setSending(false);
+        setisSendDisabled(true);
         setNewMessage('');
         setAttachment('');
         await loadChats();
     }
 
-    return <VStack flex={1} justifyContent="space-between">
+    return <VStack flex={1} safeArea justifyContent="space-between">
         <AppBar screenTitle={job.title} navigation={navigation} backButton
                 customOptions={[{action: loadChats, icon: 'sync'}]}/>
 
@@ -87,11 +87,11 @@ export default function ({navigation, route}) {
         )}
         <HStack alignItems="center" bg="white">
             <FumiInput label="Skicka meddelande" icon={{type: FontAwesome5, name: 'comments'}} value={newMessage}
-                       onChangeText={setNewMessage} style={{flex: 1}} multiline height={70}/>
+                       onChangeText={(text) => {setNewMessage(text); setisSendDisabled(false);}} style={{flex: 1}} multiline height={70}/>
             <IconButton icon={<Icon as={FontAwesome5} name="image" color="brand.400" size="sm"/>}
                         onPress={choosePicture}/>
             <IconButton icon={<Icon as={FontAwesome} name="send" color="brand.400" size="sm"/>} onPress={sendMessage}
-                        disabled={sending}/>
+                        disabled={isSendDisabled}/>
         </HStack>
     </VStack>;
 }

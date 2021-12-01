@@ -95,6 +95,7 @@ export function invoiceHtml({job, invoice}) {
                         <td>
                           <div>Fakturadatum: ${formatDate(job.deadline)}</div>
                           <div>Fakturanummer: ${job.id}</div>
+                          <div>Personnummer: ${job.customer.id}</div>
                         </td>
                     </tr>
                 </tbody>

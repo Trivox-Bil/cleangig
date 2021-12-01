@@ -4,7 +4,7 @@ import {Platform} from "react-native";
 import {Heading, Pressable} from "native-base";
 import format from "date-fns/format";
 
-export default function DatePicker({value, onChange, ...pickerProps}) {
+export default function DatePicker({value, onChange, minimumDate = new Date(), ...pickerProps}) {
     const [isVisible, setIsVisible] = useState(false);
 
     function onChangeFn(e, selectedDate) {
@@ -17,7 +17,7 @@ export default function DatePicker({value, onChange, ...pickerProps}) {
             <Heading size="sm">{format(value, 'yyyy-MM-dd HH:mm')}</Heading>
         </Pressable>
         {isVisible && (
-            <DateTimePicker mode="datetime" is24Hour={true} display="default" minimumDate={new Date()} value={value}
+            <DateTimePicker mode="datetime" is24Hour={true} display="default" minimumDate={minimumDate} value={value}
                             onChange={onChangeFn} {...pickerProps}/>
         )}
     </>;
