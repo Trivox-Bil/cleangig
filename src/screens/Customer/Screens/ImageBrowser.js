@@ -16,6 +16,7 @@ export default function({route, navigation}) {
                 const cPhotos = [];
                 for (let photo of photos) {
                     const pPhoto = await _processImageAsync(photo.uri);
+                    console.log('pPhoto', pPhoto)
                     cPhotos.push({
                         uri: pPhoto.uri,
                         name: photo.filename,

@@ -23,6 +23,13 @@ export default function askForPicture() {
     });
 }
 
+export function askForCamera() {
+    return ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.5,
+      })
+}
+
 export async function downloadFile(url) {
     const fileUri = FileSystem.documentDirectory + url.split('/').pop();
 
