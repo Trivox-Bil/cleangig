@@ -75,7 +75,7 @@ export default function ({ route, navigation }) {
   async function openCamera() {
     onClose();
     const { cameraStatus } = await ImagePicker.getCameraPermissionsAsync();
-    console.log("cameraStatus", cameraStatus);
+    // console.log("cameraStatus", cameraStatus);
     if (cameraStatus !== "granted") {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== "granted") {
@@ -93,7 +93,7 @@ export default function ({ route, navigation }) {
         type: mime.getType(pPhoto.uri),
       });
       setPictures(nPictures)
-      console.log("pictures", nPictures);
+      // console.log("pictures", nPictures);
     }
   }
 
@@ -131,7 +131,7 @@ export default function ({ route, navigation }) {
       });
       const data = await resp.json();
       if (data.id) {
-        navigation.replace("Customer", {
+        navigation.navigate("Customer", {
           screen: "Job",
           params: { screen: "Job", params: { id: data.id } },
         });
@@ -159,14 +159,14 @@ export default function ({ route, navigation }) {
   };
 
   const removePicHandler = (index) => {
-    console.log(index);
+    // console.log(index);
     let tempPictures = [...pictures];
     tempPictures.splice(index, 1);
     setPictures(tempPictures);
   };
 
   const chooseCompany = () => {
-    console.log("yes clicked");
+    // console.log("yes clicked");
   };
 
   return (

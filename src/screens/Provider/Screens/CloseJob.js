@@ -72,7 +72,8 @@ export default function ({navigation, route}) {
             });
         }
         setLoading(false);
-        navigation.replace('MyJob', {job});
+        // navigation.replace('MyJob', {job});
+        navigation.navigate('Jobs', {screen: 'JobList', params: {}});
     };
 
     return <>

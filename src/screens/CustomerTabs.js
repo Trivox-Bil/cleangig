@@ -20,13 +20,27 @@ export default function () {
 
     return (
         <Tab.Navigator screenOptions={{headerShown: false}} tabBarOptions={{ activeTintColor: '#ff7e1a'}}>
-            <Tab.Screen name="Services" component={ServicesStack}
-                                options={options('Hem', 'home')}/>
-            <Tab.Screen name="Browse" component={BrowseStack}
-                                options={options('Leverantörer', 'search')}/>
-            <Tab.Screen name="Job" component={JobStack} options={options('Jobb', 'tasks')} 
-                listeners={({navigation}) => ({ tabPress: e => {e.preventDefault(); navigation.navigate("Job")}})}/>
-            <Tab.Screen name="Chat" component={ChatStack} options={options('Chatt', 'comments')}/>
+            <Tab.Screen 
+                name="Services" 
+                component={ServicesStack}
+                options={options('Hem', 'home')}
+                listeners={({navigation}) => ({ tabPress: e => { navigation.navigate("Services")}})}
+            />
+            <Tab.Screen 
+                name="Browse" 
+                component={BrowseStack}
+                options={options('Leverantörer', 'search')}
+            />
+            <Tab.Screen 
+                name="Job" 
+                component={JobStack} 
+                options={options('Jobb', 'tasks')} 
+                listeners={({navigation}) => ({ tabPress: e => { console.log('yes yes   '); navigation.navigate("Job")}})}
+            />
+            <Tab.Screen 
+                name="Chat" 
+                component={ChatStack} 
+                options={options('Chatt', 'comments')}/>
             <Tab.Screen name="Profile" component={Profile} options={options('Profil', 'user')}/>
         </Tab.Navigator>
     );

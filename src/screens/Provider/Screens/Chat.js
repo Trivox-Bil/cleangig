@@ -1,17 +1,19 @@
-import React, {useRef, useState} from 'react';
-import {cleangigApi} from "../../../network";
+import React, { useRef, useState } from 'react';
+import { cleangigApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
-import {useSelector} from "react-redux";
-import {Center, Divider, HStack, Icon, IconButton, Image, Text, VStack} from "native-base";
+import { useSelector } from "react-redux";
+import { Center, Divider, HStack, Icon, IconButton, Image, Text, VStack, KeyboardAvoidingView } from "native-base";
+// import { KeyboardAvoidingView } from 'react-native';
 import ChatItem from "../../../components/ChatItem";
 import FetchContent from "../../../components/FetchContent";
 import FumiInput from "../../../components/FumiInput";
-import {FontAwesome, FontAwesome5} from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import askForPicture from "../../../helpers";
 import mime from "mime";
-import {KeyboardAwareFlatList} from "react-native-keyboard-aware-scroll-view";
+// import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
+import SafeFlatList from "../../../components/SafeFlatList";
 
-export default function ({navigation, route}) {
+export default function ({ navigation, route }) {
     const job = route.params.job;
     const user = useSelector(state => state.user.data);
     const [messages, setMessages] = useState([]);
@@ -23,8 +25,8 @@ export default function ({navigation, route}) {
 
     async function loadChats() {
         setIsLoading(true);
-        const {data} = await cleangigApi.get(`jobs/${job.id}/messages`);
-        setMessages(data.chats.map(m => ({...m, user})));
+        const { data } = await cleangigApi.get(`jobs/${job.id}/messages`);
+        setMessages(data.chats.map(m => ({ ...m, user })));
         setIsLoading(false);
     }
 
@@ -38,7 +40,7 @@ export default function ({navigation, route}) {
                 name: filePaths[filePaths.length - 1],
                 type: mime.getType(file.uri),
             });
-            const {data} = await cleangigApi.post('files', request);
+            const { data } = await cleangigApi.post('files', request);
 
             setAttachment(data.files[0]);
             setisSendDisabled(false);
@@ -59,39 +61,50 @@ export default function ({navigation, route}) {
 
     return <VStack flex={1} safeArea justifyContent="space-between">
         <AppBar screenTitle={job.title} navigation={navigation} backButton
-                customOptions={[{action: loadChats, icon: 'sync'}]}/>
+            customOptions={[{ action: loadChats, icon: 'sync' }]} />
 
-        <FetchContent fetch={loadChats}>
-            <KeyboardAwareFlatList
-                flex={1}
-                refreshing={isLoading}
-                onRefresh={loadChats}
-                data={messages}
-                keyExtractor={job => job.id}
-                renderItem={ChatItem}
-                ref={listRef}
-                onContentSizeChange={() => listRef.current && listRef.current.scrollToEnd({animated: true})}
-                ListEmptyComponent={function () {
-                    return <Center flex={1} py={150}>
-                        <Text color="dark.300">Var den första att kommentera</Text>
-                    </Center>
-                }}
-            />
-        </FetchContent>
-
-        {attachment.length > 0 && (
-            <VStack h={100} p={4} bg="white">
-                <Image source={{uri: attachment}} resizeMode="center" w={100} h={100} alt=" "/>
-                <Divider/>
+        <KeyboardAvoidingView
+            h={{
+                base: "705px",
+                lg: "auto",
+            }}
+            style={{flex: 1}}
+            behavior={Platform.OS === "ios" ? "padding" : ""}
+        >
+            <VStack flex={1}  p={4} bg="white">
+            <FetchContent fetch={loadChats}>
+                <SafeFlatList
+                    flex={1}
+                    refreshing={isLoading}
+                    onRefresh={loadChats}
+                    data={messages}
+                    keyExtractor={job => job.id}
+                    renderItem={ChatItem}
+                    ref={listRef}
+                    onContentSizeChange={() => listRef.current && listRef.current.scrollToEnd({ animated: true })}
+                    ListEmptyComponent={function () {
+                        return <Center flex={1} py={150}>
+                            <Text color="dark.300">Var den första att kommentera</Text>
+                        </Center>
+                    }}
+                />
+            </FetchContent>
+            
+            {attachment.length > 0 && (
+                <VStack h={100} p={4} bg="white">
+                    <Image source={{ uri: attachment }} resizeMode="center" w={100} h={100} alt=" " />
+                    <Divider />
+                </VStack>
+            )}
             </VStack>
-        )}
-        <HStack alignItems="center" bg="white">
-            <FumiInput label="Skicka meddelande" icon={{type: FontAwesome5, name: 'comments'}} value={newMessage}
-                       onChangeText={(text) => {setNewMessage(text); setisSendDisabled(false);}} style={{flex: 1}} multiline height={70}/>
-            <IconButton icon={<Icon as={FontAwesome5} name="image" color="brand.400" size="sm"/>}
-                        onPress={choosePicture}/>
-            <IconButton icon={<Icon as={FontAwesome} name="send" color="brand.400" size="sm"/>} onPress={sendMessage}
-                        disabled={isSendDisabled}/>
-        </HStack>
+            <HStack alignItems="center" bg="white">
+                <FumiInput label="Skicka meddelande" icon={{ type: FontAwesome5, name: 'comments' }} value={newMessage}
+                    onChangeText={(text) => { setNewMessage(text); setisSendDisabled(false); }} style={{ flex: 1 }} multiline height={70} />
+                <IconButton icon={<Icon as={FontAwesome5} name="image" color="brand.400" size="sm" />}
+                    onPress={choosePicture} />
+                <IconButton icon={<Icon as={FontAwesome} name="send" color="brand.400" size="sm" />} onPress={sendMessage}
+                    disabled={isSendDisabled} />
+            </HStack>
+        </KeyboardAvoidingView>
     </VStack>;
 }

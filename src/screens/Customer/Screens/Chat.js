@@ -62,7 +62,7 @@ export default function ({ navigation, route }) {
   async function openCamera() {
     onClose();
     const { cameraStatus } = await ImagePicker.getCameraPermissionsAsync();
-    console.log("cameraStatus", cameraStatus);
+    // console.log("cameraStatus", cameraStatus);
     if (cameraStatus !== "granted") {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== "granted") {
@@ -87,7 +87,7 @@ export default function ({ navigation, route }) {
 
   async function sendMessage() {
     setSending(true);
-    console.log("sending");
+    // console.log("sending");
     const request = new FormData();
     request.append("sender", user.id);
     request.append("content", newMessage);
@@ -101,7 +101,7 @@ export default function ({ navigation, route }) {
 
   return (
     
-    <VStack flex={1} justifyContent="space-between">
+    <VStack flex={1} safeArea justifyContent="space-between">
       <AppBar
         screenTitle={job.title}
         navigation={navigation}
@@ -113,8 +113,10 @@ export default function ({ navigation, route }) {
         base: "705px",
         lg: "auto",
       }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{flex: 1}}
+      behavior={Platform.OS === "ios" ? "padding" : ""}
     >
+      <VStack flex={1}  p={4} bg="white">
       <FetchContent fetch={loadChats}>
         <SafeFlatList
           flex={1}
@@ -149,6 +151,7 @@ export default function ({ navigation, route }) {
           <Divider />
         </VStack>
       )}
+      </VStack>
       <HStack alignItems="center" bg="white">
         <FumiInput
           label="Skicka meddelande"

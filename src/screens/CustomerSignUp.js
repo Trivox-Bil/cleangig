@@ -48,7 +48,7 @@ export default function ({navigation}) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log('pushToken ===>>>', pushToken)
+        // console.log('pushToken ===>>>', pushToken)
     }, [])
 
     function validateStage1() {

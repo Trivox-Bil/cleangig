@@ -15,6 +15,7 @@ import {ListItem} from "react-native-elements";
 import services from "../../data/services";
 import FetchContent from "../../components/FetchContent";
 import {resetRoute} from "../../helpers";
+import Constants from 'expo-constants';
 
 export default function ({navigation}) {
     const user = useSelector(state => state.user.data);
@@ -158,6 +159,9 @@ export default function ({navigation}) {
                     }
                 </VStack>
             </FetchContent>
+            <VStack style={{alignItems: 'center', justifyContent: 'center', marginTop: 30}} >
+                <Text fontWeight='bold' >version {Constants.manifest.version}</Text>
+            </VStack>
         </SafeScrollView>
     </>;
 };

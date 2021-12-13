@@ -13,8 +13,8 @@ export default function ({ navigation, route }) {
     const [job, setJob] = useState(route.params.data || null);
     const [pictures, setPictures] = useState([]);
 
-    console.log('navigation ===>>>', navigation);
-    console.log('route ===>>>', route);
+    // console.log('navigation ===>>>', navigation);
+    // console.log('route ===>>>', route);
 
     useEffect(() => {
         if (job && job.picture != null) {

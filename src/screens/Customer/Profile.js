@@ -12,6 +12,7 @@ import lodash from "lodash";
 import {cleangigApi} from "../../network";
 import SafeScrollView from "../../components/SafeScrollView";
 import HoshiSelectControl from "../../components/HoshiSelectControl";
+import Constants from 'expo-constants';
 
 export default function ({navigation}) {
     const user = useSelector(state => state.user.data);
@@ -79,6 +80,9 @@ export default function ({navigation}) {
                                     collection={counties.find(c => c.code === county).cities.map(c => ({label: c, value: c}))}/>
                 <HoshiInput value={postalCode} label="Postnummer" onChangeText={setPostalCode}/>
                 <HoshiInput value={street} label="Gatuadress" onChangeText={setStreet}/>
+            </VStack>
+            <VStack style={{alignItems: 'center', justifyContent: 'center', marginTop: 30}} >
+                <Text fontWeight='bold' >version {Constants.manifest.version}</Text>
             </VStack>
         </SafeScrollView>
     </>;

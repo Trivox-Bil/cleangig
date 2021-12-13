@@ -60,7 +60,7 @@ export function totalPayment(milestones) {
 
 export async function createAndSavePdf(html, filename) {
     const {uri} = await Print.printToFileAsync({html});
-    const pdfName = `${uri.slice(0, uri.lastIndexOf('/') + 1)}${filename}.pdf`;
+    const pdfName = `${FileSystem.documentDirectory}/${filename}.pdf`;
 
     await FileSystem.moveAsync({from: uri, to: pdfName,});
     await Sharing.shareAsync(pdfName);

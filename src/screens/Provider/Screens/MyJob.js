@@ -18,7 +18,7 @@ export default function ({navigation, route}) {
             let pictures;
             try {
                 pictures = JSON.parse(voca.unescapeHtml(job.picture));
-                pictures = pictures.map(pic => `https://cleangig.se/uploads/${pic}`)
+                // pictures = pictures.map(pic => `https://cleangig.se/uploads/${pic}`)
             } catch (e) {
                 console.error(e);
             }
