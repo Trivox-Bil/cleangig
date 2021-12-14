@@ -23,6 +23,7 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import askForPicture, { askForCamera } from "../../../helpers";
 import mime from "mime";
 import SafeFlatList from "../../../components/SafeFlatList";
+import { Keyboard } from "react-native";
 
 export default function ({ navigation, route }) {
   const job = route.params.job;
@@ -166,7 +167,7 @@ export default function ({ navigation, route }) {
           icon={
             <Icon as={FontAwesome5} name="image" color="brand.400" size="sm" />
           }
-          onPress={onOpen}
+          onPress={() => {Keyboard.dismiss(); onOpen()}}
         />
         <IconButton
           icon={

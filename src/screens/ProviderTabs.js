@@ -15,6 +15,7 @@ export default function () {
         return {
             tabBarLabel: label,
             tabBarIcon: tabIcon(iconName),
+            unmountOnBlur: true,
         };
     }
 

@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import {Button, Image, ListItem, Overlay, Text} from "react-native-elements";
 import {TouchableOpacity, View} from "react-native";
 
-export default function ({onAssign, proposal, navigation}) {
+export default function ({onAssign, proposal, navigation, job}) {
     const [confirmAssign, setConfirmAssign] = useState(false);
 
     function navigateTo(tab, screen, params) {
-        navigation.push('CustomerTab', {screen: tab, params: {screen, params}});
+        navigation.push('Customer', {screen: tab, params: {screen, params}});
     }
 
     return <>
@@ -29,7 +29,7 @@ export default function ({onAssign, proposal, navigation}) {
                         containerStyle={{flex: 1, marginRight: 5}}
                         buttonStyle={{borderColor: '#ff7e1a'}}
                         titleStyle={{color: '#ff7e1a'}}
-                        onPress={() => navigateTo('Chat', 'ChatScreen', {provider: proposal.provider.id})}
+                        onPress={() => navigateTo('ChatMain', 'Chat', {job})}
                     />
                     <Button
                         title="Tilldela"

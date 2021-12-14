@@ -20,7 +20,9 @@ export default function ({ navigation, route }) {
         if (job && job.picture != null) {
             let pictures;
             try {
-                pictures = JSON.parse(voca.unescapeHtml(job.picture));
+                if (job.picture) {
+                    pictures = JSON.parse(voca.unescapeHtml(job.picture));
+                }
             } catch (e) {
                 console.error(e);
             }

@@ -27,6 +27,7 @@ import { cleangigApi } from "../../../network";
 import { CheckBox } from "react-native-elements";
 import SafeScrollView from "../../../components/SafeScrollView";
 import ImageCarousel from "../../../components/ImageCarousel";
+import { Keyboard } from "react-native";
 
 export default function ({ route, navigation }) {
   const service = route.params.service;
@@ -224,7 +225,7 @@ export default function ({ route, navigation }) {
             rounded="md"
             _pressed={{ bg: "dark.700" }}
             //    onPress={choosePictures}>
-            onPress={onOpen}
+            onPress={() => {Keyboard.dismiss(); onOpen()}}
           >
             <Text fontSize="md">Lägg till bilder</Text>
           </Pressable>

@@ -71,7 +71,7 @@ export default function ({navigation, route}) {
                                 saknas</Text>)}</Text>
                         <Text style={{marginTop: 5}}>{provider.email}</Text>
                         <Text>+46 {provider.phone_number}</Text>
-                        <Text>{provider.county_code && counties.length ? Array.from(counties).find(c => c.code === provider.county_code).name : (
+                        <Text>{provider.county_code && counties.length ? Array.from(counties).find(c => c.code === provider.county_code.toUpperCase())?.name : (
                             <Text style={{fontStyle: 'italic', color: '#777'}}>Plats har inte ställts in</Text>)}</Text>
                         <Text>Försäkring - {provider.insurance ? 'Ja' : 'Nej'}</Text>
                     </View>

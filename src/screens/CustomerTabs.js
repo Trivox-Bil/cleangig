@@ -15,6 +15,7 @@ export default function () {
         return {
             tabBarLabel: label,
             tabBarIcon: tabIcon(iconName),
+            unmountOnBlur: true,
         };
     }
 
@@ -24,7 +25,7 @@ export default function () {
                 name="Services" 
                 component={ServicesStack}
                 options={options('Hem', 'home')}
-                listeners={({navigation}) => ({ tabPress: e => { navigation.navigate("Services")}})}
+                // listeners={({navigation}) => ({ tabPress: e => { navigation.navigate("Services")}})}
             />
             <Tab.Screen 
                 name="Browse" 
@@ -35,12 +36,17 @@ export default function () {
                 name="Job" 
                 component={JobStack} 
                 options={options('Jobb', 'tasks')} 
-                listeners={({navigation}) => ({ tabPress: e => { console.log('yes yes   '); navigation.navigate("Job")}})}
+                listeners={({ navigation, route }) => ({
+                    tabPress: () => navigation.navigate(route.name),
+                })}
             />
             <Tab.Screen 
-                name="Chat" 
+                name="ChatMain" 
                 component={ChatStack} 
-                options={options('Chatt', 'comments')}/>
+                options={options('Chatt', 'comments')}
+                listeners={({ navigation, route }) => ({
+                    tabPress: () => {console.log({ navigation, route });navigation.navigate(route.name)},
+                })}/>
             <Tab.Screen name="Profile" component={Profile} options={options('Profil', 'user')}/>
         </Tab.Navigator>
     );

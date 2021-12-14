@@ -53,7 +53,7 @@ export default function ({job, onDelete, pictures, navigation}) {
             <VStack>
                 <Heading size="sm">Prisförslag på jobbet</Heading>
                 {proposals.map(proposal =>
-                    <Proposal navigation={navigation} proposal={proposal} onAssign={assignJob}/>)}
+                    <Proposal navigation={navigation} job={job} proposal={proposal} onAssign={assignJob}/>)}
                 {proposals.length > 0 || (
                     <Center>
                         <Text style={{fontSize: 18, textAlign: 'center', color: '#555'}}>Inga förslag ännu</Text>
