@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {cleangigApi} from "../../../network";
 import {useSelector} from "react-redux";
 import {Center, FlatList, Heading, HStack, Image, Pressable, Text, VStack} from "native-base";
@@ -9,6 +9,12 @@ export default function ({navigation}) {
     const user = useSelector(state => state.user.data);
     const [loading, setLoading] = useState(true);
     const [jobs, setJobs] = useState(jobs);
+
+    useEffect(() => {
+        fetchProjects().then(() => {
+            setInterval(fetchProjects, 20000);
+        });
+    }, []);
 
     async function fetchProjects() {
         setLoading(true);

@@ -66,6 +66,17 @@ export async function createAndSavePdf(html, filename) {
     await Sharing.shareAsync(pdfName);
 }
 
+const fileToBase64 = (file, cb) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = function () {
+      cb(null, reader.result)
+    }
+    reader.onerror = function (error) {
+      cb(error, null)
+    }
+  }
+
 export function invoiceHtml({job, invoice}) {
     const tableColumn = (carry, {description, rate, hours, deduction}) => {
         return carry + `
@@ -118,7 +129,7 @@ export function invoiceHtml({job, invoice}) {
                         <td><span>${job.customer.fname} ${job.customer.lname}</span></td>
                     </tr>
                     <tr>
-                        <td><div>${counties.find(c => c.code === job.provider.county_code).name}</div></td>
+                        <td><div>${counties.find(c => c.code === job.provider.county_code)?.name}</div></td>
                         <td><span>${job.street}${job.city ? `, ${job.city}` : ''}, ${counties.find(c => c.code === job.county_code).name}</span></td>
                     </tr>
                     <tr>

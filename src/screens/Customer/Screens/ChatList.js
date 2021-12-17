@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {cleangigApi} from "../../../network";
 import {useSelector} from "react-redux";
 import {Center, FlatList, Heading, HStack, Image, Pressable, Text, VStack} from "native-base";
@@ -10,11 +10,18 @@ export default function ({navigation}) {
     const [loading, setLoading] = useState(true);
     const [jobs, setJobs] = useState(jobs);
 
+    useEffect(() => {
+        fetchProjects().then(() => {
+            setInterval(fetchProjects, 20000);
+        });
+    }, []);
+
     async function fetchProjects() {
         setLoading(true);
+        // const {data} = await cleangigApi.get(`customers/${user.id}/chats`);
+        // console.log(data)
         const {data} = await cleangigApi.get(`customers/${user.id}/jobs`);
-        console.log('data ====>>>>', data)
-        // setJobs(data.jobs.filter(j => ['assigned', 'done'].includes(j.status)));
+        setJobs(data.jobs.filter(j => ['assigned', 'done'].includes(j.status)));
         setLoading(false);
     }
 

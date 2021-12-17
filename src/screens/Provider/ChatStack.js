@@ -6,14 +6,14 @@ import ChatList from "./Screens/ChatList";
 const Stack = createStackNavigator();
 
 export default function () {
-    useEffect(() => {
-        props.navigation.addListener('focus', () => {
-            if(props.navigation.canGoBack())
-            {
-              props.navigation.dispatch(StackActions.popToTop());
-            }
-         });
-        }, [])
+    // useEffect(() => {
+    //     props.navigation.addListener('focus', () => {
+    //         if(props.navigation.canGoBack())
+    //         {
+    //           props.navigation.dispatch(StackActions.popToTop());
+    //         }
+    //      });
+    //     }, [])
     return (
         <Stack.Navigator initialRouteName="ChatList" screenOptions={{headerShown: false}}>
             <Stack.Screen name="ChatList" component={ChatList}/>

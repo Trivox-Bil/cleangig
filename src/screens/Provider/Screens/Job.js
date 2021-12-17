@@ -44,8 +44,7 @@ export default function ({route, navigation}) {
         formData.append('proposal', proposal);
         formData.append('price', price);
         await sotApi.post(`proposals/create`, formData);
-        await fetchProposals();
-        setSendingProposal(false);
+        console.log('job.customer ===>>>', job.customer)
         const message = {
             to: job.customer.notification_token,
             sound: 'default',
@@ -53,8 +52,6 @@ export default function ({route, navigation}) {
             body: proposal,
             data: {type: 'proposal', id: job.id},
         };
-        setProposal('');
-        setPrice('');
         await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',
             headers: {
@@ -64,6 +61,10 @@ export default function ({route, navigation}) {
             },
             body: JSON.stringify(message),
         });
+        await fetchProposals();
+        setSendingProposal(false);
+        setProposal('');
+        setPrice('');
     };
 
     const deleteProposal = async (id) => {

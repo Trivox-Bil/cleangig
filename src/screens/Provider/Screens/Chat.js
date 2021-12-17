@@ -2,16 +2,18 @@ import React, { useRef, useState } from 'react';
 import { cleangigApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
 import { useSelector } from "react-redux";
-import { Center, Divider, HStack, Icon, IconButton, Image, Text, VStack, KeyboardAvoidingView } from "native-base";
+import * as ImagePicker from "expo-image-picker";
+import { Center, Actionsheet, Divider, HStack, Icon, IconButton, Image, Text, VStack, KeyboardAvoidingView, useDisclose } from "native-base";
 // import { KeyboardAvoidingView } from 'react-native';
 import ChatItem from "../../../components/ChatItem";
 import FetchContent from "../../../components/FetchContent";
 import FumiInput from "../../../components/FumiInput";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import askForPicture from "../../../helpers";
+import askForPicture, { askForCamera } from "../../../helpers";
 import mime from "mime";
 // import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import SafeFlatList from "../../../components/SafeFlatList";
+import { Keyboard } from "react-native";
 
 export default function ({ navigation, route }) {
     const job = route.params.job;
@@ -22,6 +24,7 @@ export default function ({ navigation, route }) {
     const [attachment, setAttachment] = useState('');
     const [isSendDisabled, setisSendDisabled] = useState(true);
     const listRef = useRef();
+    const { isOpen, onOpen, onClose } = useDisclose();
 
     async function loadChats() {
         setIsLoading(true);
@@ -46,6 +49,32 @@ export default function ({ navigation, route }) {
             setisSendDisabled(false);
         }
     }
+
+    async function openCamera() {
+        onClose();
+        const { cameraStatus } = await ImagePicker.getCameraPermissionsAsync();
+        // console.log("cameraStatus", cameraStatus);
+        if (cameraStatus !== "granted") {
+          const { status } = await ImagePicker.requestCameraPermissionsAsync();
+          if (status !== "granted") {
+            return;
+          }
+        }
+    
+        let file = await askForCamera();
+        if (!file.cancelled) {
+          const filePaths = file.uri.split("/");
+          const request = new FormData();
+          request.append("files[]", {
+            uri: file.uri,
+            name: filePaths[filePaths.length - 1],
+            type: mime.getType(file.uri),
+          });
+          const { data } = await cleangigApi.post("files", request);
+    
+          setAttachment(data.files[0]);
+        }
+      }
 
     async function sendMessage() {
         const request = new FormData();
@@ -101,10 +130,19 @@ export default function ({ navigation, route }) {
                 <FumiInput label="Skicka meddelande" icon={{ type: FontAwesome5, name: 'comments' }} value={newMessage}
                     onChangeText={(text) => { setNewMessage(text); setisSendDisabled(false); }} style={{ flex: 1 }} multiline height={70} />
                 <IconButton icon={<Icon as={FontAwesome5} name="image" color="brand.400" size="sm" />}
-                    onPress={choosePicture} />
+                    onPress={() => {Keyboard.dismiss(); onOpen()}} />
                 <IconButton icon={<Icon as={FontAwesome} name="send" color="brand.400" size="sm" />} onPress={sendMessage}
                     disabled={isSendDisabled} />
             </HStack>
         </KeyboardAvoidingView>
+        <Actionsheet isOpen={isOpen} onClose={onClose}>
+        <Actionsheet.Content>
+          <Actionsheet.Item onPress={openCamera}>Öppen kamera</Actionsheet.Item>
+          <Actionsheet.Item onPress={choosePicture}>
+            Välj från biblioteket
+          </Actionsheet.Item>
+          <Actionsheet.Item onPress={onClose}>Avbryt</Actionsheet.Item>
+        </Actionsheet.Content>
+      </Actionsheet>
     </VStack>;
 }

@@ -37,7 +37,7 @@ export default function () {
                 component={JobStack} 
                 options={options('Jobb', 'tasks')} 
                 listeners={({ navigation, route }) => ({
-                    tabPress: () => navigation.navigate(route.name),
+                    tabPress: () => {navigation.navigate("Job", {screen: "JobList"})},
                 })}
             />
             <Tab.Screen 
@@ -45,7 +45,7 @@ export default function () {
                 component={ChatStack} 
                 options={options('Chatt', 'comments')}
                 listeners={({ navigation, route }) => ({
-                    tabPress: () => {console.log({ navigation, route });navigation.navigate(route.name)},
+                    tabPress: () => {navigation.navigate("ChatMain", {screen: "ChatList"})},
                 })}/>
             <Tab.Screen name="Profile" component={Profile} options={options('Profil', 'user')}/>
         </Tab.Navigator>

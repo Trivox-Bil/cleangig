@@ -16,18 +16,22 @@ import {
   Text,
   VStack,
   Checkbox,
+  IconButton,
+  Icon
 } from "native-base";
 import mime from "mime";
-import {askForCamera} from "../../../helpers";
+import { askForCamera } from "../../../helpers";
 import { useSelector } from "react-redux";
-import counties from "../../../data/counties";
+import counties, { county } from "../../../data/counties";
 import addDays from "date-fns/addDays";
 import DatePicker from "../../../components/DatePicker";
 import { cleangigApi } from "../../../network";
 import { CheckBox } from "react-native-elements";
 import SafeScrollView from "../../../components/SafeScrollView";
 import ImageCarousel from "../../../components/ImageCarousel";
-import { Keyboard } from "react-native";
+import { Image, Keyboard, View } from "react-native";
+import { ListItem } from 'react-native-elements';
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function ({ route, navigation }) {
   const service = route.params.service;
@@ -55,7 +59,8 @@ export default function ({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [noPictures, setNoPictures] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclose();
-
+  const [selectedProviders, setSelectedProviders] = useState([]);
+  console.log("selectedProviders ====>>>", selectedProviders)
   function choosePictures() {
     onClose();
     navigation.navigate("ImageBrowser", {
@@ -122,6 +127,7 @@ export default function ({ route, navigation }) {
         deadline_end: deadlineTo,
         visibility,
         pictures: noPictures ? null : JSON.stringify(pics),
+        posted_for: Object.keys(selectedProviders).join()
       };
       const resp = await fetch("https://cleangig.se/api/jobs", {
         method: "POST",
@@ -167,8 +173,14 @@ export default function ({ route, navigation }) {
   };
 
   const chooseCompany = () => {
-    // console.log("yes clicked");
+    navigation.navigate("BrowseProvider", { selectedProviders, setSelectedProviders })
   };
+
+  const removeProvider = (key) => {
+    let temp = { ...selectedProviders };
+    delete temp[key];
+    setSelectedProviders(temp)
+  }
 
   return (
     <>
@@ -218,17 +230,22 @@ export default function ({ route, navigation }) {
             </>
           )}
 
-          <Pressable
-            bg="light.200"
-            p={4}
-            alignItems="center"
-            rounded="md"
-            _pressed={{ bg: "dark.700" }}
-            //    onPress={choosePictures}>
-            onPress={() => {Keyboard.dismiss(); onOpen()}}
-          >
-            <Text fontSize="md">Lägg till bilder</Text>
-          </Pressable>
+          {
+            !noPictures && (
+              <Pressable
+                bg="light.200"
+                p={4}
+                alignItems="center"
+                rounded="md"
+                _pressed={{ bg: "dark.700" }}
+                //    onPress={choosePictures}>
+                onPress={() => { Keyboard.dismiss(); onOpen() }}
+              >
+                <Text fontSize="md">Lägg till bilder</Text>
+              </Pressable>
+            )
+          }
+
           <Actionsheet isOpen={isOpen} onClose={onClose}>
             <Actionsheet.Content>
               <Actionsheet.Item onPress={openCamera}>
@@ -243,7 +260,7 @@ export default function ({ route, navigation }) {
           <FormControl>
             <Checkbox
               value={noPictures}
-              onChange={setNoPictures}
+              onChange={(val) => { setNoPictures(val); (val ? setPictures([]) : null) }}
               colorScheme="accent"
               my={4}
             >
@@ -340,12 +357,31 @@ export default function ({ route, navigation }) {
             </VStack>
           </FormControl>
           {
-            // visibility === 'private'
-            // ? <Pressable bg="light.200" p={4} alignItems="center" rounded="md" _pressed={{bg: 'dark.700'}}
-            //             onPress={chooseCompany}>
-            //         <Text fontSize="md">välj företag</Text>
-            //     </Pressable>
-            // : <></>
+            visibility === 'private'
+              ?
+              <>
+                <Pressable bg="light.200" p={4} alignItems="center" rounded="md" _pressed={{ bg: 'dark.700' }}
+                  onPress={chooseCompany}>
+                  <Text fontSize="md">välj företag</Text>
+                </Pressable>
+                {/* {selectedProviders.map((provider, i) => ( */}
+                <View style={{ marginTop: 15 }}>
+                  {Object.keys(selectedProviders).map(key => (
+                    <ListItem key={key} style={{ paddingLeft: 0, paddingRight: 0 }}>
+                      <Image
+                        source={{ uri: selectedProviders[key].picture }}
+                        style={{ width: 40, height: 40, borderRadius: 25 }} />
+                      <ListItem.Content>
+                        <ListItem.Title>{selectedProviders[key].name}</ListItem.Title>
+                      </ListItem.Content>
+                      <IconButton onPress={() => removeProvider(key)}
+                        icon={<Icon as={<FontAwesome5 name="trash" />} size="20px" color="danger.500" />} />
+                    </ListItem>
+                  ))}
+                </View>
+                {/* ))} */}
+              </>
+              : <></>
           }
 
           <Button

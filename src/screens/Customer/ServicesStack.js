@@ -3,7 +3,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import Services from "./Screens/Services";
 import NewJob from "./Screens/NewJob";
 import ImageBrowser from "./Screens/ImageBrowser";
-import ProviderList from "./Screens/ProviderList";
+import BrowseProvider from './Screens/BrowseProvider';
+import ProviderProfile from "./Screens/ProviderProfile";
 
 const Stack = createStackNavigator();
 
@@ -13,7 +14,8 @@ export default function () {
             <Stack.Screen name="Services" component={Services}/>
             <Stack.Screen name="NewJob" component={NewJob}/>
             <Stack.Screen name="ImageBrowser" component={ImageBrowser}/>
-            <Stack.Screen name="ProviderList" component={ProviderList}/>
+            <Stack.Screen name="BrowseProvider" component={BrowseProvider}/>
+            <Stack.Screen name="ProviderProfile" component={ProviderProfile}/>
         </Stack.Navigator>
     );
 };
