@@ -58,12 +58,15 @@ export default function App() {
 
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => {
+            console.log('token', token)
             store.dispatch({type: SET_PUSH_TOKEN, payload: token});
         });
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            console.log('addNotificationReceivedListener', notification)
             store.dispatch({type: SET_NOTIFICATION, payload: notification.request.content.data});
         });
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log('addNotificationResponseReceivedListener', response)
             store.dispatch({type: SET_NOTIFICATION, payload: response.notification.request.content.data});
         });
 
