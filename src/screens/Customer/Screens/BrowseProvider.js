@@ -98,7 +98,7 @@ export default function ({ route, navigation }) {
             delete selectedProviders.current[provider.id]
             // selectedProviders.current = selectedProviders.current.filter(item => item.id != provider.id)
         }
-        console.log(selectedProviders.current)
+        // console.log(selectedProviders.current)
         let temp = [...providers];
         temp.forEach(item => { item.id === provider.id ? item.selected = !item.selected : null });
         setProviders(temp)

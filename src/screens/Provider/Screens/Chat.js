@@ -137,7 +137,7 @@ export default function ({ navigation, route }) {
         </KeyboardAvoidingView>
         <Actionsheet isOpen={isOpen} onClose={onClose}>
         <Actionsheet.Content>
-          <Actionsheet.Item onPress={openCamera}>Öppen kamera</Actionsheet.Item>
+          <Actionsheet.Item onPress={openCamera}>Öppna kamera</Actionsheet.Item>
           <Actionsheet.Item onPress={choosePicture}>
             Välj från biblioteket
           </Actionsheet.Item>

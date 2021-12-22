@@ -1,11 +1,33 @@
 import React from 'react';
-import {Button, Card, Text} from "react-native-elements";
-import {ScrollView, StyleSheet, View} from "react-native";
+import {Button, Card} from "react-native-elements";
+import {ScrollView, StyleSheet, View, Text} from "react-native";
 import voca from "voca";
 import {createAndSavePdf, invoiceHtml, totalPayment} from "../helpers";
+import { useSelector } from "react-redux";
 
 export default function ({invoice, job}) {
+    const user = useSelector(state => state.user.data);
     return <>
+        <View style={{marginLeft: 15, marginBottom: 10, flexDirection: 'row'}}>
+            <Text color="dark.700" style={{fontWeight: '700'}} > Deadline: </Text>
+            <Text color="dark.400">{job.deadline}</Text>
+        </View>
+        { user.id === job.customer_id 
+            ? (
+                <View style={{marginLeft: 15, marginBottom: 10, flexDirection: 'row'}}>
+                    <Text color="dark.700" style={{fontWeight: '700'}} > Company: </Text>
+                    <Text color="dark.400">{job.provider.name}</Text>
+                </View>
+            ) : (
+                <View style={{marginLeft: 15, marginBottom: 10, flexDirection: 'row'}}>
+                    <Text color="dark.700" style={{fontWeight: '700'}} > Customer: </Text>
+                    <Text color="dark.400">{job.customer.fname} {job.customer.lname}</Text>
+                </View>
+            )
+        }
+        
+        
+
         <Card>
             <Card.Title>Sammanfattning</Card.Title>
             {!!invoice.length && (

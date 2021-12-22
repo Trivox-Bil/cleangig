@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import AppBar from "../../../components/AppBar";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -60,7 +60,9 @@ export default function ({ route, navigation }) {
   const [noPictures, setNoPictures] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclose();
   const [selectedProviders, setSelectedProviders] = useState([]);
-  console.log("selectedProviders ====>>>", selectedProviders)
+  const [error, setError] = useState('');
+  const titleInput = useRef(null);
+  const descInput = useRef(null);
   function choosePictures() {
     onClose();
     navigation.navigate("ImageBrowser", {
@@ -150,6 +152,34 @@ export default function ({ route, navigation }) {
     }
   }
 
+  const validate = () => {
+    let valid = true
+    if (title === '') {
+
+      setError('Rubrik krävs');
+      titleInput.current.focus();
+      valid = false
+    } else if (description === '') {
+
+      descInput.current.focus();
+      setError('Beskrivande text krävs');
+      valid = false
+    } else if (!noPictures && pictures.length === 0) {
+
+      setError('Lägg till foton');
+      valid = false
+    } else if (visibility === 'private' && selectedProviders.length === 0) {
+
+      setError('Välj ett företag');
+      valid = false
+    }
+
+    if (valid) {
+      setError('')
+      create()
+    }
+  }
+
   async function uploadPictures() {
     const request = new FormData();
     pictures.forEach((pic) => request.append("files[]", pic));
@@ -200,14 +230,17 @@ export default function ({ route, navigation }) {
             </Text>
           </Center>
 
+         {error !== '' && <Text color="danger.700" fontWeight={500}>{error}</Text>}
+
           <FormControl isRequired>
             <FormControl.Label>Rubrik</FormControl.Label>
-            <Input value={title} onChangeText={setTitle} />
+            <Input ref={titleInput} value={title} onChangeText={setTitle} />
           </FormControl>
 
           <FormControl isRequired>
             <FormControl.Label>Beskrivande text</FormControl.Label>
             <Input
+              ref={descInput}
               value={description}
               onChangeText={setDescription}
               multiline
@@ -249,7 +282,7 @@ export default function ({ route, navigation }) {
           <Actionsheet isOpen={isOpen} onClose={onClose}>
             <Actionsheet.Content>
               <Actionsheet.Item onPress={openCamera}>
-                Öppen kamera
+              Öppna kamera
               </Actionsheet.Item>
               <Actionsheet.Item onPress={choosePictures}>
                 Välj från biblioteket
@@ -387,7 +420,7 @@ export default function ({ route, navigation }) {
           <Button
             _text={{ color: "light.200" }}
             my={5}
-            onPress={create}
+            onPress={validate}
             isLoading={loading}
             isLoadingText="Läser in..."
           >

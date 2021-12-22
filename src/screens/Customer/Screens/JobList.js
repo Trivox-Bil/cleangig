@@ -37,7 +37,7 @@ export default function ({ navigation }) {
   }, []);
 
   const filteredJobs = useCallback(() => {
-      console.log(jobs)
+      // console.log(jobs)
     return jobs.filter((j) => statusFilter.includes(j.status));
   }, [jobs, statusFilter]);
 
@@ -94,7 +94,7 @@ export default function ({ navigation }) {
         navigation={navigation}
         customOptions={[{ action: fetchProjects, icon: "sync" }]}
       />
-      <VStack flex={0.1}>
+      <VStack flex={0.2}>
         <JobStatusFilter
           value={statusFilter}
           onChange={setStatusFilter}
@@ -108,7 +108,7 @@ export default function ({ navigation }) {
           ]}
         />
       </VStack>
-      <VStack flex={0.9} mt={5}>
+      <VStack flex={0.8} >
         <FetchContent fetch={fetchProjects}>
           <FlatList
             refreshing={loading}

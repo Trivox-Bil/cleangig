@@ -57,6 +57,8 @@ export default function ({navigation}) {
     }
 
     function deleteService(service) {
+        let tempOServices = offeredServices.filter(s => s.id !==  service.id);
+        setOfferedServices(tempOServices);
         setRemovedServices([...removedServices, service]);
     }
 
@@ -143,6 +145,11 @@ export default function ({navigation}) {
                             </ListItem>
                         ))}
                     </VStack>
+                    {/* {
+                        console.log('offeredServices ===>>>', offeredServices)}
+                        {console.log('addedServices ===>>> ', addedServices)}
+                       { console.log('removedServices ===>>>', removedServices)
+                    } */}
                     {services
                         .filter(as => {
                             return offeredServices.concat(addedServices).findIndex(s => s.id === as.id) < 0

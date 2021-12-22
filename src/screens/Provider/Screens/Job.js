@@ -44,7 +44,7 @@ export default function ({route, navigation}) {
         formData.append('proposal', proposal);
         formData.append('price', price);
         await sotApi.post(`proposals/create`, formData);
-        console.log('job.customer ===>>>', job.customer)
+        // console.log('job.customer ===>>>', job.customer)
         const message = {
             to: job.customer.notification_token,
             sound: 'default',

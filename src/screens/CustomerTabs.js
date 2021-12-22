@@ -25,12 +25,18 @@ export default function () {
                 name="Services" 
                 component={ServicesStack}
                 options={options('Hem', 'home')}
+                listeners={({ navigation, route }) => ({
+                    tabPress: () => {navigation.navigate("Services", {screen: "Services"})},
+                })}
                 // listeners={({navigation}) => ({ tabPress: e => { navigation.navigate("Services")}})}
             />
             <Tab.Screen 
                 name="Browse" 
                 component={BrowseStack}
                 options={options('Leverantörer', 'search')}
+                listeners={({ navigation, route }) => ({
+                    tabPress: () => {navigation.navigate("Browse", {screen: "ProviderList"})},
+                })}
             />
             <Tab.Screen 
                 name="Job" 

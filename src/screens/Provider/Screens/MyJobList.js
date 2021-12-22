@@ -55,26 +55,28 @@ export default function ({navigation}) {
 
     return <VStack flex={1}>
         <AppBar screenTitle="Jobb" navigation={navigation} customOptions={[{action: fetchProjects, icon: 'sync'}]}/>
-
-        <JobStatusFilter value={statusFilter} onChange={setStatusFilter} options={[
-            {value: STATUS_ALL, title: 'Allt'},
-            {value: STATUS_ASSIGNED, title: 'Pågående'},
-            {value: STATUS_DONE, title: 'Slutfört arbete'},
-        ]}/>
-
-        <FetchContent fetch={fetchProjects}>
-            <FlatList
-                refreshing={loading}
-                onRefresh={fetchProjects}
-                data={filteredJobs()}
-                keyExtractor={job => job.id}
-                renderItem={ListItem}
-                ListEmptyComponent={function() {
-                    return <Center flex={1} py={150}>
-                        <Heading size="md" color="dark.300">Inget att visa</Heading>
-                    </Center>
-                }}
-            />
-        </FetchContent>
+        <VStack flex={0.1}>
+            <JobStatusFilter value={statusFilter} onChange={setStatusFilter} options={[
+                {value: STATUS_ALL, title: 'Allt'},
+                {value: STATUS_ASSIGNED, title: 'Pågående'},
+                {value: STATUS_DONE, title: 'Slutfört arbete'},
+            ]}/>
+        </VStack>
+        <VStack flex={0.9} >
+            <FetchContent fetch={fetchProjects}>
+                <FlatList
+                    refreshing={loading}
+                    onRefresh={fetchProjects}
+                    data={filteredJobs()}
+                    keyExtractor={job => job.id}
+                    renderItem={ListItem}
+                    ListEmptyComponent={function() {
+                        return <Center flex={1} py={150}>
+                            <Heading size="md" color="dark.300">Inget att visa</Heading>
+                        </Center>
+                    }}
+                />
+            </FetchContent>
+        </VStack>
     </VStack>;
 }

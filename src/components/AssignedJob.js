@@ -22,7 +22,7 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
         <Text color="dark.400">Publicerad ons {formatDate(job.created_at)}</Text>
         <Text color="dark.400">Deadline {formatDate(job.deadline)}</Text>
         <Text m={4} borderLeftWidth={2} borderColor="dark.600" p={4}>{job.description}</Text>
-        {console.log("pictures ===>>>", pictures)}
+        {/* {console.log("pictures ===>>>", pictures)} */}
         {pictures.length > 0 && (
             <HStack minH={200} ml={5} my={10}>
                 <ImageCarousel images={pictures}/>

@@ -6,6 +6,7 @@ import * as Sharing from "expo-sharing";
 import * as Print from "expo-print";
 import voca from "voca";
 import counties from "./data/counties";
+import { cleangigApi } from "./network";
 
 export const colors = {
     orange: '#ff7000',
@@ -197,3 +198,9 @@ export function invoiceHtml({job, invoice}) {
         </html>
         `;
 }
+
+
+// export async function fatchProject(jobId) {
+//     const { data } = await cleangigApi.get(`customers/${user.id}/jobs`);
+//     console.log(data)
+// }

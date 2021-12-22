@@ -19,7 +19,7 @@ export default function ({ options, value, onChange }) {
 
   return (
     <View style={{flexDirection: "row", maxWidth: "100%", flex: 1, flexWrap: 'wrap'}} 
-    my={2}>
+    my={1}>
       {options.map((option, i) => {
         return (
           <Button

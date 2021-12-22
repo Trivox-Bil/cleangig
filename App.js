@@ -57,8 +57,9 @@ export default function App() {
     const responseListener = useRef();
 
     useEffect(() => {
+        
         registerForPushNotificationsAsync().then(token => {
-            console.log('token', token)
+            // console.log('token', token)
             store.dispatch({type: SET_PUSH_TOKEN, payload: token});
         });
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -68,6 +69,7 @@ export default function App() {
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             console.log('addNotificationResponseReceivedListener', response)
             store.dispatch({type: SET_NOTIFICATION, payload: response.notification.request.content.data});
+
         });
 
         return () => {
