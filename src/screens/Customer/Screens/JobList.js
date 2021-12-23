@@ -37,7 +37,6 @@ export default function ({ navigation }) {
   }, []);
 
   const filteredJobs = useCallback(() => {
-      // console.log(jobs)
     return jobs.filter((j) => statusFilter.includes(j.status));
   }, [jobs, statusFilter]);
 

@@ -64,10 +64,11 @@ export default function App() {
         });
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             console.log('addNotificationReceivedListener', notification)
+            
             store.dispatch({type: SET_NOTIFICATION, payload: notification.request.content.data});
         });
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log('addNotificationResponseReceivedListener', response)
+            // console.log('addNotificationResponseReceivedListener', response)
             store.dispatch({type: SET_NOTIFICATION, payload: response.notification.request.content.data});
 
         });
