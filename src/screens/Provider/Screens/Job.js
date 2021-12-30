@@ -50,7 +50,7 @@ export default function ({route, navigation}) {
             sound: 'default',
             title: `Nytt prisförslag på "${job.title}"`,
             body: proposal,
-            data: {type: 'proposal', id: job.id},
+            data: {type: 'proposal', details: {job: job}},
         };
         await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',

@@ -26,7 +26,7 @@ import {
 import AppLoading from 'expo-app-loading';
 import {defaultTheme} from "./src/theme";
 import CustomerSignUp from "./src/screens/CustomerSignUp";
-import {SET_NOTIFICATION, SET_PUSH_TOKEN} from "./src/actions/types";
+import {SET_NOTIFICATION, SET_PUSH_TOKEN, SET_NOTIFICATION_OPEN} from "./src/actions/types";
 import * as Notifications from "expo-notifications";
 import {registerForPushNotificationsAsync} from "./src/notifications";
 import ProviderSignUp from "./src/screens/ProviderSignUp";
@@ -69,7 +69,7 @@ export default function App() {
         });
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             // console.log('addNotificationResponseReceivedListener', response)
-            store.dispatch({type: SET_NOTIFICATION, payload: response.notification.request.content.data});
+            store.dispatch({type: SET_NOTIFICATION_OPEN, payload: response.notification.request.content.data});
 
         });
 

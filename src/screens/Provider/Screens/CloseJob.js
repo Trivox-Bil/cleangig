@@ -55,6 +55,8 @@ export default function ({ navigation, route }) {
         formData.append('deduction', deduction);
         const { data: result } = await sotApi.post(`jobs/close`, formData);
         if (result.token) {
+            let tempJob = {...job};
+            tempJob.status = 'done';
             await fetch('https://exp.host/--/api/v2/push/send', {
                 method: 'POST',
                 headers: {
@@ -67,7 +69,7 @@ export default function ({ navigation, route }) {
                     sound: 'default',
                     title: `Faktura för slutfört arbete`,
                     body: `Jobbet "${job.title}" är stängt`,
-                    data: { type: 'closed-job' },
+                    data: { type: 'closed-job', details: {job: tempJob} },
                 }),
             });
         }

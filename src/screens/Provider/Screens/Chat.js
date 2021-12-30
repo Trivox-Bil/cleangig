@@ -82,6 +82,23 @@ export default function ({ navigation, route }) {
         request.append('content', newMessage);
         request.append('attachment', attachment);
         await cleangigApi.post(`jobs/${job.id}/messages`, request);
+        const message = {
+            to: job.customer.notification_token,
+            sound: 'default',
+            title: `Du har ett nytt meddelande`,
+            body: `${user.name}: ${newMessage}`,
+            data: {type: 'message', details: {job: job}},
+        };
+        console.log('message ===>>', message)
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
         setisSendDisabled(true);
         setNewMessage('');
         setAttachment('');

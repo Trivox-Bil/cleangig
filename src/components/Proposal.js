@@ -4,6 +4,7 @@ import {TouchableOpacity, View} from "react-native";
 
 export default function ({onAssign, proposal, navigation, job}) {
     const [confirmAssign, setConfirmAssign] = useState(false);
+    job.provider_notification_token = proposal.provider.notification_token
 
     function navigateTo(tab, screen, params) {
         navigation.push('Customer', {screen: tab, params: {screen, params}});

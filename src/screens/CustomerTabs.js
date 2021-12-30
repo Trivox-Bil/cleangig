@@ -7,6 +7,8 @@ import BrowseStack from "./Customer/BrowseStack";
 import JobStack from "./Customer/JobStack";
 import ChatStack from "./Customer/ChatStack";
 import Profile from "./Customer/Profile";
+import store from "../store";
+import {SET_NOTIFICATION_OPENED} from "../actions/types";
 
 const Tab = createBottomTabNavigator();
 
@@ -25,12 +27,20 @@ export default function ({ navigation }) {
   }
 
   useEffect(() => {
-    console.log("notification", notification);
-    if (notification.notification && notification.notification.details) {
+    console.log("notification ===>>", notification);
+    if (notification.isOpen && notification.notification.details) {
       if (notification.notification.type === "job_approved") {
         // navigation.navigate('JobList', { screen: 'Job', params: {data: notification.notification.details} });
-        navigation.navigate("Job", { data: notification.notification.details });
+        navigation.navigate("Job", { screen: "Job", params: {data: notification.notification.details }});
+      } else if (notification.notification.type === "proposal") {
+        navigation.navigate("Job", { screen: "Job", params: {data: notification.notification.details.job } });
+      } else if (notification.notification.type === "closed-job") {
+        console.log('closed job notification, ', notification)
+        navigation.navigate("Job", { screen: "Job", params: {data: notification.notification.details.job } });
+      } else if (notification.notification.type === "message") {
+        navigation.navigate("ChatMain", { screen: "Chat", params: {job: notification.notification.details.job } });
       }
+      store.dispatch({type: SET_NOTIFICATION_OPENED});
     }
   }, [notification]);
 

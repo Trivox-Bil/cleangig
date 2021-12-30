@@ -22,7 +22,28 @@ export default function ({job, onDelete, pictures, navigation}) {
         formData.append('job', job.id);
         formData.append('provider', proposal.provider.id);
         formData.append('proposal', proposal.id);
-        await sotApi.post(`proposals/approve`, formData);
+        console.log(formData)
+        const { data: result } = await sotApi.post(`proposals/approve`, formData);
+        console.log(result);
+        job.status='assigned';
+        if (result.token) {
+            const message = {
+                to: result.token,
+                sound: 'default',
+                title: `Nya jobb`,
+                body: `En köpare har tilldelat dig ett jobb. Du kan se jobbet på fliken historik.`,
+                data: {type: 'assigned-job', details: {job: job}},
+            };
+            await fetch('https://exp.host/--/api/v2/push/send', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Accept-encoding': 'gzip, deflate',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(message),
+            });
+        }
         navigation.goBack();
     }
 
