@@ -1,12 +1,13 @@
-import {CommonActions} from "@react-navigation/native";
-import {parse} from "date-fns";
+import { CommonActions } from "@react-navigation/native";
+import { parse } from "date-fns";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as Print from "expo-print";
 import voca from "voca";
-import counties from "./data/counties";
+import counties, { county } from "./data/counties";
 import { cleangigApi } from "./network";
+import { map } from "lodash";
 
 export const colors = {
     orange: '#ff7000',
@@ -28,7 +29,7 @@ export function askForCamera() {
     return ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 0.5,
-      })
+    })
 }
 
 export async function downloadFile(url) {
@@ -39,7 +40,7 @@ export async function downloadFile(url) {
 }
 
 export function resetRoute(name) {
-    return CommonActions.reset({index: 0, routes: [{name}]});
+    return CommonActions.reset({ index: 0, routes: [{ name }] });
 }
 
 export function formatDate(dateStr, showTime) {
@@ -60,10 +61,10 @@ export function totalPayment(milestones) {
 }
 
 export async function createAndSavePdf(html, filename) {
-    const {uri} = await Print.printToFileAsync({html});
+    const { uri } = await Print.printToFileAsync({ html });
     const pdfName = `${FileSystem.documentDirectory}/${filename}.pdf`;
 
-    await FileSystem.moveAsync({from: uri, to: pdfName,});
+    await FileSystem.moveAsync({ from: uri, to: pdfName, });
     await Sharing.shareAsync(pdfName);
 }
 
@@ -71,15 +72,15 @@ const fileToBase64 = (file, cb) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = function () {
-      cb(null, reader.result)
+        cb(null, reader.result)
     }
     reader.onerror = function (error) {
-      cb(error, null)
+        cb(error, null)
     }
-  }
+}
 
-export function invoiceHtml({job, invoice}) {
-    const tableColumn = (carry, {description, rate, hours, deduction}) => {
+export function invoiceHtml({ job, invoice }) {
+    const tableColumn = (carry, { description, rate, hours, deduction }) => {
         return carry + `
         <tr>
             <td>${voca.truncate(description, 20)}</td>
@@ -130,7 +131,7 @@ export function invoiceHtml({job, invoice}) {
                         <td><span>${job.customer.fname} ${job.customer.lname}</span></td>
                     </tr>
                     <tr>
-                        <td><div>${counties.find(c => c.code === job.provider.county_code)?.name}</div></td>
+                        <td><div>${providerCountyName(job.provider.county_code)}</div></td>
                         <td><span>${job.street}${job.city ? `, ${job.city}` : ''}, ${counties.find(c => c.code === job.county_code).name}</span></td>
                     </tr>
                     <tr>
@@ -204,3 +205,11 @@ export function invoiceHtml({job, invoice}) {
 //     const { data } = await cleangigApi.get(`customers/${user.id}/jobs`);
 //     console.log(data)
 // }
+
+export const providerCountyName = (providerCounties) => {
+    let countyName = [];
+    map(providerCounties.split(","), countryCode => {
+        countyName.push(county(countryCode).name);
+    })
+    return countyName.join();
+}

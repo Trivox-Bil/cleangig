@@ -19,7 +19,7 @@ export default function ({navigation}) {
     async function fetchProjects() {
         setLoading(true);
         const {data} = await cleangigApi.get(`providers/${user.id}/jobs`);
-        setJobs(data.jobs.filter(j => ['assigned', 'done'].includes(j.status)));
+        setJobs(data.jobs.filter(j => ['assigned'].includes(j.status)));
         setLoading(false);
     }
 

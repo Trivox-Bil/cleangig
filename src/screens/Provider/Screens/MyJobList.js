@@ -6,10 +6,12 @@ import AppBar from "../../../components/AppBar";
 import FetchContent from "../../../components/FetchContent";
 import JobStatusFilter from "../../../components/JobStatusFilter";
 import services from "../../../data/services";
+import { county } from "../../../data/counties"
 
-const STATUS_ALL = ["assigned", "done"];
+const STATUS_ALL = ["assigned", "done", "initial"];
 const STATUS_ASSIGNED = ["assigned"];
 const STATUS_DONE = ["done"];
+const STATUS_WAITING = ["initial"];
 
 export default function ({navigation}) {
     const user = useSelector(state => state.user.data);
@@ -34,8 +36,17 @@ export default function ({navigation}) {
         setLoading(false);
     }
 
+    const openJobDetails = (job) => {
+        if (job.status === 'initial') {
+            job.county = { code: job.county_code, name: county(job.county_code).name }
+            navigation.navigate('Browse', { screen: 'Job', params: {job: job}})
+        } else {
+            navigation.navigate('MyJob', {data: job})
+        }
+    }
+
     function ListItem({item: job}) {
-        return <Pressable _pressed={{bg: 'gray.200'}} onPress={() => navigation.navigate('MyJob', {data: job})}
+        return <Pressable _pressed={{bg: 'gray.200'}} onPress={() => openJobDetails(job)}
                           px={2} py={4} space={2} borderBottomWidth={1} borderColor="#ccc">
             <HStack alignItems="center">
                 <Image source={services.find(s => s.id === job.service_id).icon} w={10} h={10} m={4} alt=" "/>
@@ -46,6 +57,7 @@ export default function ({navigation}) {
                         <Badge>
                             {job.status === 'assigned' && 'Pågående'}
                             {job.status === 'done' && 'Slutfört arbete'}
+                            {job.status === 'initial' && 'Väntar på svar'}
                         </Badge>
                     </HStack>
                 </VStack>
@@ -55,14 +67,15 @@ export default function ({navigation}) {
 
     return <VStack flex={1}>
         <AppBar screenTitle="Jobb" navigation={navigation} customOptions={[{action: fetchProjects, icon: 'sync'}]}/>
-        <VStack flex={0.1}>
+        <VStack flex={0.15}>
             <JobStatusFilter value={statusFilter} onChange={setStatusFilter} options={[
                 {value: STATUS_ALL, title: 'Allt'},
+                {value: STATUS_WAITING, title: 'Väntar på svar'},
                 {value: STATUS_ASSIGNED, title: 'Pågående'},
                 {value: STATUS_DONE, title: 'Slutfört arbete'},
             ]}/>
         </VStack>
-        <VStack flex={0.9} >
+        <VStack flex={0.85} >
             <FetchContent fetch={fetchProjects}>
                 <FlatList
                     refreshing={loading}

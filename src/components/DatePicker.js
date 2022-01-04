@@ -17,7 +17,7 @@ export default function DatePicker({value, onChange, minimumDate = new Date(), .
             <Heading size="sm">{format(value, 'yyyy-MM-dd HH:mm')}</Heading>
         </Pressable>
         {isVisible && (
-            <DateTimePicker mode="datetime" is24Hour={true} display="default" minimumDate={minimumDate} value={value}
+            <DateTimePicker placeholderText=" " mode="datetime" is24Hour={true} display="default" minimumDate={minimumDate} value={value}
                             onChange={onChangeFn} {...pickerProps}/>
         )}
     </>;

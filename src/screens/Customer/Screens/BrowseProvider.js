@@ -9,6 +9,7 @@ import SafeScrollView from "../../../components/SafeScrollView";
 import { Picker } from "@react-native-picker/picker";
 import AppBar from "../../../components/AppBar";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { providerCountyName } from '../../../helpers';
 
 export default function ({ route, navigation }) {
     const [loading, setLoading] = useState(false);
@@ -152,7 +153,7 @@ export default function ({ route, navigation }) {
                                 style={{ width: 50, height: 50, borderRadius: 25, marginHorizontal: 10 }} />
                             <ListItem.Content>
                                 <ListItem.Title>{provider.name}</ListItem.Title>
-                                <ListItem.Subtitle>{provider.county_code ? county(provider.county_code).name : 'Plats ej specificerad'}</ListItem.Subtitle>
+                                <ListItem.Subtitle>{provider.county_code ? providerCountyName(provider.county_code) : 'Plats ej specificerad'}</ListItem.Subtitle>
                             </ListItem.Content>
                             <IconButton onPress={() => selectProvider(provider)}
                                 icon={<Icon as={<FontAwesome5 name={`${provider.selected ? "check-circle" : "circle"}`} />} size="sm" color="light.400" />} />

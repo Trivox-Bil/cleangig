@@ -21,7 +21,7 @@ export default function ({navigation}) {
         // const {data} = await cleangigApi.get(`customers/${user.id}/chats`);
         // console.log(data)
         const {data} = await cleangigApi.get(`customers/${user.id}/jobs`);
-        setJobs(data.jobs.filter(j => ['assigned', 'done'].includes(j.status)));
+        setJobs(data.jobs.filter(j => ['assigned'].includes(j.status)));
         setLoading(false);
     }
 

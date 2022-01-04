@@ -47,17 +47,20 @@ export default function ({ route, navigation }) {
   const [county, setCounty] = useState(
     route.params.county || counties.find((c) => c.code === user.county)
   );
+  // const [deadlineFrom, setDeadlineFrom] = useState(
+  //   route.params.deadlineFrom || addDays(new Date(), 7)
+  // );
   const [deadlineFrom, setDeadlineFrom] = useState(
-    route.params.deadlineFrom || addDays(new Date(), 7)
+    route.params.deadlineFrom || new Date()
   );
   const [deadlineTo, setDeadlineTo] = useState(
-    route.params.deadlineTo || addDays(new Date(), 14)
+    route.params.deadlineTo || addDays(new Date(), 7)
   );
   const [visibility, setVisibility] = useState(
     route.params.visibility || "public"
   );
   const [loading, setLoading] = useState(false);
-  const [noPictures, setNoPictures] = useState(false);
+  // const [noPictures, setNoPictures] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclose();
   const [selectedProviders, setSelectedProviders] = useState([]);
   const [error, setError] = useState('');
@@ -115,6 +118,8 @@ export default function ({ route, navigation }) {
 
   async function create() {
     try {
+      let noPictures = true;
+      if (pictures.length > 0) noPictures = false;
       setLoading(true);
       const pics = noPictures ? null : await uploadPictures();
       const request = {
@@ -163,10 +168,6 @@ export default function ({ route, navigation }) {
 
       descInput.current.focus();
       setError('Beskrivande text krävs');
-      valid = false
-    } else if (!noPictures && pictures.length === 0) {
-
-      setError('Lägg till foton');
       valid = false
     } else if (visibility === 'private' && selectedProviders.length === 0) {
 
@@ -230,7 +231,7 @@ export default function ({ route, navigation }) {
             </Text>
           </Center>
 
-         {error !== '' && <Text color="danger.700" fontWeight={500}>{error}</Text>}
+          {error !== '' && <Text color="danger.700" fontWeight={500}>{error}</Text>}
 
           <FormControl isRequired>
             <FormControl.Label>Rubrik</FormControl.Label>
@@ -263,26 +264,22 @@ export default function ({ route, navigation }) {
             </>
           )}
 
-          {
-            !noPictures && (
-              <Pressable
-                bg="light.200"
-                p={4}
-                alignItems="center"
-                rounded="md"
-                _pressed={{ bg: "dark.700" }}
-                //    onPress={choosePictures}>
-                onPress={() => { Keyboard.dismiss(); onOpen() }}
-              >
-                <Text fontSize="md">Lägg till bilder</Text>
-              </Pressable>
-            )
-          }
+          <Pressable
+            bg="light.200"
+            p={4}
+            alignItems="center"
+            rounded="md"
+            _pressed={{ bg: "dark.700" }}
+            //    onPress={choosePictures}>
+            onPress={() => { Keyboard.dismiss(); onOpen() }}
+          >
+            <Text fontSize="md">Lägg till bilder</Text>
+          </Pressable>
 
           <Actionsheet isOpen={isOpen} onClose={onClose}>
             <Actionsheet.Content>
               <Actionsheet.Item onPress={openCamera}>
-              Öppna kamera
+                Öppna kamera
               </Actionsheet.Item>
               <Actionsheet.Item onPress={choosePictures}>
                 Välj från biblioteket
@@ -290,7 +287,7 @@ export default function ({ route, navigation }) {
               <Actionsheet.Item onPress={onClose}>Avbryt</Actionsheet.Item>
             </Actionsheet.Content>
           </Actionsheet>
-          <FormControl>
+          {/* <FormControl>
             <Checkbox
               value={noPictures}
               onChange={(val) => { setNoPictures(val); (val ? setPictures([]) : null) }}
@@ -301,7 +298,7 @@ export default function ({ route, navigation }) {
                 Vill inte lägga till bilder
               </Text>
             </Checkbox>
-          </FormControl>
+          </FormControl> */}
 
           {editAddress ? (
             <>

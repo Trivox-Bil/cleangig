@@ -10,19 +10,19 @@ import {LOGIN_SUCCESS, LOGOUT} from "../../actions/types";
 import {storeLocal, USER_DATA_KEY} from "../../storage";
 import HoshiInput from "../../components/HoshiInput";
 import SafeScrollView from "../../components/SafeScrollView";
-import HoshiSelectControl from "../../components/HoshiSelectControl";
 import {ListItem} from "react-native-elements";
 import services from "../../data/services";
 import FetchContent from "../../components/FetchContent";
 import {resetRoute} from "../../helpers";
 import Constants from 'expo-constants';
+import HoshiMultiSelectControl from '../../components/HoshiMultiSelectControl';
 
 export default function ({navigation}) {
     const user = useSelector(state => state.user.data);
     const [businessName, setBusinessName] = useState(user.name);
     const [contactName] = useState(user.contact);
     const [phone, setPhone] = useState(user.phone_number);
-    const [county, setCounty] = useState(user.county_code);
+    const [county, setCounty] = useState(user.county_code.split(","));
     const [description, setDescription] = useState(user.description);
     const [picture, setPicture] = useState(user.picture);
     const [offeredServices, setOfferedServices] = useState([]);
@@ -30,6 +30,7 @@ export default function ({navigation}) {
     const [removedServices, setRemovedServices] = useState([]);
     const [saveIcon, setSaveIcon] = useState('save');
     const dispatch = useDispatch();
+    console.log(user)
 
     async function fetchServices() {
         const {data} = await sotApi.get(`services/get_all?provider=${user.id}`);
@@ -73,14 +74,13 @@ export default function ({navigation}) {
         const formData = new FormData();
         formData.append('id', user.id);
         formData.append('name', businessName);
-        formData.append('county_code', county);
+        formData.append('county_code', county.join());
         formData.append('phone_number', phone);
         formData.append('description', description);
         formData.append('services', JSON.stringify({
             add: addedServices.map(s => [s.id]),
             remove: removedServices.map(s => s.id),
         }));
-
         const {data} = await sotApi.post(`providers/update`, formData);
 
         if (data.success) {
@@ -116,8 +116,9 @@ export default function ({navigation}) {
                 <HoshiInput value={phone} label="Telefonnummer" onChangeText={setPhone} keyboardType="numeric"/>
                 <HoshiInput value={description} label="Företagsbeskrivning" onChangeText={setDescription} multiline
                             height={100}/>
-                <HoshiSelectControl label="Plats" selectedValue={county} onValueChange={setCounty}
-                                    collection={counties.map(c => ({label: c.name, value: c.code}))}/>
+                <HoshiMultiSelectControl label="Plats" selectedValue={county} onValueChange={setCounty}
+                                    collection={counties.map(c => ({id: c.code, name: c.name, value: c.code}))}/>
+
             </VStack>
 
             <FetchContent fetch={fetchServices}>
