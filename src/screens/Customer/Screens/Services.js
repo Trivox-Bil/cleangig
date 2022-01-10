@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, Center, HStack, Image, Modal, Pressable, ScrollView, StatusBar, Text, VStack} from "native-base";
+import {Button, Center, Flex, HStack, Image, Modal, Pressable, ScrollView, StatusBar, Text, VStack} from "native-base";
 import services from "../../../data/services";
 import {Dimensions} from "react-native";
 
@@ -35,22 +35,23 @@ export default function ({navigation}) {
             </ScrollView>
         </VStack>
 
-        <Modal isOpen={chosenService !== null} onClose={() => setChosenService(null)}>
+        <Modal isOpen={chosenService !== null} onClose={() => setChosenService(null)} size='xl'>
             {chosenService && (
                 <Modal.Content>
                     <Modal.CloseButton/>
-                    <Modal.Header>{chosenService.name}</Modal.Header>
-                    <Modal.Body>
-                        <ScrollView horizontal>
-                            <VStack>
+                    <Modal.Header _text={{fontSize: '2xl'}} >{chosenService.name}</Modal.Header>
+                    <Modal.Body px={6}>
+                        {/* <ScrollView horizontal> */}
+                            <Flex direction='column'>
                                 {chosenService.description.split('\n').map((item, i) => (
-                                    <HStack key={i}>
-                                        <Text mx={4}>•</Text>
-                                        <Text>{item}</Text>
-                                    </HStack>
+                                    // flexDirection: "row", maxWidth: "100%", flex: 1, flexWrap: 'wrap'
+                                    <Flex key={i} direction='row' >
+                                        <Text mr={4}>•</Text>
+                                        <Text fontSize="md">{item}</Text>
+                                    </Flex>
                                 ))}
-                            </VStack>
-                        </ScrollView>
+                            </Flex>
+                        {/* </ScrollView> */}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="ghost" colorScheme="brand" onPress={toNewJob}>Lägg till jobb</Button>

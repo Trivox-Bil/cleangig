@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { cleangigApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
 import * as ImagePicker from "expo-image-picker";
@@ -26,7 +26,8 @@ import SafeFlatList from "../../../components/SafeFlatList";
 import { Keyboard } from "react-native";
 
 export default function ({ navigation, route }) {
-  const job = route.params.job;
+  // const job = route.params.job;
+  const job = useRef(route.params.job || null);
   const user = useSelector((state) => state.user.data);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,9 +37,22 @@ export default function ({ navigation, route }) {
   const listRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclose();
 
+  useEffect(() => {
+    if (job.current == null && route.params.id) {
+      fetchJob().then();
+    }
+  }, [job.current])
+
+  async function fetchJob() {
+    const { data } = await cleangigApi.get(`jobs/${route.params.id}`);
+    // setJob(data.job);
+    job.current = data.job
+    loadChats();
+  }
+
   async function loadChats() {
     setIsLoading(true);
-    const { data } = await cleangigApi.get(`jobs/${job.id}/messages`);
+    const { data } = await cleangigApi.get(`jobs/${job.current?.id}/messages`);
     setMessages(data.chats.map((m) => ({ ...m, user })));
     setIsLoading(false);
   }
@@ -93,25 +107,34 @@ export default function ({ navigation, route }) {
     request.append("sender", user.id);
     request.append("content", newMessage);
     request.append("attachment", attachment);
-    console.log('job', job)
-    await cleangigApi.post(`jobs/${job.id}/messages`, request);
-    if ( job.provider || job.provider_notification_token ) {
+    // console.log('job', job)
+    await cleangigApi.post(`jobs/${job.current.id}/messages`, request);
+    if (job.current.provider || job.current.provider_notification_token) {
       const message = {
-        to: job.provider ? job.provider.notification_token : job.provider_notification_token,
+        to: job.current.provider ? job.current.provider.notification_token : job.current.provider_notification_token,
         sound: 'default',
         title: `Du har ett nytt meddelande`,
         body: `${user.fname} ${user.lname}: ${newMessage}`,
-        data: {type: 'message', details: {job: job}},
+        data: { type: 'message', details: { job: job.current } },
       };
+      const notificationData = new FormData();
+      notificationData.append('customer_id', job.current.customer.id);
+      notificationData.append('job_id', job.current.id);
+      notificationData.append('content', message.body);
+      notificationData.append('title', message.title);
+      notificationData.append('type', `message`);
+      console.log(notificationData)
+      const { data: notification } = await cleangigApi.post(`providers/${job.current.provider.id}/notification`, notificationData);
+      message.data.notification_id = notification.id;
       console.log('message ===>>', message)
       await fetch('https://exp.host/--/api/v2/push/send', {
-          method: 'POST',
-          headers: {
-              Accept: 'application/json',
-              'Accept-encoding': 'gzip, deflate',
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(message),
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
       });
     }
     setSending(false);
@@ -121,82 +144,82 @@ export default function ({ navigation, route }) {
   }
 
   return (
-    
+
     <VStack flex={1} safeArea justifyContent="space-between">
       <AppBar
-        screenTitle={job.title}
+        screenTitle={job.current?.title}
         navigation={navigation}
         backButton
         customOptions={[{ action: loadChats, icon: "sync" }]}
       />
-<KeyboardAvoidingView
-      h={{
-        base: "705px",
-        lg: "auto",
-      }}
-      style={{flex: 1}}
-      behavior={Platform.OS === "ios" ? "padding" : ""}
-    >
-      <VStack flex={1}  p={4} bg="white">
-      <FetchContent fetch={loadChats}>
-        <SafeFlatList
-          flex={1}
-          refreshing={isLoading}
-          onRefresh={loadChats}
-          data={messages}
-          keyExtractor={(job) => job.id}
-          renderItem={ChatItem}
-          ref={listRef}
-          onContentSizeChange={() =>
-            listRef.current && listRef.current.scrollToEnd({ animated: true })
-          }
-          ListEmptyComponent={function () {
-            return (
-              <Center flex={1} py={150}>
-                <Text color="dark.300">Var den första att kommentera</Text>
-              </Center>
-            );
-          }}
-        />
-      </FetchContent>
+      <KeyboardAvoidingView
+        h={{
+          base: "705px",
+          lg: "auto",
+        }}
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : ""}
+      >
+        <VStack flex={1} p={4} bg="white">
+          <FetchContent fetch={loadChats}>
+            <SafeFlatList
+              flex={1}
+              refreshing={isLoading}
+              onRefresh={loadChats}
+              data={messages}
+              keyExtractor={(job) => job.id}
+              renderItem={ChatItem}
+              ref={listRef}
+              onContentSizeChange={() =>
+                listRef.current && listRef.current.scrollToEnd({ animated: true })
+              }
+              ListEmptyComponent={function () {
+                return (
+                  <Center flex={1} py={150}>
+                    <Text color="dark.300">Var den första att kommentera</Text>
+                  </Center>
+                );
+              }}
+            />
+          </FetchContent>
 
-      {attachment.length > 0 && (
-        <VStack h={100} p={4} bg="white">
-          <Image
-            source={{ uri: attachment }}
-            resizeMode="center"
-            w={100}
-            h={100}
-            alt=" "
-          />
-          <Divider />
+          {attachment.length > 0 && (
+            <VStack h={100} p={4} bg="white">
+              <Image
+                source={{ uri: attachment }}
+                resizeMode="center"
+                w={100}
+                h={100}
+                alt=" "
+              />
+              <Divider />
+            </VStack>
+          )}
         </VStack>
-      )}
-      </VStack>
-      <HStack alignItems="center" bg="white">
-        <FumiInput
-          label="Skicka meddelande"
-          icon={{ type: FontAwesome5, name: "comments" }}
-          value={newMessage}
-          onChangeText={setNewMessage}
-          style={{ flex: 1 }}
-          multiline
-          height={70}
-        />
-        <IconButton
-          icon={
-            <Icon as={FontAwesome5} name="image" color="brand.400" size="sm" />
-          }
-          onPress={() => {Keyboard.dismiss(); onOpen()}}
-        />
-        <IconButton
-          icon={
-            <Icon as={FontAwesome} name="send" color="brand.400" size="sm" />
-          }
-          onPress={sendMessage}
-          disabled={sending}
-        />
-      </HStack>
+        <HStack alignItems="center" bg="white">
+          <FumiInput
+            label="Skicka meddelande"
+            icon={{ type: FontAwesome5, name: "comments" }}
+            value={newMessage}
+            onChangeText={setNewMessage}
+            style={{ flex: 1 }}
+            multiline
+            height={70}
+          />
+          <IconButton
+            icon={
+              <Icon as={FontAwesome5} name="image" color="brand.400" size="sm" />
+            }
+            onPress={() => { Keyboard.dismiss(); onOpen() }}
+          />
+          <IconButton
+            icon={
+              <Icon as={FontAwesome} name="send" color="brand.400" size="sm" />
+            }
+            onPress={sendMessage}
+            disabled={sending}
+          />
+        </HStack>
       </KeyboardAvoidingView>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
         <Actionsheet.Content>
@@ -208,6 +231,6 @@ export default function ({ navigation, route }) {
         </Actionsheet.Content>
       </Actionsheet>
     </VStack>
-   
+
   );
 }

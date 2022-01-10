@@ -147,7 +147,7 @@ export default function ({ route, navigation }) {
       if (data.id) {
         navigation.navigate("Customer", {
           screen: "Job",
-          params: { screen: "Job", params: { id: data.id } },
+          params: { screen: "Job", params: { id: data.id, isNew: true } },
         });
       }
     } catch (e) {
@@ -204,7 +204,7 @@ export default function ({ route, navigation }) {
   };
 
   const chooseCompany = () => {
-    navigation.navigate("BrowseProvider", { selectedProviders, setSelectedProviders })
+    navigation.navigate("BrowseProvider", { selectedProviders, setSelectedProviders, service })
   };
 
   const removeProvider = (key) => {

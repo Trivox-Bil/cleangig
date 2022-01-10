@@ -213,3 +213,7 @@ export const providerCountyName = (providerCounties) => {
     })
     return countyName.join();
 }
+
+export const readNotification = async (id) => {
+    await cleangigApi.get(`read_notification/${id}`);
+}

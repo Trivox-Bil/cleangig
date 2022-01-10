@@ -8,3 +8,4 @@ export const SET_PUSH_TOKEN = 'Set exponent push token of user';
 export const SET_NOTIFICATION = 'Store received notification data';
 export const SET_NOTIFICATION_OPEN = 'received notification clicked';
 export const SET_NOTIFICATION_OPENED = 'notification page opened';
+export const SET_NOTIFICATION_COUNT = 'notification page Count';

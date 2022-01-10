@@ -12,8 +12,8 @@ import SafeScrollView from "../../../components/SafeScrollView";
 export default function ({navigation, route}) {
     const [job, setJob] = useState(route.params.data || null);
     const [pictures, setPictures] = useState([]);
-    console.log("job ====>>>", job);
-    console.log("route.params ====>>>", route.params);
+    // console.log("job ====>>>", job);
+    // console.log("route.params ====>>>", route.params);
     useEffect(() => {
         if (job) {
             let pictures;

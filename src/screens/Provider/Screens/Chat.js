@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { cleangigApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
 import { useSelector } from "react-redux";
@@ -16,7 +16,8 @@ import SafeFlatList from "../../../components/SafeFlatList";
 import { Keyboard } from "react-native";
 
 export default function ({ navigation, route }) {
-    const job = route.params.job;
+    // const job = route.params.job;
+    const job = useRef(route.params.job || null);
     const user = useSelector(state => state.user.data);
     const [messages, setMessages] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +27,22 @@ export default function ({ navigation, route }) {
     const listRef = useRef();
     const { isOpen, onOpen, onClose } = useDisclose();
 
+    useEffect(() => {
+        if (job.current == null && route.params.id) {
+          fetchJob().then();
+        }
+    }, [job.current])
+
+    async function fetchJob() {
+        const { data } = await cleangigApi.get(`jobs/${route.params.id}`);
+        // setJob(data.job);
+        job.current = data.job
+        loadChats();
+    }
+
     async function loadChats() {
         setIsLoading(true);
-        const { data } = await cleangigApi.get(`jobs/${job.id}/messages`);
+        const { data } = await cleangigApi.get(`jobs/${job.current?.id}/messages`);
         setMessages(data.chats.map(m => ({ ...m, user })));
         setIsLoading(false);
     }
@@ -71,7 +85,7 @@ export default function ({ navigation, route }) {
             type: mime.getType(file.uri),
           });
           const { data } = await cleangigApi.post("files", request);
-    
+          setisSendDisabled(false);
           setAttachment(data.files[0]);
         }
       }
@@ -81,14 +95,22 @@ export default function ({ navigation, route }) {
         request.append('sender', user.id);
         request.append('content', newMessage);
         request.append('attachment', attachment);
-        await cleangigApi.post(`jobs/${job.id}/messages`, request);
+        await cleangigApi.post(`jobs/${job.current.id}/messages`, request);
         const message = {
-            to: job.customer.notification_token,
+            to: job.current.customer.notification_token,
             sound: 'default',
             title: `Du har ett nytt meddelande`,
             body: `${user.name}: ${newMessage}`,
-            data: {type: 'message', details: {job: job}},
+            data: {type: 'message', details: {job: job.current}},
         };
+        const notificationData = new FormData();
+        notificationData.append('provider_id', user.id);
+        notificationData.append('job_id', job.current.id);
+        notificationData.append('content', message.body);
+        notificationData.append('title', message.title);
+        notificationData.append('type', `message`);
+        const { data: notification } = await cleangigApi.post(`customers/${job.current.customer.id}/notification`, notificationData);
+        message.data.notification_id = notification.id;
         console.log('message ===>>', message)
         await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',
@@ -106,7 +128,7 @@ export default function ({ navigation, route }) {
     }
 
     return <VStack flex={1} safeArea justifyContent="space-between">
-        <AppBar screenTitle={job.title} navigation={navigation} backButton
+        <AppBar screenTitle={job.current?.title} navigation={navigation} backButton
             customOptions={[{ action: loadChats, icon: 'sync' }]} />
 
         <KeyboardAvoidingView

@@ -30,7 +30,7 @@ export default function ({navigation}) {
     const [removedServices, setRemovedServices] = useState([]);
     const [saveIcon, setSaveIcon] = useState('save');
     const dispatch = useDispatch();
-    console.log(user)
+    // console.log(user)
 
     async function fetchServices() {
         const {data} = await sotApi.get(`services/get_all?provider=${user.id}`);

@@ -9,7 +9,7 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
     const [warnDelete, setWarnDelete] = useState(false);
 
     function goToChat() {
-        navigation.navigate('Chat', {screen: 'Chat', params: {job}});
+        navigation.navigate('ChatMain', {screen: 'Chat', params: {job}});
     }
 
     function goToProvider() {

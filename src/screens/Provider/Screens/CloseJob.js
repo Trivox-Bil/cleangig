@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
 import { CheckBox, Overlay } from 'react-native-elements';
-import { sotApi } from "../../../network";
+import { cleangigApi, sotApi } from "../../../network";
 import SafeScrollView from "../../../components/SafeScrollView";
 import { totalPayment } from "../../../helpers";
 import AppBar from "../../../components/AppBar";
+import { useSelector } from "react-redux";
 import {
     AddIcon,
     Button,
@@ -21,6 +22,7 @@ import {
 } from "native-base";
 
 export default function ({ navigation, route }) {
+    const user = useSelector(state => state.user.data);
     const job = route.params.job;
     const [milestones, setMilestones] = useState([]);
     const [description, setDescription] = useState('');
@@ -55,8 +57,23 @@ export default function ({ navigation, route }) {
         formData.append('deduction', deduction);
         const { data: result } = await sotApi.post(`jobs/close`, formData);
         if (result.token) {
-            let tempJob = {...job};
+            let tempJob = { ...job };
             tempJob.status = 'done';
+            const message = {
+                to: result.token,
+                sound: 'default',
+                title: `Faktura för slutfört arbete`,
+                body: `Jobbet "${job.title}" är stängt`,
+                data: { type: 'closed-job', details: { job: tempJob } },
+            };
+            const notificationData = new FormData();
+            notificationData.append('provider_id', user.id);
+            notificationData.append('job_id', job.id);
+            notificationData.append('content', message.body);
+            notificationData.append('title', message.title);
+            notificationData.append('type', `closed-job`);
+            const { data: notification } = await cleangigApi.post(`customers/${job.customer.id}/notification`, notificationData);
+            message.data.notification_id = notification.id;
             await fetch('https://exp.host/--/api/v2/push/send', {
                 method: 'POST',
                 headers: {
@@ -64,13 +81,7 @@ export default function ({ navigation, route }) {
                     'Accept-encoding': 'gzip, deflate',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    to: result.token,
-                    sound: 'default',
-                    title: `Faktura för slutfört arbete`,
-                    body: `Jobbet "${job.title}" är stängt`,
-                    data: { type: 'closed-job', details: {job: tempJob} },
-                }),
+                body: JSON.stringify(message),
             });
         }
         setLoading(false);

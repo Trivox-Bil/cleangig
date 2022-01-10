@@ -55,6 +55,7 @@
     "react-native-images-picker-expo": "^1.0.0",
     "react-native-in-app-notification": "^3.2.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
+    "react-native-modal-datetime-picker": "^13.0.1",
     "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.8.0",

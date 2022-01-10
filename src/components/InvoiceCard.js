@@ -9,7 +9,7 @@ export default function ({invoice, job}) {
     const user = useSelector(state => state.user.data);
     return <>
         <View style={{marginLeft: 15, marginBottom: 10, flexDirection: 'row'}}>
-            <Text color="dark.700" style={{fontWeight: '700'}} > Deadline: </Text>
+            <Text color="dark.700" style={{fontWeight: '700'}} > Förfallodatum: </Text>
             <Text color="dark.400">{job.deadline}</Text>
         </View>
         { user.id === job.customer_id 

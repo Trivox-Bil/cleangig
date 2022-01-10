@@ -3,7 +3,7 @@ import {Button, Center, Heading, HStack, Text} from "native-base";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
 
-export default function ({onDelete, pictures, job}) {
+export default function ({navigation, onDelete, pictures, job, isNew = false}) {
     const [warnDelete, setWarnDelete] = useState(false);
 
     return <Center p={4}>
@@ -17,6 +17,7 @@ export default function ({onDelete, pictures, job}) {
         )}
 
         <Button colorScheme="red" onPress={() => setWarnDelete(true)} my={4}>Ta bort jobb</Button>
+        {isNew && <Button onPress={() => navigation.navigate('Services')} my={4} _text={{color: '#fff'}}>Gå till hemsidan</Button>}
         <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}
                        message="Är du säker att du vill radera"/>
     </Center>;

@@ -76,7 +76,7 @@ export default function ({ navigation }) {
                 {job.status === "pending" && "Väntar Godkännande"}
                 {job.status === "initial" && "Inte tilldelats"}
                 {job.status === "assigned" && "Pågående"}
-                {job.status === "unpaid" && "Obetalda Fakturor"}
+                {job.status === "unpaid" && "Fakturor"}
                 {job.status === "done" && "Slutfört arbete"}
               </Badge>
             </HStack>
@@ -102,7 +102,7 @@ export default function ({ navigation }) {
             { value: STATUS_PENDING, title: "Väntar Godkännande" },
             { value: STATUS_INITIAL, title: "Inte tilldelats" },
             { value: STATUS_ASSIGNED, title: "Pågående" },
-            { value: STATUS_UNPAID, title: "Obetalda Fakturor" },
+            { value: STATUS_UNPAID, title: "Fakturor" },
             { value: STATUS_DONE, title: "Slutfört arbete" },
           ]}
         />

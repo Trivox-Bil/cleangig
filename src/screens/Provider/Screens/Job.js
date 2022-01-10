@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Card, Image, Input, ListItem, Text } from 'react-native-elements';
-import { sotApi } from "../../../network";
+import { cleangigApi, sotApi } from "../../../network";
 import { formatDate } from "../../../helpers";
 import ImageCarousel from "../../../components/ImageCarousel";
 import { HStack } from "native-base";
@@ -13,7 +13,7 @@ import AppBar from "../../../components/AppBar";
 
 export default function ({ route, navigation }) {
     const job = route.params.job;
-    console.log("job ==>>>", route.params)
+    // console.log("job ==>>>", route.params)
     const user = useSelector(state => state.user.data);
     const [proposals, setProposals] = useState([]);
     const [proposal, setProposal] = useState('');
@@ -45,13 +45,20 @@ export default function ({ route, navigation }) {
         formData.append('proposal', proposal);
         formData.append('price', price);
         await sotApi.post(`proposals/create`, formData);
-        // console.log('job.customer ===>>>', job.customer)
+        // console.log('job.customer ===>>>', job.customer)        
+        const notificationData = new FormData();
+        notificationData.append('provider_id', user.id);
+        notificationData.append('job_id', job.id);
+        notificationData.append('content', proposal);
+        notificationData.append('title', `Nytt prisförslag på "${job.title}"`);
+        notificationData.append('type', `proposal`);
+        const { data: notification } = await cleangigApi.post(`customers/${job.customer.id}/notification`, notificationData);
         const message = {
             to: job.customer.notification_token,
             sound: 'default',
             title: `Nytt prisförslag på "${job.title}"`,
             body: proposal,
-            data: { type: 'proposal', details: { job: job } },
+            data: { type: 'proposal', details: { job: job }, notification_id: notification.id },
         };
         await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',

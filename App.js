@@ -26,13 +26,14 @@ import {
 import AppLoading from 'expo-app-loading';
 import {defaultTheme} from "./src/theme";
 import CustomerSignUp from "./src/screens/CustomerSignUp";
-import {SET_NOTIFICATION, SET_PUSH_TOKEN, SET_NOTIFICATION_OPEN} from "./src/actions/types";
+import {SET_NOTIFICATION, SET_PUSH_TOKEN, SET_NOTIFICATION_OPEN, SET_NOTIFICATION_COUNT} from "./src/actions/types";
 import * as Notifications from "expo-notifications";
 import {registerForPushNotificationsAsync} from "./src/notifications";
 import ProviderSignUp from "./src/screens/ProviderSignUp";
 import CustomerTabs from "./src/screens/CustomerTabs";
 import ProviderTabs from "./src/screens/ProviderTabs";
 import config from "./src/config";
+import { cleangigApi } from './src/network';
 
 const Stack = createNativeStackNavigator();
 
@@ -55,19 +56,24 @@ export default function App() {
     });
     const notificationListener = useRef();
     const responseListener = useRef();
+    const notificationState =  store.getState().notification;
 
-    useEffect(() => {
+    useEffect( async () => {
+
+
         
+
         registerForPushNotificationsAsync().then(token => {
             // console.log('token', token)
             store.dispatch({type: SET_PUSH_TOKEN, payload: token});
         });
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-            console.log('addNotificationReceivedListener', notification)
+            // console.log('addNotificationReceivedListener', notification)
             
             store.dispatch({type: SET_NOTIFICATION, payload: notification.request.content.data});
         });
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+           
             // console.log('addNotificationResponseReceivedListener', response)
             store.dispatch({type: SET_NOTIFICATION_OPEN, payload: response.notification.request.content.data});
 

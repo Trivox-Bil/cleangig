@@ -4,7 +4,7 @@ import counties from "../data/counties";
 import {formatDate} from "../helpers";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
-import {sotApi} from "../network";
+import {cleangigApi, sotApi} from "../network";
 import FetchContent from "./FetchContent";
 import Proposal from "./Proposal";
 
@@ -22,9 +22,9 @@ export default function ({job, onDelete, pictures, navigation}) {
         formData.append('job', job.id);
         formData.append('provider', proposal.provider.id);
         formData.append('proposal', proposal.id);
-        console.log(formData)
+
         const { data: result } = await sotApi.post(`proposals/approve`, formData);
-        console.log(result);
+        
         job.status='assigned';
         if (result.token) {
             const message = {
@@ -34,6 +34,14 @@ export default function ({job, onDelete, pictures, navigation}) {
                 body: `En köpare har tilldelat dig ett jobb. Du kan se jobbet på fliken historik.`,
                 data: {type: 'assigned-job', details: {job: job}},
             };
+            const notificationData = new FormData();
+            notificationData.append('customer_id', job.customer.id);
+            notificationData.append('job_id', job.id);
+            notificationData.append('content', message.body);
+            notificationData.append('title', message.title);
+            notificationData.append('type', `assigned-job`);
+            const { data: notification } = await cleangigApi.post(`providers/${proposal.provider.id}/notification`, notificationData);
+            message.data.notification_id = notification.id;
             await fetch('https://exp.host/--/api/v2/push/send', {
                 method: 'POST',
                 headers: {

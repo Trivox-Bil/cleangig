@@ -23,7 +23,7 @@ export default function ({ route, navigation }) {
 
     let filter = {
         location: null,
-        service: null,
+        service: route.params?.service?.id,
     };
 
     const filterOptions = [
@@ -36,17 +36,17 @@ export default function ({ route, navigation }) {
                 </Picker>
             ),
         },
-        {
-            title: 'Tjänster',
-            component: (
-                <Picker selectedValue={filterService} style={{ flex: 1 }} onValueChange={setFilterService}>
-                    <Picker.Item label="Alla tjänster" value={false} />
-                    {services.map((item, index) => (
-                        <Picker.Item label={item.name} value={item.id} key={index} />
-                    ))}
-                </Picker>
-            ),
-        },
+        // {
+        //     title: 'Tjänster',
+        //     component: (
+        //         <Picker selectedValue={filterService} style={{ flex: 1 }} onValueChange={setFilterService}>
+        //             <Picker.Item label="Alla tjänster" value={false} />
+        //             {services.map((item, index) => (
+        //                 <Picker.Item label={item.name} value={item.id} key={index} />
+        //             ))}
+        //         </Picker>
+        //     ),
+        // },
     ];
 
     const resetFilter = () => {
@@ -147,7 +147,10 @@ export default function ({ route, navigation }) {
                 <View style={styles.mainBody}>
                     {providers.map((provider, i) => (
                         <ListItem key={i}
-                            onPress={() => navigation.push('ProviderProfile', { provider: provider.id })}>
+                        // onPress={() => navigation.push('ProviderProfile', { provider: provider.id })}
+                        >
+                            <IconButton onPress={() => selectProvider(provider)}
+                                icon={<Icon as={<FontAwesome5 name={`${provider.selected ? "check-circle" : "circle"}`} />} size="sm" color="light.400" />} />
                             <Image
                                 source={{ uri: provider.picture }}
                                 style={{ width: 50, height: 50, borderRadius: 25, marginHorizontal: 10 }} />
@@ -155,8 +158,8 @@ export default function ({ route, navigation }) {
                                 <ListItem.Title>{provider.name}</ListItem.Title>
                                 <ListItem.Subtitle>{provider.county_code ? providerCountyName(provider.county_code) : 'Plats ej specificerad'}</ListItem.Subtitle>
                             </ListItem.Content>
-                            <IconButton onPress={() => selectProvider(provider)}
-                                icon={<Icon as={<FontAwesome5 name={`${provider.selected ? "check-circle" : "circle"}`} />} size="sm" color="light.400" />} />
+                            <IconButton onPress={() => navigation.push('ProviderProfile', { provider: provider.id })}
+                                icon={<Icon as={<FontAwesome5 name="info-circle" />} size="sm" color="light.400" />} />
                         </ListItem>
                     ))}
                 </View>
