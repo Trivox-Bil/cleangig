@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import {cleangigApi} from "../../../network";
-import {useSelector} from "react-redux";
-import {Center, FlatList, Heading, HStack, Image, Pressable, Text, VStack} from "native-base";
+import React, { useState, useEffect } from 'react';
+import { cleangigApi } from "../../../network";
+import { useSelector } from "react-redux";
+import { Badge, Center, FlatList, Heading, HStack, Image, Pressable, Text, VStack } from "native-base";
 import FetchContent from "../../../components/FetchContent";
 import AppBar from "../../../components/AppBar";
 
-export default function ({navigation}) {
+export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
     const [loading, setLoading] = useState(true);
     const [jobs, setJobs] = useState(jobs);
@@ -20,27 +20,38 @@ export default function ({navigation}) {
         setLoading(true);
         // const {data} = await cleangigApi.get(`customers/${user.id}/chats`);
         // console.log(data)
-        const {data} = await cleangigApi.get(`customers/${user.id}/jobs`);
-        setJobs(data.jobs.filter(j => ['assigned'].includes(j.status)));
+        // const {data} = await cleangigApi.get(`customers/${user.id}/jobs`);
+        // setJobs(data.jobs.filter(j => ['assigned'].includes(j.status)));
+        const { data } = await cleangigApi.get(`customer/${user.id}/chatlists`);
+        setJobs(data.jobs);
         setLoading(false);
     }
 
-    function ListItem({item: job}) {
-        return <Pressable _pressed={{bg: 'gray.200'}} px={2} space={2} borderBottomWidth={1} borderColor="#ccc"
-                          onPress={() => navigation.navigate('Chat', {job})}>
-            <HStack alignItems="center">
-                <Image source={{uri: job.provider.picture}} w={20} h={20} m={4} rounded="full" borderColor="accent.400"
-                       borderWidth={2} alt=" "/>
-                <VStack space={2}>
-                    <Heading size="sm">{job.provider.name}</Heading>
-                    <Text>{job.title}</Text>
-                </VStack>
+    function ListItem({ item: job }) {
+        return <Pressable _pressed={{ bg: 'gray.200' }} px={2} space={2} borderBottomWidth={1} borderColor="#ccc"
+            onPress={() => navigation.navigate('Chat', { job })}>
+            <HStack justifyContent="space-between">
+                <HStack alignItems="center">
+                    <Image source={{ uri: job.provider.picture }} w={20} h={20} m={4} rounded="full" borderColor="accent.400"
+                        borderWidth={2} alt=" " />
+                    <VStack space={2}>
+                        <Heading size="sm">{job.provider.name}</Heading>
+                        <Text>{job.title}</Text>
+                    </VStack>
+                </HStack>
+                {
+                    job.sender == '0' && job.read_status == 'unread' &&
+                    <VStack justifyContent="center" mr={4}>
+                        <Badge size="5" bgColor="#ff7e1a" borderRadius={50}  ></Badge>
+                    </VStack>
+                }
+
             </HStack>
         </Pressable>
     }
 
     return <>
-        <AppBar screenTitle="Chatt" navigation={navigation}/>
+        <AppBar screenTitle="Chatt" navigation={navigation} />
 
         <FetchContent fetch={fetchProjects}>
             <FlatList

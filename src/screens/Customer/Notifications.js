@@ -45,7 +45,7 @@ const Notification = ({ navigation }) => {
                 navigation.navigate("Job", { screen: "Job", params: { id: notification.job_id } })
                 break;
             case 'message':
-                navigation.navigate("ChatMain", { screen: "Chat", params: { id: notification.job_id } });
+                navigation.navigate("ChatMain", { screen: "Chat", params: { id: notification.job_id, provider_id: notification.provider_id } });
                 break;
             default: 
                 break;

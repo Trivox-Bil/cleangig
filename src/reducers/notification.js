@@ -12,14 +12,12 @@ export default function (state = initialState, action) {
         case SET_PUSH_TOKEN:
             return {...state, pushToken: action.payload};
         case SET_NOTIFICATION:
-            console.log("action", action)
             return {...state, notification: action.payload, count: action.payload.count};
         case SET_NOTIFICATION_OPEN:
             return {...state, notification: action.payload, isOpen: true};
         case SET_NOTIFICATION_OPENED:
             return {...state, isOpen: false};
         case SET_NOTIFICATION_COUNT:
-            console.log("action", action)
             return {...state, count: action.payload};
         default:
             return state;

@@ -36,6 +36,10 @@ export default function ({ navigation, route }) {
   const [sending, setSending] = useState(false);
   const listRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclose();
+  let provider_id = route.params.provider_id
+    || (job.current !== null
+      ? job.current.candidate != null && job.current.candidate != ''
+        ? job.current.candidate : job.current.provider_id : 0)
 
   useEffect(() => {
     if (job.current == null && route.params.id) {
@@ -51,10 +55,16 @@ export default function ({ navigation, route }) {
   }
 
   async function loadChats() {
-    setIsLoading(true);
-    const { data } = await cleangigApi.get(`jobs/${job.current?.id}/messages`);
-    setMessages(data.chats.map((m) => ({ ...m, user })));
-    setIsLoading(false);
+    if (job.current !== null) {
+      setIsLoading(true);
+      // const { data } = await cleangigApi.get(`jobs/${job.current?.id}/messages`);
+      // setMessages(data.chats.map((m) => ({ ...m, user })));
+
+      const { data } = await cleangigApi.get(`messages/${job.current.id}/${user.id}/${provider_id}`);
+      await cleangigApi.get(`read_messages/${job.current.id}/0`);
+      setMessages(data.chats);
+      setIsLoading(false);
+    }
   }
 
   async function choosePicture() {
@@ -101,46 +111,52 @@ export default function ({ navigation, route }) {
   }
 
   async function sendMessage() {
-    setSending(true);
-    // console.log("sending");
-    const request = new FormData();
-    request.append("sender", user.id);
-    request.append("content", newMessage);
-    request.append("attachment", attachment);
-    // console.log('job', job)
-    await cleangigApi.post(`jobs/${job.current.id}/messages`, request);
-    if (job.current.provider || job.current.provider_notification_token) {
-      const message = {
-        to: job.current.provider ? job.current.provider.notification_token : job.current.provider_notification_token,
-        sound: 'default',
-        title: `Du har ett nytt meddelande`,
-        body: `${user.fname} ${user.lname}: ${newMessage}`,
-        data: { type: 'message', details: { job: job.current } },
-      };
-      const notificationData = new FormData();
-      notificationData.append('customer_id', job.current.customer.id);
-      notificationData.append('job_id', job.current.id);
-      notificationData.append('content', message.body);
-      notificationData.append('title', message.title);
-      notificationData.append('type', `message`);
-      console.log(notificationData)
-      const { data: notification } = await cleangigApi.post(`providers/${job.current.provider.id}/notification`, notificationData);
-      message.data.notification_id = notification.id;
-      console.log('message ===>>', message)
-      await fetch('https://exp.host/--/api/v2/push/send', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Accept-encoding': 'gzip, deflate',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(message),
-      });
+    if (newMessage.trim() !== '') {
+      setSending(true);
+      // console.log("sending");
+      const request = new FormData();
+      // request.append("sender", user.id);
+      // request.append("content", newMessage);
+      // request.append("attachment", attachment);
+      // console.log('job', job)
+      // await cleangigApi.post(`jobs/${job.current.id}/messages`, request);
+      request.append('sender', 1);
+      request.append('provider_id', provider_id);
+      request.append('customer_id', user.id);
+      request.append('content', newMessage);
+      request.append('file', attachment);
+      await cleangigApi.post(`messages/${job.current.id}`, request);
+      if (job.current.provider || job.current.provider_notification_token) {
+        const message = {
+          to: job.current.provider ? job.current.provider.notification_token : job.current.provider_notification_token,
+          sound: 'default',
+          title: `Du har ett nytt meddelande`,
+          body: `${user.fname} ${user.lname}: ${newMessage}`,
+          data: { type: 'message', details: { job: job.current } },
+        };
+        const notificationData = new FormData();
+        notificationData.append('customer_id', user.id);
+        notificationData.append('job_id', job.current.id);
+        notificationData.append('content', message.body);
+        notificationData.append('title', message.title);
+        notificationData.append('type', `message`);
+        const { data: notification } = await cleangigApi.post(`providers/${provider_id}/notification`, notificationData);
+        message.data.notification_id = notification.id;
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(message),
+        });
+      }
+      setSending(false);
+      setNewMessage("");
+      setAttachment("");
+      await loadChats();
     }
-    setSending(false);
-    setNewMessage("");
-    setAttachment("");
-    await loadChats();
   }
 
   return (
@@ -168,7 +184,7 @@ export default function ({ navigation, route }) {
               onRefresh={loadChats}
               data={messages}
               keyExtractor={(job) => job.id}
-              renderItem={ChatItem}
+              renderItem={({ item }) => <ChatItem message={item} user={user}></ChatItem>}
               ref={listRef}
               onContentSizeChange={() =>
                 listRef.current && listRef.current.scrollToEnd({ animated: true })
