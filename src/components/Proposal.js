@@ -30,7 +30,7 @@ export default function ({onAssign, proposal, navigation, job}) {
                         containerStyle={{flex: 1, marginRight: 5}}
                         buttonStyle={{borderColor: '#ff7e1a'}}
                         titleStyle={{color: '#ff7e1a'}}
-                        onPress={() => navigateTo('ChatMain', 'Chat', {job})}
+                        onPress={() => navigateTo('ChatMain', 'Chat', {job: job, provider_id: proposal.provider.id})}
                     />
                     <Button
                         title="Tilldela"

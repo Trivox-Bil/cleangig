@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import SafeScrollView from "../components/SafeScrollView";
 import {
     Alert,
@@ -46,6 +46,12 @@ export default function ({navigation}) {
     const [stage2Error, setStage2Error] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const dispatch = useDispatch();
+    const lNameRef = useRef(null);
+    const emailRef = useRef();
+    const phoneRef = useRef();
+    const passwordRef = useRef();
+    const passConfirmRef = useRef();
+    const streetRef = useRef();
 
     useEffect(() => {
         // console.log('pushToken ===>>>', pushToken)
@@ -105,28 +111,65 @@ export default function ({navigation}) {
     const part1 = <VStack bg="#fff" p={4} space={2} m={5} rounded="md" shadow={2}>
         <FormControl isRequired>
             <FormControl.Label>Förnamn</FormControl.Label>
-            <Input value={firstName} onChangeText={setFirstName} autoCompleteType="name"/>
+            <Input 
+                value={firstName} 
+                blurOnSubmit={false} 
+                onSubmitEditing={() => lNameRef.current.focus()} 
+                onChangeText={setFirstName}
+                autoCompleteType="name"/>
         </FormControl>
         <FormControl>
             <FormControl.Label>Efternamn</FormControl.Label>
-            <Input value={lastName} onChangeText={setLastName} autoCompleteType="name"/>
+            <Input 
+                value={lastName} 
+                ref={(input) => lNameRef.current = input}
+                onSubmitEditing={() => emailRef.current.focus()} 
+                blurOnSubmit={false} 
+                onChangeText={setLastName} 
+                autoCompleteType="name"/>
         </FormControl>
         <FormControl isRequired>
             <FormControl.Label>E-post adress</FormControl.Label>
-            <Input value={email} onChangeText={setEmail} autoCompleteType="email"/>
+            <Input 
+                value={email} 
+                onChangeText={setEmail} 
+                autoCompleteType="email"
+                ref={(input) => emailRef.current = input}
+                onSubmitEditing={() => phoneRef.current.focus()} 
+                blurOnSubmit={false} 
+            />
         </FormControl>
         <FormControl isRequired>
             <FormControl.Label>Telefonnummer</FormControl.Label>
-            <Input value={phone} onChangeText={setPhone} autoCompleteType="tel" keyboardType="numeric"/>
+            <Input 
+                value={phone} 
+                onChangeText={setPhone} 
+                autoCompleteType="tel" 
+                keyboardType="numeric"
+                ref={(input) => phoneRef.current = input}
+                onSubmitEditing={() => passwordRef.current.focus()} 
+                blurOnSubmit={false} 
+            />
         </FormControl>
         <FormControl isRequired>
             <FormControl.Label>Lösenord</FormControl.Label>
-            <Input value={password} onChangeText={setPassword} autoCompleteType="password" secureTextEntry/>
+            <Input 
+                value={password}
+                onChangeText={setPassword} 
+                autoCompleteType="password" 
+                ref={(input) => passwordRef.current = input}
+                onSubmitEditing={() => passConfirmRef.current.focus()} 
+                blurOnSubmit={false} 
+                secureTextEntry/>
         </FormControl>
         <FormControl isRequired>
             <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
-            <Input value={passConfirm} onChangeText={setPassConfirm} autoCompleteType="password"
-                   secureTextEntry/>
+            <Input 
+                value={passConfirm} 
+                onChangeText={setPassConfirm} 
+                autoCompleteType="password"
+                ref={(input) => passConfirmRef.current = input}
+                secureTextEntry/>
         </FormControl>
 
         <Collapse isOpen={stage1Error.length > 0}>
@@ -175,11 +218,20 @@ export default function ({navigation}) {
             </FormControl>
             <FormControl>
                 <FormControl.Label>Postnummer</FormControl.Label>
-                <Input value={postalCode} onChangeText={setPostalCode}/>
+                <Input 
+                    value={postalCode} 
+                    onChangeText={setPostalCode}
+                    onSubmitEditing={() => streetRef.current.focus()} 
+                    blurOnSubmit={false} 
+                />
             </FormControl>
             <FormControl>
                 <FormControl.Label>Gatuadress</FormControl.Label>
-                <Input value={street} onChangeText={setStreet} autoCompleteType="street-address"/>
+                <Input 
+                    value={street}  
+                    onChangeText={setStreet}
+                    ref={(input) => streetRef.current = input}
+                    autoCompleteType="street-address"/>
             </FormControl>
             <FormControl>
                 <Checkbox value={terms} onChange={setTerms} colorScheme="accent" my={4}>

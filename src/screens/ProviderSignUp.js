@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useRef } from 'react';
 import SafeScrollView from "../components/SafeScrollView";
 import {
     Alert,
@@ -20,12 +20,12 @@ import {
     VStack
 } from "native-base";
 import validator from "validator";
-import {cleangigApi} from "../network";
-import {useDispatch, useSelector} from "react-redux";
-import {login} from "../actions/user";
-import {resetRoute} from "../helpers";
+import { cleangigApi } from "../network";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../actions/user";
+import { resetRoute } from "../helpers";
 
-export default function ({navigation}) {
+export default function ({ navigation }) {
     const pushToken = useSelector(state => state.notification.pushToken);
     const [stage, setStage] = useState(1);
     const [businessName, setBusinessName] = useState('');
@@ -40,6 +40,10 @@ export default function ({navigation}) {
     const [stage2Error, setStage2Error] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const dispatch = useDispatch();
+    const contactNameRef = useRef(null);
+    const orgNumberRef = useRef(null);
+    const passwordRef = useRef();
+    const passConfirmRef = useRef();
 
     function validateStage1() {
         if ([businessName, contactName, orgNumber].some(field => field.trim() === '')) {
@@ -73,7 +77,7 @@ export default function ({navigation}) {
             request.append('password', password);
             request.append('insurance', insurance);
             request.append('organisation_number', orgNumber);
-            const {data: response} = await cleangigApi.post('providers', request);
+            const { data: response } = await cleangigApi.post('providers', request);
             if (response.success) {
                 request.append('pushToken', pushToken);
                 dispatch(login(request));
@@ -92,15 +96,31 @@ export default function ({navigation}) {
     const part1 = <VStack bg="#fff" p={4} space={2} m={5} rounded="md" shadow={2}>
         <FormControl isRequired>
             <FormControl.Label>Ditt företags namn</FormControl.Label>
-            <Input value={businessName} onChangeText={setBusinessName}/>
+            <Input
+                value={businessName}
+                onChangeText={setBusinessName}
+                blurOnSubmit={false}
+                onSubmitEditing={() => contactNameRef.current.focus()}
+            />
         </FormControl>
         <FormControl isRequired>
             <FormControl.Label>Konto ägare</FormControl.Label>
-            <Input value={contactName} onChangeText={setContactName} autoCompleteType="name"/>
+            <Input
+                value={contactName}
+                onChangeText={setContactName}
+                ref={(input) => contactNameRef.current = input}
+                onSubmitEditing={() => orgNumberRef.current.focus()}
+                blurOnSubmit={false}
+                autoCompleteType="name" />
         </FormControl>
         <FormControl isRequired>
             <FormControl.Label>Organisationsnummer</FormControl.Label>
-            <Input value={orgNumber} onChangeText={setOrgNumber} keyboardType="numeric"/>
+            <Input
+                value={orgNumber}
+                onChangeText={setOrgNumber}
+                ref={(input) => orgNumberRef.current = input}
+                keyboardType="numeric"
+            />
         </FormControl>
         <FormControl>
             <Checkbox value={insurance} onChange={setInsurance}>Försäkring?</Checkbox>
@@ -109,15 +129,15 @@ export default function ({navigation}) {
         <Collapse isOpen={stage1Error.length > 0}>
             <Alert status="error">
                 <HStack space={4} flexWrap="wrap">
-                    <Alert.Icon/>
+                    <Alert.Icon />
                     <Heading size="sm">Fel</Heading>
                     <Text>{stage1Error}</Text>
-                    <IconButton icon={<CloseIcon size="xs"/>} onPress={() => setStage1Error('')}/>
+                    <IconButton icon={<CloseIcon size="xs" />} onPress={() => setStage1Error('')} />
                 </HStack>
             </Alert>
         </Collapse>
 
-        <Button _text={{color: '#fff'}} alignSelf="stretch" onPress={validateStage1}>
+        <Button _text={{ color: '#fff' }} alignSelf="stretch" onPress={validateStage1}>
             Bekräfta
         </Button>
     </VStack>;
@@ -131,23 +151,41 @@ export default function ({navigation}) {
                 <Text fontSize="md">Försäkring - {insurance ? 'Ja' : 'Nej'}</Text>
                 <Text fontSize="md">{email}</Text>
             </VStack>
-            <Divider orientation="vertical" mx={2} bg="brand.700"/>
+            <Divider orientation="vertical" mx={2} bg="brand.700" />
             <Button variant="ghost" colorScheme="brand" onPress={() => setStage(1)}>Ändra</Button>
         </HStack>
 
         <VStack bg="#fff" p={4} space={2} m={5} rounded="md" shadow={2}>
             <FormControl isRequired>
                 <FormControl.Label>E-post adress</FormControl.Label>
-                <Input value={email} onChangeText={setEmail} autoCompleteType="email"/>
+                <Input
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCompleteType="email"
+                    onSubmitEditing={() => passwordRef.current.focus()}
+                    blurOnSubmit={false}
+                />
             </FormControl>
             <FormControl isRequired>
                 <FormControl.Label>Lösenord</FormControl.Label>
-                <Input value={password} onChangeText={setPassword} autoCompleteType="password" secureTextEntry/>
+                <Input
+                    value={password}
+                    onChangeText={setPassword}
+                    autoCompleteType="password"
+                    ref={(input) => passwordRef.current = input}
+                    onSubmitEditing={() => passConfirmRef.current.focus()}
+                    blurOnSubmit={false}
+                    secureTextEntry
+                />
             </FormControl>
             <FormControl isRequired>
                 <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
-                <Input value={passConfirm} onChangeText={setPassConfirm} autoCompleteType="password"
-                       secureTextEntry/>
+                <Input
+                    value={passConfirm}
+                    onChangeText={setPassConfirm}
+                    ref={(input) => passConfirmRef.current = input}
+                    autoCompleteType="password"
+                    secureTextEntry />
             </FormControl>
             <FormControl>
                 <Checkbox value={terms} onChange={setTerms} colorScheme="accent" my={4}>
@@ -158,16 +196,16 @@ export default function ({navigation}) {
             <Collapse isOpen={stage2Error.length > 0}>
                 <Alert status="error">
                     <HStack space={4} flexWrap="wrap">
-                        <Alert.Icon/>
+                        <Alert.Icon />
                         <Heading size="sm">Fel</Heading>
                         <Text>{stage2Error}</Text>
-                        <IconButton icon={<CloseIcon size="xs"/>} onPress={() => setStage2Error('')}/>
+                        <IconButton icon={<CloseIcon size="xs" />} onPress={() => setStage2Error('')} />
                     </HStack>
                 </Alert>
             </Collapse>
 
             <Button colorScheme="brand" disabled={stage2Error.length} isLoading={submitting} onPress={validateStage2}
-                    isLoadingText="Laddar, vänta..." alignSelf="stretch" _disabled={{bg: 'light.300'}}>
+                isLoadingText="Laddar, vänta..." alignSelf="stretch" _disabled={{ bg: 'light.300' }}>
                 Slutföra registreringen
             </Button>
         </VStack>
@@ -176,7 +214,7 @@ export default function ({navigation}) {
     return <SafeScrollView flex={1}>
         <VStack safeArea mb={100}>
             <VStack alignItems="center" my={4}>
-                <Image source={require("../../assets/logo-small.png")} h={150} alt="CleanGig" resizeMode="center"/>
+                <Image source={require("../../assets/logo-small.png")} h={150} alt="CleanGig" resizeMode="center" />
             </VStack>
 
             <VStack mx={2} mt={5} space={2} alignItems="center">
@@ -190,7 +228,7 @@ export default function ({navigation}) {
             </VStack>
 
             <Center>
-                <Progress size="2xl" my={4} value={stage * 50} w={200} colorScheme="brand"/>
+                <Progress size="2xl" my={4} value={stage * 50} w={200} colorScheme="brand" />
             </Center>
 
             {stage === 1 ? part1 : part2}

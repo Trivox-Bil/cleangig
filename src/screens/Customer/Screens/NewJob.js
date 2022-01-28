@@ -235,7 +235,7 @@ export default function ({ route, navigation }) {
 
           <FormControl isRequired>
             <FormControl.Label>Rubrik</FormControl.Label>
-            <Input ref={titleInput} value={title} onChangeText={setTitle} />
+            <Input ref={titleInput} onSubmitEditing={() => descInput.current.focus()} blurOnSubmit={false} value={title} onChangeText={setTitle} />
           </FormControl>
 
           <FormControl isRequired>
@@ -324,7 +324,7 @@ export default function ({ route, navigation }) {
               <FormControl isRequired>
                 <FormControl.Label>Stad</FormControl.Label>
                 <Select selectedValue={city} onValueChange={setCity}>
-                  {county.cities.map((city, i) => {
+                  {county.cities.sort().map((city, i) => {
                     return <Select.Item label={city} value={city} key={i} />;
                   })}
                 </Select>

@@ -9,11 +9,19 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
     const [warnDelete, setWarnDelete] = useState(false);
 
     function goToChat() {
-        navigation.navigate('ChatMain', {screen: 'Chat', params: {job}});
+        if (isProvider) {
+            navigation.navigate('Chat', { screen: 'Chat', params: { job } })
+        } else {
+            navigation.navigate('ChatMain', {screen: 'Chat', params: {job}});
+        }
     }
 
     function goToProvider() {
         navigation.navigate('Browse', {screen: 'ProviderProfile', params: {provider: job.provider.id}});
+    }
+
+    function goToCustomer() {
+        navigation.navigate('customer', {customer: job.customer_id});
     }
 
     return <VStack m={4} space={4}>
@@ -31,8 +39,9 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
 
         <HStack space={4} justifyContent="center" flexWrap="wrap">
             <Button variant="link" onPress={goToChat}>Chatt</Button>
-            {isProvider || <Button variant="link" onPress={goToProvider}>Leverantör</Button>}
-            {isProvider || <Button variant="link" colorScheme="dark" onPress={() => setWarnDelete(true)}>
+            {!isProvider && <Button variant="link" onPress={goToProvider}>Leverantör</Button>}
+            {isProvider && <Button variant="link" onPress={goToCustomer}>Kund</Button>}
+            {!isProvider && <Button variant="link" colorScheme="dark" onPress={() => setWarnDelete(true)}>
                 Radera
             </Button>}
             {isProvider && <Button variant="link" onPress={() => navigation.navigate('CloseJob', {job})}>

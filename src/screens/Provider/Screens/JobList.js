@@ -39,13 +39,18 @@ export default function ({ navigation }) {
 
     const filter = (status) => {
         statusFilter.current = status;
-        if (status === 'local') {
+         if (status === 'archived') {
+            setFilteredJobs(jobs.current.filter(job => job.archived));
+        } else {
+            setFilteredJobs(jobs.current.filter(job => !job.archived && provider.county_code.split(",").includes(job.county_code)));
+        }
+        /* if (status === 'local') {
             setFilteredJobs(jobs.current.filter(job => includes(provider.county_code.split(",") && !job.archived, job.county_code, 0)));
         } else if (status === 'archived') {
             setFilteredJobs(jobs.current.filter(job => job.archived));
         } else {
             setFilteredJobs(jobs.current.filter(job => !job.archived));
-        }
+        } */
     }
 
     return <VStack flex={1}>
@@ -63,7 +68,7 @@ export default function ({ navigation }) {
             <VStack flex={0.1}>
                 <JobStatusFilter value={statusFilter.current} onChange={(status) => {filter(status)}} options={[
                     { value: 'all', title: 'Allt' },
-                    { value: 'local', title: 'Via only local jobs' },
+                    // { value: 'local', title: 'Via only local jobs' },
                     { value: 'archived', title: 'Arkiverade jobb' },
                 ]} />
             </VStack>

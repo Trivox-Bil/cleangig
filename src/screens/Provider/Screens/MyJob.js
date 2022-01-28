@@ -45,7 +45,7 @@ export default function ({navigation, route}) {
 
         <SafeScrollView flex={1} paddingBottom={20}>
             {job && job.status === 'assigned' && <>
-                <AssignedJob job={job} pictures={pictures} navigation={navigation} onDelete={deleteJob} isProvider/>
+                <AssignedJob job={job} pictures={pictures} navigation={navigation} onDelete={deleteJob} isProvider={true}/>
             </>}
 
             {job && job.status === 'done' && <ClosedJob id={job.id} pictures={pictures}/>}  

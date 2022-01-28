@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Card, Image, Input, ListItem, Text } from 'react-native-elements';
 import { cleangigApi, sotApi } from "../../../network";
@@ -20,6 +20,7 @@ export default function ({ route, navigation }) {
     const [price, setPrice] = useState(50);
     const [pictures, setPictures] = useState([]);
     const [sendingProposal, setSendingProposal] = useState(false);
+    const priceRef = useRef();
 
     useEffect(() => {
         let pictures;
@@ -154,12 +155,15 @@ export default function ({ route, navigation }) {
                                     value={proposal}
                                     onChangeText={setProposal}
                                     multiline
+                                    onSubmitEditing={() => priceRef.current.focus()}
+                                    blurOnSubmit={false}
                                     numberOfLines={4}
                                 />
                                 <Input
                                     placeholder="Pris"
                                     label="Pris(SEK)"
                                     value={price}
+                                    ref={(input) => priceRef.current = input}
                                     onChangeText={setPrice}
                                     keyboardType="numeric"
                                 />
