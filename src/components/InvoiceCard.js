@@ -67,14 +67,11 @@ export default function ({invoice, job}) {
         </Card>
 
         <Button
-            title="Ladda ner som PDF"
-            icon={{type: 'font-awesome', name: 'file-pdf-o', color: '#fa0f00'}}
+            title="Betala"
+            // icon={{type: 'font-awesome', name: 'file-pdf-o', color: '#fa0f00'}}
             type="clear"
-            titleStyle={{color: '#fa0f00'}}
-            onPress={() => createAndSavePdf(
-                invoiceHtml({job, invoice}),
-                `Faktura_${job.id}_${job.provider.id}`
-            )}
+            titleStyle={{color: '#ff7e1a'}}
+            onPress={() => {}}
             containerStyle={{marginTop: 30}}
         />
     </>;

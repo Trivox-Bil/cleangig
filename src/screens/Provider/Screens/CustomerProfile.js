@@ -44,7 +44,9 @@ export default function ({navigation, route}) {
                     <View style={{marginLeft: 20, marginTop: 10}}>
                         <Text style={{fontSize: 18, fontWeight: 'bold', color: colors.blue}}>{customer.fname} {customer.lname}</Text>
                         <Text style={{marginTop: 5}}>{customer.email}</Text>
-                        <Text>+46 {customer.phone_number}</Text>
+                        <Text>{customer.phone_number}</Text>
+                        { console.log("customer", customer) /* <Text></Text> */}
+                        <Text>{customer.street}, {customer.postal_code} {customer.city}</Text>
                         <Text>{customer.county && counties.length ? Array.from(counties).find(c => c.code === customer.county.toUpperCase())?.name : (
                             <Text style={{fontStyle: 'italic', color: '#777'}}>Plats har inte ställts in</Text>)}</Text>
                     </View>

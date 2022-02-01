@@ -8,6 +8,7 @@ import voca from "voca";
 import AssignedJob from "../../../components/AssignedJob";
 import SafeScrollView from "../../../components/SafeScrollView";
 import ClosedJob from "../../../components/ClosedJob";
+import services from "../../../data/services";
 
 export default function ({ navigation, route }) {
     const [job, setJob] = useState(route.params.data || null);
@@ -53,7 +54,7 @@ export default function ({ navigation, route }) {
     }
 
     return <VStack flex={1}>
-        <AppBar screenTitle={job ? job.title : 'loading...'} navigation={navigation} backButton backButtonHandler={_backButtonHandler} />
+        <AppBar screenTitle={job ? services.find((s) => s.id === job.service_id).name : 'loading...'} navigation={navigation} backButton backButtonHandler={_backButtonHandler} />
 
         <SafeScrollView flex={1}>
             {job && job.status === 'pending' && <PendingJob navigation={navigation} pictures={pictures} job={job} onDelete={deleteJob} isNew={isNew} />}

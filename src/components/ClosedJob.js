@@ -38,6 +38,7 @@ export default function ({id, pictures}) {
             )}
 
             <InvoiceCard job={job} invoice={invoice}/>
+
         </VStack>
     ) : null;
 }

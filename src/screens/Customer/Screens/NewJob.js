@@ -366,10 +366,10 @@ export default function ({ route, navigation }) {
           </FormControl>
 
           <FormControl>
-            <FormControl.Label>Synlighet</FormControl.Label>
+            {/* <FormControl.Label>Synlighet</FormControl.Label> */}
             <VStack>
               <CheckBox
-                title="Låt leverantörer svara mig"
+                title="Låt företag svara mig"
                 checkedIcon="dot-circle-o"
                 uncheckedIcon="circle-o"
                 checked={visibility === "public"}
@@ -377,7 +377,7 @@ export default function ({ route, navigation }) {
                 onPress={() => setVisibility("public")}
               />
               <CheckBox
-                title="Jag vill välja en specifikt"
+                title="Välj vilka företag"
                 checkedIcon="dot-circle-o"
                 uncheckedIcon="circle-o"
                 checked={visibility === "private"}
@@ -392,7 +392,7 @@ export default function ({ route, navigation }) {
               <>
                 <Pressable bg="light.200" p={4} alignItems="center" rounded="md" _pressed={{ bg: 'dark.700' }}
                   onPress={chooseCompany}>
-                  <Text fontSize="md">välj företag</Text>
+                  <Text fontSize="md">Välj företag</Text>
                 </Pressable>
                 {/* {selectedProviders.map((provider, i) => ( */}
                 <View style={{ marginTop: 15 }}>

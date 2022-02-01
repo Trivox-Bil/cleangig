@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { cleangigApi } from "../../../network";
+import { cleangigApi, sotApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
 import { useSelector } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
@@ -26,12 +26,27 @@ export default function ({ navigation, route }) {
     const [isSendDisabled, setisSendDisabled] = useState(true);
     const listRef = useRef();
     const { isOpen, onOpen, onClose } = useDisclose();
+    const [jobPrice, setJobPrice] = useState(0);
 
     useEffect(() => {
         if (job.current == null && route.params.id) {
             fetchJob().then();
+            fetchProposals(route.params.id)
+        } else {
+            fetchProposals(job.current.id)
         }
     }, [job.current])
+
+    const fetchProposals = async (id) => {
+        const { data: result } = await sotApi.get(`proposals/get_all?job=${id}`);
+        if (result.success) {
+            result.proposals.forEach(proposal => {
+                if (proposal?.provider?.id === user.id) {
+                    setJobPrice(proposal.price);
+                }
+            });
+        }
+    };
 
     async function fetchJob() {
         const { data } = await cleangigApi.get(`jobs/${route.params.id}`);
@@ -139,9 +154,14 @@ export default function ({ navigation, route }) {
         }
     }
 
+    function _backButtonHandler() {
+        navigation.replace('Provider', { screen: 'Chat' });
+    }
+
     return <VStack flex={1} safeArea justifyContent="space-between">
-        <AppBar screenTitle={job.current?.title} navigation={navigation} backButton
-            customOptions={[{ action: loadChats, icon: 'sync' }]} />
+        <AppBar screenTitle={`${job.current?.title} (budget - ${jobPrice} KR)`} navigation={navigation} backButton
+            customOptions={[{ action: loadChats, icon: 'sync' }]}
+            backButtonHandler={_backButtonHandler} />
 
         <KeyboardAvoidingView
             h={{

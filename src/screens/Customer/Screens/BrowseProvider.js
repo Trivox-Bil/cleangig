@@ -118,7 +118,7 @@ export default function ({ route, navigation }) {
         <AppBar
             backButton
             navigation={navigation}
-            screenTitle="välj företag"
+            screenTitle="Välj företag"
             customOptions={[{ action: closeModal, icon: 'check' }]}
         />
 
@@ -136,13 +136,13 @@ export default function ({ route, navigation }) {
                     showLoading={searching}
                     onSubmitEditing={searchProviders}
                 />
-                <Button title="Filtrera" titleStyle={{ color: '#ff7000' }} type="clear"
+                {/* <Button title="Filtrera" titleStyle={{ color: '#ff7000' }} type="clear"
                     onPress={() => setShowFilter(true)} />
                 {filter.location && <Text style={{
                     color: '#ff7000',
                     fontSize: 14,
                     textAlign: 'center'
-                }}>Län: {county(filterLocation).name}</Text>}
+                }}>Län: {county(filterLocation).name}</Text>} */}
 
                 <View style={styles.mainBody}>
                     {providers.map((provider, i) => (

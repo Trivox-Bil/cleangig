@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { cleangigApi } from "../../../network";
+import { cleangigApi, sotApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
 import * as ImagePicker from "expo-image-picker";
 import { useSelector } from "react-redux";
@@ -36,6 +36,7 @@ export default function ({ navigation, route }) {
   const [sending, setSending] = useState(false);
   const listRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclose();
+  const [jobPrice, setJobPrice] = useState(0);
   let provider_id = route.params.provider_id
     || (job.current !== null
       ? job.current.candidate != null && job.current.candidate != ''
@@ -44,8 +45,28 @@ export default function ({ navigation, route }) {
   useEffect(() => {
     if (job.current == null && route.params.id) {
       fetchJob().then();
+      fetchProposals(route.params.id)
+    } else {
+      fetchProposals(job.current.id)
     }
   }, [job.current])
+
+  const fetchProposals = async (id) => {
+    const { data: result } = await sotApi.get(`proposals/get_all?job=${id}`);
+    if (result.success) {
+      let providerId = route.params.provider_id
+        || (job.current !== null
+          ? job.current.candidate != null && job.current.candidate != ''
+            ? job.current.candidate : job.current.provider_id : 0)
+
+        result.proposals.forEach(proposal => {
+            if ((providerId !== 0 && provider_id === proposal?.provider?.id)) {
+                console.log(proposal.price)
+                setJobPrice(proposal.price);
+            }
+        });
+    }
+};
 
   async function fetchJob() {
     const { data } = await cleangigApi.get(`jobs/${route.params.id}`);
@@ -159,13 +180,18 @@ export default function ({ navigation, route }) {
     }
   }
 
+  function _backButtonHandler() {
+    navigation.replace('Customer', { screen: 'ChatMain' });
+  }
+
   return (
 
     <VStack flex={1} safeArea justifyContent="space-between">
       <AppBar
-        screenTitle={job.current?.title}
+        screenTitle={`${job.current?.title} (budget - ${jobPrice} KR)`}
         navigation={navigation}
         backButton
+        backButtonHandler={_backButtonHandler}
         customOptions={[{ action: loadChats, icon: "sync" }]}
       />
       <KeyboardAvoidingView
