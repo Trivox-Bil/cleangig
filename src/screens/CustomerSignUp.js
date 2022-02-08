@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SafeScrollView from "../components/SafeScrollView";
 import {
     Alert,
@@ -14,8 +14,10 @@ import {
     HStack,
     IconButton,
     Image,
+    Icon,
     Input,
     Link,
+    KeyboardAvoidingView,
     Progress,
     Select,
     Text,
@@ -23,12 +25,13 @@ import {
 } from "native-base";
 import counties from "../data/counties";
 import validator from "validator";
-import {cleangigApi} from "../network";
-import {useDispatch, useSelector} from "react-redux";
-import {login} from "../actions/user";
-import {resetRoute} from "../helpers";
+import { cleangigApi } from "../network";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../actions/user";
+import { resetRoute } from "../helpers";
+import { FontAwesome } from '@expo/vector-icons';
 
-export default function ({navigation}) {
+export default function ({ navigation }) {
     const pushToken = useSelector(state => state.notification.pushToken);
     const [stage, setStage] = useState(1);
     const [firstName, setFirstName] = useState('');
@@ -41,7 +44,7 @@ export default function ({navigation}) {
     const [street, setStreet] = useState('');
     const [postalCode, setPostalCode] = useState('');
     const [phone, setPhone] = useState('+46 ');
-    const [terms, setTerms] = useState(false);
+    const [terms, setTerms] = useState(true);
     const [stage1Error, setStage1Error] = useState('');
     const [stage2Error, setStage2Error] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -52,6 +55,8 @@ export default function ({navigation}) {
     const passwordRef = useRef();
     const passConfirmRef = useRef();
     const streetRef = useRef();
+    const [passVisible, setPassVisible] = useState(false)
+    const [passConfVisible, setPassConfVisible] = useState(false)
 
     useEffect(() => {
         // console.log('pushToken ===>>>', pushToken)
@@ -92,10 +97,10 @@ export default function ({navigation}) {
             request.append('county', county);
             request.append('phone_number', phone);
             request.append('postal_code', postalCode);
-            const {data: response} = await cleangigApi.post('customers', request);
+            const { data: response } = await cleangigApi.post('customers', request);
             if (response.success) {
                 request.append('pushToken', pushToken);
-                dispatch(login('private' ,request));
+                dispatch(login('private', request));
                 navigation.dispatch(resetRoute('Customer'));
             } else {
                 setStage2Error('Ett fel inträffade. Försök igen');
@@ -108,180 +113,211 @@ export default function ({navigation}) {
         }
     }
 
-    const part1 = <VStack bg="#fff" p={4} space={2} m={5} rounded="md" shadow={2}>
-        <FormControl isRequired>
-            <FormControl.Label>Förnamn</FormControl.Label>
-            <Input 
-                value={firstName} 
-                blurOnSubmit={false} 
-                onSubmitEditing={() => lNameRef.current.focus()} 
-                onChangeText={setFirstName}
-                autoCompleteType="name"/>
-        </FormControl>
-        <FormControl>
-            <FormControl.Label>Efternamn</FormControl.Label>
-            <Input 
-                value={lastName} 
-                ref={(input) => lNameRef.current = input}
-                onSubmitEditing={() => emailRef.current.focus()} 
-                blurOnSubmit={false} 
-                onChangeText={setLastName} 
-                autoCompleteType="name"/>
-        </FormControl>
-        <FormControl isRequired>
-            <FormControl.Label>E-post adress</FormControl.Label>
-            <Input 
-                value={email} 
-                onChangeText={setEmail} 
-                autoCompleteType="email"
-                ref={(input) => emailRef.current = input}
-                onSubmitEditing={() => phoneRef.current.focus()} 
-                blurOnSubmit={false} 
-            />
-        </FormControl>
-        <FormControl isRequired>
-            <FormControl.Label>Telefonnummer</FormControl.Label>
-            <Input 
-                value={phone} 
-                onChangeText={setPhone} 
-                autoCompleteType="tel" 
-                keyboardType="numeric"
-                ref={(input) => phoneRef.current = input}
-                onSubmitEditing={() => passwordRef.current.focus()} 
-                blurOnSubmit={false} 
-            />
-        </FormControl>
-        <FormControl isRequired>
-            <FormControl.Label>Lösenord</FormControl.Label>
-            <Input 
-                value={password}
-                onChangeText={setPassword} 
-                autoCompleteType="password" 
-                ref={(input) => passwordRef.current = input}
-                onSubmitEditing={() => passConfirmRef.current.focus()} 
-                blurOnSubmit={false} 
-                secureTextEntry/>
-        </FormControl>
-        <FormControl isRequired>
-            <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
-            <Input 
-                value={passConfirm} 
-                onChangeText={setPassConfirm} 
-                autoCompleteType="password"
-                ref={(input) => passConfirmRef.current = input}
-                secureTextEntry/>
-        </FormControl>
+    const part1 =
+        <VStack>
+            <FormControl px="4" mb="5">
+                <FormControl.Label>Förnamn</FormControl.Label>
+                <Input
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    placeholder="Förnamn"
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                    InputLeftElement={<Icon as={<FontAwesome name="user" />} size="sm" m={2}
+                        color="#ff7e1a" />}
+                />
+            </FormControl>
+            <FormControl px="4" mb="5">
+                <FormControl.Label>Efternamn</FormControl.Label>
+                <Input
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    placeholder="Efternamn"
+                    borderWidth={1}
+                    value={lastName}
+                    onChangeText={setLastName}
+                    InputLeftElement={<Icon as={<FontAwesome name="user" />} size="sm" m={2}
+                        color="#ff7e1a" />}
+                />
+            </FormControl>
+            <FormControl px="4" mb="5">
+                <FormControl.Label>E-post</FormControl.Label>
+                <Input
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCompleteType="email"
+                    placeholder="E-postadress"
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                    InputLeftElement={<Icon as={<FontAwesome name="envelope" />} size="sm" m={2}
+                        color="#ff7e1a" />}
+                />
+            </FormControl>
+            <FormControl px="4" mb="5">
+                <FormControl.Label>Lösenord</FormControl.Label>
+                <Input
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    placeholder="Lösenord"
+                    borderWidth={1}
+                    value={password}
+                    onChangeText={setPassword}
+                    autoCompleteType="password"
+                    secureTextEntry={!passVisible}
+                    InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
+                        color="#ff7e1a" />}
+                    InputRightElement={<Icon as={<FontAwesome name={passVisible ? "eye" : "eye-slash"} />} onPress={() => setPassVisible(!passVisible)} size="sm" m={2}
+                        color="#bdbcb9" />}
+                />
+            </FormControl>
+            <FormControl px="4" mb="5">
+                <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
+                <Input
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    placeholder="Bekräfta lösenordet"
+                    borderWidth={1}
+                    value={passConfirm}
+                    onChangeText={setPassConfirm}
+                    autoCompleteType="password"
+                    secureTextEntry={!passConfVisible}
+                    InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
+                        color="#ff7e1a" />}
+                    InputRightElement={<Icon as={<FontAwesome name={passConfVisible ? "eye" : "eye-slash"} />} onPress={() => setPassConfVisible(!passConfVisible)} size="sm" m={2}
+                        color="#bdbcb9" />}
+                />
+            </FormControl>
 
-        <Collapse isOpen={stage1Error.length > 0}>
-            <Alert status="error">
-                <HStack space={4}>
-                    <Alert.Icon/>
-                    <Heading size="sm">Fel</Heading>
-                    <Text>{stage1Error}</Text>
-                    <IconButton icon={<CloseIcon size="xs"/>} onPress={() => setStage1Error('')}/>
-                </HStack>
-            </Alert>
-        </Collapse>
-
-        <Button _text={{color: '#fff'}} alignSelf="stretch" onPress={validateStage1}>
-            Bekräfta
-        </Button>
-    </VStack>;
+            <Collapse isOpen={stage1Error.length > 0}>
+                <Alert status="error">
+                    <HStack space={4}>
+                        <Alert.Icon />
+                        <Heading size="sm">Fel</Heading>
+                        <Text>{stage1Error}</Text>
+                        <IconButton icon={<CloseIcon size="xs" />} onPress={() => setStage1Error('')} />
+                    </HStack>
+                </Alert>
+            </Collapse>
+        </VStack>;
 
     const part2 = <>
-        <HStack bg="accent.200" mt={0} m={5} p={3} rounded="xl" alignItems="center">
-            <VStack flex={1} space={1}>
-                <Text fontSize="md">{firstName} {lastName}</Text>
-                <Text fontSize="md">{email}</Text>
-                <Text fontSize="md">{phone}</Text>
-            </VStack>
-            <Divider orientation="vertical" mx={2} bg="brand.700"/>
-            <Button variant="ghost" colorScheme="brand" onPress={() => setStage(1)}>Ändra</Button>
-        </HStack>
-
-        <VStack bg="#fff" p={4} space={2} m={5} rounded="md" shadow={2}>
-            <FormControl isRequired>
+        <VStack>
+            <FormControl px="4" mb="5">
+                <FormControl.Label>Telefonnummer</FormControl.Label>
+                <Input
+                    value={phone}
+                    onChangeText={setPhone}
+                    placeholder="Telefonnummer"
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                    InputLeftElement={<Icon as={<FontAwesome name="phone" />} size="sm" m={2}
+                        color="#ff7e1a" />}
+                />
+            </FormControl>
+            <FormControl px="4" mb="5">
                 <FormControl.Label>Län</FormControl.Label>
-                <Select selectedValue={county} onValueChange={setCounty}
-                        _selectedItem={{bg: "brand.300", endIcon: <CheckIcon size={4}/>}}>
-                    {counties.map(({code, name}) => <Select.Item key={code} label={name} value={code}/>)}
+                <Select
+                    selectedValue={county}
+                    onValueChange={setCounty}
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                    _selectedItem={{ bg: "brand.300", endIcon: <CheckIcon size={4} /> }}>
+                    {counties.map(({ code, name }) => <Select.Item key={code} label={name} value={code} />)}
                 </Select>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl px="4" mb="5">
                 <FormControl.Label>Stad</FormControl.Label>
-                <Select selectedValue={city} onValueChange={setCity}
-                        _selectedItem={{bg: "brand.300", endIcon: <CheckIcon size={4}/>}}>
+                <Select
+                    selectedValue={city}
+                    onValueChange={setCity}
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                    _selectedItem={{ bg: "brand.300", endIcon: <CheckIcon size={4} /> }}>
                     {counties.find(c => c.code === county).cities.map((city, i) => {
-                        return <Select.Item key={i} label={city} value={city}/>;
+                        return <Select.Item key={i} label={city} value={city} />;
                     })}
                 </Select>
             </FormControl>
-            <FormControl>
+            <FormControl px="4" mb="5">
                 <FormControl.Label>Postnummer</FormControl.Label>
-                <Input 
-                    value={postalCode} 
+                <Input
+                    value={postalCode}
                     onChangeText={setPostalCode}
-                    onSubmitEditing={() => streetRef.current.focus()} 
-                    blurOnSubmit={false} 
+                    placeholder="Postnummer"
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
                 />
             </FormControl>
-            <FormControl>
+            <FormControl px="4" mb="5">
                 <FormControl.Label>Gatuadress</FormControl.Label>
-                <Input 
-                    value={street}  
+                <Input
+                    value={street}
                     onChangeText={setStreet}
-                    ref={(input) => streetRef.current = input}
-                    autoCompleteType="street-address"/>
-            </FormControl>
-            <FormControl>
-                <Checkbox value={terms} onChange={setTerms} colorScheme="accent" my={4}>
-                    <Link href="https://cleangig.se/privacy.html" mx={4}>Jag accepterar villkoren</Link>
-                </Checkbox>
+                    placeholder="Gatuadress"
+                    borderRadius="8"
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                />
             </FormControl>
 
             <Collapse isOpen={stage2Error.length > 0}>
                 <Alert status="error">
                     <HStack space={4} flexWrap="wrap">
-                        <Alert.Icon/>
+                        <Alert.Icon />
                         <Heading size="sm">Fel</Heading>
                         <Text>{stage2Error}</Text>
-                        <IconButton icon={<CloseIcon size="xs"/>} onPress={() => setStage2Error('')}/>
+                        <IconButton icon={<CloseIcon size="xs" />} onPress={() => setStage2Error('')} />
                     </HStack>
                 </Alert>
             </Collapse>
 
-            <Button colorScheme="brand" isLoading={submitting} onPress={validateStage2} isLoadingText="Laddar, vänta..."
-                    alignSelf="stretch">
-                Slutföra registreringen
-            </Button>
+            <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{textDecoration: 'none', fontWeight: 'bold'}}  > Terms of Use.</Link></Text>
         </VStack>
     </>;
 
-    return <SafeScrollView flex={1}>
-        <VStack safeArea mb={100}>
-            <VStack alignItems="center" my={4}>
-                <Image source={require("../../assets/logo-small.png")} h={150} alt="CleanGig" resizeMode="center"/>
-            </VStack>
-
-            <VStack mx={2} mt={5} space={2} alignItems="center">
-                <Heading size="md">Registrering av privatpersoner</Heading>
-                <Center p="3">
-                    <Link onPress={() => navigation.replace('Login')}>
-                        Har du redan ett konto?
-                        <Text bold color="brand.700"> Logga in</Text>
-                    </Link>
-                </Center>
-            </VStack>
-
-            <Center>
-                <Progress size="2xl" my={4} value={stage * 50} w={200} colorScheme="brand"/>
-            </Center>
-
-            {stage === 1 ? part1 : part2}
-
-            <Center>
-                <Link onPress={() => navigation.replace('ProviderSignUp')}>Registrera dig som företag</Link>
-            </Center>
-        </VStack>
-    </SafeScrollView>;
+    return (
+        <VStack safeArea flex={1}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                h={{
+                    base: "705px",
+                    lg: "auto",
+                }}
+                lex={1}
+            >
+                <VStack flex={1} justifyContent="space-between">
+                    <VStack>
+                        {/* <Pressable pl="3" onPress={() => navigation.goBack()}>
+                    <FontAwesome name="angle-left" size={35} color="#ff7e1a" />
+                </Pressable> */}
+                        <VStack alignItems="center" mt="5">
+                            <Heading mb="3" fontWeight="semibold">Registrering</Heading>
+                            <Text fontSize="sm">Please fill this information</Text>
+                        </VStack>
+                    </VStack>
+                    {stage === 1 ? part1 : part2}
+                    <VStack>
+                        <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">
+                            {
+                                stage === 1
+                                    ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
+                                    : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(1)} >Back</Button>
+                            }
+                            {
+                                stage === 1
+                                    ? <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Next</Button>
+                                    : <Button flex={1} py="4" variant="ghost" onPress={validateStage2} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>
+                            }
+                        </HStack>
+                    </VStack>
+                </VStack>
+            </KeyboardAvoidingView >
+        </VStack >
+    )
 }

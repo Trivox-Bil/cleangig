@@ -12,7 +12,14 @@ export default function ({navigation}) {
             const onFailed = async (e) => {
                 await storeLocal(USER_DATA_KEY, {});
                 dispatch({type: LOGOUT});
-                navigation.replace('Login');
+                getLocal("skipIntro").then(value => {
+                    console.log("value", value)
+                    if (value == '1') {
+                        navigation.replace('Login');
+                    } else {
+                        navigation.replace('IntroSlide');
+                    }
+                })
                 return e;
             }
 

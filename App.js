@@ -34,6 +34,7 @@ import CustomerTabs from "./src/screens/CustomerTabs";
 import ProviderTabs from "./src/screens/ProviderTabs";
 import config from "./src/config";
 import { cleangigApi } from './src/network';
+import IntroSlides from './src/screens/IntroSlides';
 
 const Stack = createNativeStackNavigator();
 
@@ -93,6 +94,7 @@ export default function App() {
                 <NavigationContainer>
                     <Stack.Navigator initialRouteName="Splash" screenOptions={{headerShown: false}}>
                         <Stack.Screen name="Splash" component={Splash}/>
+                        <Stack.Screen name="IntroSlide" component={IntroSlides}/>
                         <Stack.Screen name="Login" component={Login}/>
                         <Stack.Screen name="CustomerSignUp" component={CustomerSignUp}/>
                         <Stack.Screen name="ProviderSignUp" component={ProviderSignUp}/>
