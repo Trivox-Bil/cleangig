@@ -17,7 +17,7 @@
     "@react-native-community/slider": "4.1.7",
     "@react-native-picker/picker": "2.1.0",
     "@react-navigation/bottom-tabs": "^5.11.10",
-    "@react-navigation/material-top-tabs": "^5.3.15",
+    "@react-navigation/material-top-tabs": "^5.3.19",
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "^5.14.3",
     "@unimodules/core": "~7.2.0",
@@ -48,8 +48,8 @@
     "react-dom": "17.0.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-43.tar.gz",
     "react-native-anchor-carousel": "^4.0.1",
-    "react-native-elements": "^3.4.2",
     "react-native-app-intro-slider": "^4.0.4",
+    "react-native-elements": "^3.4.2",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-image-crop-picker": "^0.36.4",
     "react-native-image-gallery": "^2.1.5",
@@ -64,7 +64,7 @@
     "react-native-sectioned-multi-select": "^0.9.0",
     "react-native-svg": "12.1.1",
     "react-native-swipe-list-view": "^3.2.9",
-    "react-native-tab-view": "2.16.0",
+    "react-native-tab-view": "^2.16.0",
     "react-native-textinput-effects": "^0.6.2",
     "react-native-web": "0.17.1",
     "react-native-windows": "^0.64.6",
@@ -78,7 +78,8 @@
     "styled-system": "^5.1.5",
     "unimodules-permissions-interface": "^6.1.0",
     "validator": "^13.6.0",
-    "voca": "^1.4.0"
+    "voca": "^1.4.0",
+    "react-native-pager-view": "5.4.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

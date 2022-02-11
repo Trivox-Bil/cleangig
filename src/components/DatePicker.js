@@ -20,7 +20,16 @@ export default function DatePicker({ value, onChange, minimumDate = new Date(), 
 
 
     return <>
-        <Pressable onPress={() => setIsVisible(!isVisible)} alignItems="center" bg="light.200" p={4} rounded="md">
+        <Pressable 
+            onPress={() => setIsVisible(!isVisible)}
+            alignItems="center" 
+            borderRadius="8"
+            borderColor="#ff7e1a"
+            borderWidth={1} 
+            py="3" 
+            px="1.5"
+            // rounded="md"
+        >
             <Heading size="sm">{format(value, 'yyyy-MM-dd HH:mm')}</Heading>
         </Pressable>
         <DateTimePickerModal

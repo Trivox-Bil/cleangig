@@ -106,6 +106,9 @@ export default function ({ navigation }) {
                 onChangeText={setBusinessName}
                 placeholder="Ditt företags namn"
                 borderRadius="8"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
                 borderColor="#ff7e1a"
                 borderWidth={1}
                 InputLeftElement={<Icon as={<FontAwesome name="user" />} size="sm" m={2}
@@ -120,6 +123,9 @@ export default function ({ navigation }) {
                 placeholder="Konto ägare"
                 borderRadius="8"
                 borderColor="#ff7e1a"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
                 borderWidth={1}
                 InputLeftElement={<Icon as={<FontAwesome name="user" />} size="sm" m={2}
                     color="#ff7e1a" />}
@@ -132,6 +138,9 @@ export default function ({ navigation }) {
                 onChangeText={setOrgNumber}
                 placeholder="Organisationsnummer"
                 borderRadius="8"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
                 borderColor="#ff7e1a"
                 borderWidth={1}
             />
@@ -161,6 +170,9 @@ export default function ({ navigation }) {
                 placeholder="E-post adress"
                 borderRadius="8"
                 borderColor="#ff7e1a"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
                 borderWidth={1}
                 InputLeftElement={<Icon as={<FontAwesome name="envelope" />} size="sm" m={2}
                     color="#ff7e1a" />}
@@ -174,6 +186,9 @@ export default function ({ navigation }) {
                 placeholder="Lösenord"
                 borderRadius="8"
                 borderColor="#ff7e1a"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
                 borderWidth={1}
                 secureTextEntry={!passVisible}
                 InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
@@ -189,6 +204,9 @@ export default function ({ navigation }) {
                 onChangeText={setPassConfirm}
                 placeholder="Bekräfta lösenordet"
                 borderRadius="8"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
                 borderColor="#ff7e1a"
                 borderWidth={1}
                 secureTextEntry={!passConfVisible}
@@ -210,7 +228,7 @@ export default function ({ navigation }) {
             </Alert>
         </Collapse>
 
-        <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{textDecoration: 'none', fontWeight: 'bold'}}  > Terms of Use.</Link></Text>
+        <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > Terms of Use.</Link></Text>
     </VStack>;
 
 

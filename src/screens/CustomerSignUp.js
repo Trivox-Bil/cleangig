@@ -121,6 +121,9 @@ export default function ({ navigation }) {
                     value={firstName}
                     onChangeText={setFirstName}
                     placeholder="Förnamn"
+                    _focus={{
+                        borderColor: "#ff7e1a"
+                    }}
                     borderRadius="8"
                     borderColor="#ff7e1a"
                     borderWidth={1}
@@ -134,6 +137,9 @@ export default function ({ navigation }) {
                     borderRadius="8"
                     borderColor="#ff7e1a"
                     placeholder="Efternamn"
+                    _focus={{
+                        borderColor: "#ff7e1a"
+                    }}
                     borderWidth={1}
                     value={lastName}
                     onChangeText={setLastName}
@@ -147,6 +153,9 @@ export default function ({ navigation }) {
                     value={email}
                     onChangeText={setEmail}
                     autoCompleteType="email"
+                    _focus={{
+                        borderColor: "#ff7e1a"
+                    }}
                     placeholder="E-postadress"
                     borderRadius="8"
                     borderColor="#ff7e1a"
@@ -163,6 +172,9 @@ export default function ({ navigation }) {
                     placeholder="Lösenord"
                     borderWidth={1}
                     value={password}
+                    _focus={{
+                        borderColor: "#ff7e1a"
+                    }}
                     onChangeText={setPassword}
                     autoCompleteType="password"
                     secureTextEntry={!passVisible}
@@ -179,6 +191,9 @@ export default function ({ navigation }) {
                     borderColor="#ff7e1a"
                     placeholder="Bekräfta lösenordet"
                     borderWidth={1}
+                    _focus={{
+                        borderColor: "#ff7e1a"
+                    }}
                     value={passConfirm}
                     onChangeText={setPassConfirm}
                     autoCompleteType="password"
@@ -212,6 +227,9 @@ export default function ({ navigation }) {
                     placeholder="Telefonnummer"
                     borderRadius="8"
                     borderColor="#ff7e1a"
+                    _focus={{
+                        borderColor: "#ff7e1a"
+                    }}
                     borderWidth={1}
                     InputLeftElement={<Icon as={<FontAwesome name="phone" />} size="sm" m={2}
                         color="#ff7e1a" />}
@@ -251,6 +269,9 @@ export default function ({ navigation }) {
                     placeholder="Postnummer"
                     borderRadius="8"
                     borderColor="#ff7e1a"
+                    _focus={{
+                        borderColor: "#ff7e1a"
+                    }}
                     borderWidth={1}
                 />
             </FormControl>
@@ -260,6 +281,9 @@ export default function ({ navigation }) {
                     value={street}
                     onChangeText={setStreet}
                     placeholder="Gatuadress"
+                    _focus={{
+                        borderColor: "#ff7e1a"
+                    }}
                     borderRadius="8"
                     borderColor="#ff7e1a"
                     borderWidth={1}
@@ -277,7 +301,7 @@ export default function ({ navigation }) {
                 </Alert>
             </Collapse>
 
-            <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{textDecoration: 'none', fontWeight: 'bold'}}  > Terms of Use.</Link></Text>
+            <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > Terms of Use.</Link></Text>
         </VStack>
     </>;
 

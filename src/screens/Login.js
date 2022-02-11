@@ -113,6 +113,9 @@ export default function ({ navigation }) {
                                     autoCompleteType="email"
                                     placeholder="E-postadress"
                                     borderRadius="8"
+                                    _focus={{
+                                        borderColor: "#ff7e1a"
+                                    }}
                                     borderColor="#ff7e1a"
                                     borderWidth={1}
                                     InputLeftElement={<Icon as={<FontAwesome name="envelope" />} size="sm" m={2}
@@ -126,6 +129,9 @@ export default function ({ navigation }) {
                                     borderColor="#ff7e1a"
                                     placeholder="Lösenord"
                                     borderWidth={1}
+                                    _focus={{
+                                        borderColor: "#ff7e1a"
+                                    }}
                                     value={password}
                                     onChangeText={setPassword}
                                     autoCompleteType="password"

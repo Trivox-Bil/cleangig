@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { cleangigApi } from "../../../network";
 import { useSelector } from "react-redux";
-import { Badge, Center, FlatList, Heading, HStack, Image, Pressable, Text, VStack, Box } from "native-base";
+import { Badge, Center, FlatList, Heading, HStack, Image, Icon, Pressable, Text, VStack, Box } from "native-base";
 import FetchContent from "../../../components/FetchContent";
 import AppBar from "../../../components/AppBar";
 import { StyleSheet, TouchableOpacity, TouchableHighlight, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { FontAwesome5 } from '@expo/vector-icons';
+import WarningDialog from "../../../components/WarningDialog";
 
 export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
     const [loading, setLoading] = useState(true);
     const [jobs, setJobs] = useState(jobs);
+    const [warnDelete, setWarnDelete] = useState(false);
+    const [selectedChat, setSelectedChat] = useState(false);
 
     useEffect(() => {
         fetchProjects().then(() => {
@@ -51,11 +55,11 @@ export default function ({ navigation }) {
 
     function ListItem({ item }) {
         return <Box bg="#fff">
-            <Pressable _pressed={{ bg: 'gray.200' }} px={2} space={2} borderBottomWidth={1} borderColor="#ccc"
+            <Pressable _pressed={{ bg: 'gray.200' }} borderBottomWidth={1} borderColor="#ccc"
                 onPress={() => navigation.navigate('Chat', { job: item })} >
                 <HStack justifyContent="space-between">
                     <HStack alignItems="center">
-                        <Image source={{ uri: item.customer.picture }} w={20} h={20} m={4} rounded="full" borderColor="accent.400"
+                        <Image source={{ uri: item.customer.picture }} size="16" m={3} rounded="full" borderColor="accent.400"
                             borderWidth={2} alt=" " />
                         <VStack space={2}>
                             <Heading size="sm">{item.customer.fname} {item.customer.lname}</Heading>
@@ -77,16 +81,11 @@ export default function ({ navigation }) {
     const renderHiddenItem = (data, rowMap) => (
         <View style={styles.rowBack}>
             <TouchableOpacity
-                style={[styles.actionButton, styles.closeBtn]}
-                onPress={() => closeItem(rowMap, data.item.id)}
-            >
-                <Text style={styles.btnText}>Close</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
                 style={[styles.actionButton, styles.deleteBtn]}
-                onPress={() => deleteItem(data.item)}
+                onPress={() => { setWarnDelete(true); closeItem(rowMap, data.item.id); setSelectedChat(data.item)}}
             >
-                <Text style={styles.btnText}>Delete</Text>
+                {/* <Text style={styles.btnText}>Delete</Text> */}
+                <Icon as={FontAwesome5} name="trash" color="#ffffff" size="6"></Icon>
             </TouchableOpacity>
         </View>
     );
@@ -96,10 +95,11 @@ export default function ({ navigation }) {
             rowMap[rowKey].closeRow();
         }
     };
-    
-    const deleteItem = async item => {
-        console.log(item)
-        const { data } = await cleangigApi.get(`delete_chat/${item.id}/${item.customer_id}/${user.id}`);
+
+    const onDelete = async () => {
+        console.log(selectedChat)
+        setWarnDelete(false)
+        const { data } = await cleangigApi.get(`delete_chat/${selectedChat.id}/${selectedChat.customer_id}/${user.id}`);
         fetchProjects().then();
     }
 
@@ -119,19 +119,22 @@ export default function ({ navigation }) {
                     </Center>
                 }}
             /> */}
-             <SwipeListView
+            <SwipeListView
                 data={jobs}
                 // data={listData}
                 keyExtractor={(job) => job.id}
                 renderItem={ListItem}
                 renderHiddenItem={renderHiddenItem}
-                leftOpenValue={75}
-                rightOpenValue={-150}
+                leftOpenValue={0}
+                rightOpenValue={-75}
                 previewRowKey={'0'}
                 previewOpenValue={-40}
                 previewOpenDelay={3000}
             ></SwipeListView>
         </FetchContent>
+
+        <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}
+            message="Är du säker att du vill radera" />
     </>;
 }
 

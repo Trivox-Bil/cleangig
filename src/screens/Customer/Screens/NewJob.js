@@ -13,6 +13,7 @@ import {
   Input,
   Pressable,
   Select,
+  TextArea,
   Text,
   VStack,
   Checkbox,
@@ -31,7 +32,7 @@ import SafeScrollView from "../../../components/SafeScrollView";
 import ImageCarousel from "../../../components/ImageCarousel";
 import { Image, Keyboard, View } from "react-native";
 import { ListItem } from 'react-native-elements';
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 
 export default function ({ route, navigation }) {
   const service = route.params.service;
@@ -64,6 +65,7 @@ export default function ({ route, navigation }) {
   const { isOpen, onOpen, onClose } = useDisclose();
   const [selectedProviders, setSelectedProviders] = useState([]);
   const [error, setError] = useState('');
+  const [step, setStep] = useState(0)
   const titleInput = useRef(null);
   const descInput = useRef(null);
   function choosePictures() {
@@ -177,7 +179,11 @@ export default function ({ route, navigation }) {
 
     if (valid) {
       setError('')
-      create()
+      if (step == 0) {
+        setStep(1)
+      } else {
+        create()
+      }
     }
   }
 
@@ -213,12 +219,25 @@ export default function ({ route, navigation }) {
     setSelectedProviders(temp)
   }
 
+  const backHandler = () => {
+
+    if (step === 0) {
+      navigation.goBack()
+    } else {
+      setStep(0);
+    }
+  }
+
   return (
     <>
       <AppBar
         backButton
+        backButtonHandler={backHandler}
         navigation={navigation}
         screenTitle="Skapa nytt jobb"
+        customOptions={[
+          step === 0 && { action: validate, icon: 'check' }
+        ]}
       />
 
       <SafeScrollView flex={1}>
@@ -233,23 +252,261 @@ export default function ({ route, navigation }) {
 
           {error !== '' && <Text color="danger.700" fontWeight={500}>{error}</Text>}
 
-          <FormControl isRequired>
-            <FormControl.Label>Rubrik</FormControl.Label>
-            <Input ref={titleInput} onSubmitEditing={() => descInput.current.focus()} blurOnSubmit={false} value={title} onChangeText={setTitle} />
-          </FormControl>
+          {step === 0 ? (
+            <>
+              <FormControl isRequired mb="3">
+                <FormControl.Label>Rubrik</FormControl.Label>
+                <Input
+                  ref={titleInput}
+                  onSubmitEditing={() => descInput.current.focus()}
+                  blurOnSubmit={false} value={title} onChangeText={setTitle}
+                  borderRadius="8"
+                  _focus={{
+                    borderColor: "#ff7e1a"
+                  }}
+                  borderColor="#ff7e1a"
+                  borderWidth={1}
+                />
+              </FormControl>
 
-          <FormControl isRequired>
-            <FormControl.Label>Beskrivande text</FormControl.Label>
-            <Input
-              ref={descInput}
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              numberOfLines={4}
-            />
-          </FormControl>
+              <FormControl isRequired mb="5">
+                <FormControl.Label>Beskrivande text</FormControl.Label>
+                <TextArea
+                  ref={descInput}
+                  value={description}
+                  borderRadius="8"
+                  _focus={{
+                    borderColor: "#ff7e1a"
+                  }}
+                  borderColor="#ff7e1a"
+                  borderWidth={1}
+                  onChangeText={setDescription}
+                  h="150"
+                />
+              </FormControl>
 
-          {pictures.length > 0 && (
+              <HStack justifyContent="space-between">
+                <Text fontWeight="medium">Lägg till bilder</Text>
+                <Icon as={FontAwesome} name="plus" color="#ff7e1a" size="6" onPress={onOpen}></Icon>
+              </HStack>
+
+              <Actionsheet isOpen={isOpen} onClose={onClose}>
+                <Actionsheet.Content>
+                  <Actionsheet.Item onPress={openCamera}>
+                    Öppna kamera
+                  </Actionsheet.Item>
+                  <Actionsheet.Item onPress={choosePictures}>
+                    Välj från biblioteket
+                  </Actionsheet.Item>
+                  <Actionsheet.Item onPress={onClose}>Avbryt</Actionsheet.Item>
+                </Actionsheet.Content>
+              </Actionsheet>
+
+              {pictures.length > 0 && (
+                <>
+                  <HStack minH={200} ml={5} my={10}>
+                    <ImageCarousel
+                      images={pictures.map((pic) => pic.uri)}
+                      isNewJob={true}
+                      removePic={removePicHandler}
+                    />
+                  </HStack>
+                  <Button variant="subtle" onPress={() => setPictures([])}>
+                    Ta bort bilder
+                  </Button>
+                </>
+              )}
+
+            </>
+          ) : (
+            <>
+              {editAddress ? (
+                <>
+                  <FormControl mb="3">
+                    <FormControl.Label>Län</FormControl.Label>
+                    <Select
+                      value={county.name}
+                      onValueChange={setCounty}
+                      selectedValue={county}
+                      borderRadius="8"
+                      _focus={{
+                        borderColor: "#ff7e1a"
+                      }}
+                      borderColor="#ff7e1a"
+                      borderWidth={1}
+                    >
+                      {counties.map((county) => {
+                        return (
+                          <Select.Item
+                            label={county.name}
+                            value={county}
+                            key={county.code}
+                          />
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl isRequired mb="3">
+                    <FormControl.Label>Stad</FormControl.Label>
+                    <Select
+                      selectedValue={city}
+                      borderRadius="8"
+                      _focus={{
+                        borderColor: "#ff7e1a"
+                      }}
+                      borderColor="#ff7e1a"
+                      borderWidth={1}
+                      onValueChange={setCity}>
+                      {county.cities.sort().map((city, i) => {
+                        return <Select.Item label={city} value={city} key={i} />;
+                      })}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl isRequired mb="3">
+                    <FormControl.Label>Gatuadress</FormControl.Label>
+                    <Input
+                      value={street}
+                      onChange={setStreet}
+                      autoComplete="street-address"
+                      borderRadius="8"
+                      _focus={{
+                        borderColor: "#ff7e1a"
+                      }}
+                      borderColor="#ff7e1a"
+                      borderWidth={1}
+                    />
+                  </FormControl>
+                </>
+              ) : (
+                <VStack mb="3">
+                  <Text fontWeight="medium" mb="2">Adress</Text>
+                  <Pressable
+                    borderRadius="8"
+                    py="3"
+                    px="1.5"
+                    // alignItems="center"
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                    rounded="md"
+                    onPress={() => setEditAddress(true)}
+                  >
+                    <Text>
+                      {user.street}, {user.city}, {county ? county.name : "NA"}
+                    </Text>
+                  </Pressable>
+                </VStack>
+              )}
+
+              <FormControl mb="3">
+                <FormControl.Label>När vill du ha jobbet utfört?</FormControl.Label>
+                <DatePicker
+                  value={deadlineFrom}
+                  onChange={deadLineFormHandler}
+                />
+                <Text marginY="3" style={{ textAlign: "center" }}>till</Text>
+                <DatePicker
+                  value={deadlineTo}
+                  minimumDate={new Date(deadlineFrom)}
+                  onChange={setDeadlineTo}
+                />
+              </FormControl>
+
+              <FormControl>
+                <VStack>
+                  <CheckBox
+                    title="Låt företag svara mig"
+                    checkedIcon="dot-circle-o"
+                    uncheckedIcon="circle-o"
+                    checked={visibility === "public"}
+                    p={0}
+                    checkedColor="#ff7e1a"
+                    borderRadius="8"
+                    _focus={{
+                      borderColor: "#ff7e1a"
+                    }}
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                    onPress={() => setVisibility("public")}
+                  />
+                  <CheckBox
+                    title="Välj vilka företag"
+                    checkedIcon="dot-circle-o"
+                    uncheckedIcon="circle-o"
+                    checked={visibility === "private"}
+                    checkedColor="#ff7e1a"
+                    borderRadius="8"
+                    _focus={{
+                      borderColor: "#ff7e1a"
+                    }}
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                    onPress={() => setVisibility("private")}
+                  />
+                </VStack>
+              </FormControl>
+
+              {
+                visibility === 'private'
+                  ?
+                  <>
+                    <Pressable
+                      // bg="#ff7e1a" 
+                      p="3"
+                      mt="2.5"
+                      borderRadius="8"
+                      _focus={{
+                        borderColor: "#ff7e1a"
+                      }}
+                      borderColor="#ff7e1a"
+                      borderWidth={1}
+                      alignItems="center"
+                      onPress={chooseCompany}>
+                      <Text fontSize="md">Välj företag</Text>
+                    </Pressable>
+                    <View style={{ marginTop: 15 }}>
+                      {Object.keys(selectedProviders).map(key => (
+                        <ListItem key={key} style={{ paddingLeft: 0, paddingRight: 0 }}>
+                          <Image
+                            source={{ uri: selectedProviders[key].picture }}
+                            style={{ width: 40, height: 40, borderRadius: 25 }} />
+                          <ListItem.Content>
+                            <ListItem.Title>{selectedProviders[key].name}</ListItem.Title>
+                          </ListItem.Content>
+                          <IconButton onPress={() => removeProvider(key)}
+                            icon={<Icon as={<FontAwesome5 name="trash" />} size="20px" color="danger.500" />} />
+                        </ListItem>
+                      ))}
+                    </View>
+                  </>
+                  : <></>
+              }
+
+              <Button
+                _text={{ color: "light.200" }}
+                my={5}
+                rounded="md"
+                p="3"
+                onPress={validate}
+                isLoading={loading}
+                isLoadingText="Läser in..."
+              >
+                Skicka in
+              </Button>
+            </>
+          )}
+          {/*  <Button
+            _text={{ color: "light.200" }}
+            my={5}
+            onPress={validate}
+            isLoading={loading}
+          >
+            Nästa
+          </Button> */}
+
+
+          {/*     {pictures.length > 0 && (
             <>
               <HStack minH={200} ml={5} my={10}>
                 <ImageCarousel
@@ -287,18 +544,6 @@ export default function ({ route, navigation }) {
               <Actionsheet.Item onPress={onClose}>Avbryt</Actionsheet.Item>
             </Actionsheet.Content>
           </Actionsheet>
-          {/* <FormControl>
-            <Checkbox
-              value={noPictures}
-              onChange={(val) => { setNoPictures(val); (val ? setPictures([]) : null) }}
-              colorScheme="accent"
-              my={4}
-            >
-              <Text fontSize="md" mx={4}>
-                Vill inte lägga till bilder
-              </Text>
-            </Checkbox>
-          </FormControl> */}
 
           {editAddress ? (
             <>
@@ -366,7 +611,6 @@ export default function ({ route, navigation }) {
           </FormControl>
 
           <FormControl>
-            {/* <FormControl.Label>Synlighet</FormControl.Label> */}
             <VStack>
               <CheckBox
                 title="Låt företag svara mig"
@@ -394,7 +638,6 @@ export default function ({ route, navigation }) {
                   onPress={chooseCompany}>
                   <Text fontSize="md">Välj företag</Text>
                 </Pressable>
-                {/* {selectedProviders.map((provider, i) => ( */}
                 <View style={{ marginTop: 15 }}>
                   {Object.keys(selectedProviders).map(key => (
                     <ListItem key={key} style={{ paddingLeft: 0, paddingRight: 0 }}>
@@ -409,7 +652,6 @@ export default function ({ route, navigation }) {
                     </ListItem>
                   ))}
                 </View>
-                {/* ))} */}
               </>
               : <></>
           }
@@ -422,7 +664,7 @@ export default function ({ route, navigation }) {
             isLoadingText="Läser in..."
           >
             Skicka in
-          </Button>
+          </Button> */}
         </VStack>
       </SafeScrollView>
     </>

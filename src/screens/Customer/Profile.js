@@ -1,20 +1,21 @@
-import React, {useCallback, useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import AppBar from "../../components/AppBar";
-import {useDispatch, useSelector} from "react-redux";
-import {LOGIN_SUCCESS, LOGOUT} from "../../actions/types";
-import {storeLocal, USER_DATA_KEY} from "../../storage";
-import {resetRoute} from "../../helpers";
-import {Heading, HStack, Image, Pressable, Text, VStack} from "native-base";
+import { useDispatch, useSelector } from "react-redux";
+import { StyleSheet } from 'react-native'
+import { LOGIN_SUCCESS, LOGOUT } from "../../actions/types";
+import { storeLocal, USER_DATA_KEY } from "../../storage";
+import { resetRoute } from "../../helpers";
+import { Button, Heading, HStack, Image, Pressable, Text, VStack } from "native-base";
 import counties from "../../data/counties";
 import HoshiInput from "../../components/HoshiInput";
 import * as ImagePicker from 'expo-image-picker';
 import lodash from "lodash";
-import {cleangigApi} from "../../network";
+import { cleangigApi } from "../../network";
 import SafeScrollView from "../../components/SafeScrollView";
 import HoshiSelectControl from "../../components/HoshiSelectControl";
 import Constants from 'expo-constants';
 
-export default function ({navigation}) {
+export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
     const [fname, setFname] = useState(user.fname);
     const [lname, setLname] = useState(user.lname);
@@ -24,10 +25,11 @@ export default function ({navigation}) {
     const [picture, setPicture] = useState(user.picture);
     const [street, setStreet] = useState(user.street);
     const [postalCode, setPostalCode] = useState(user.postal_code);
+    const [activeTab, setActiveTab] = useState('profile');
     const dispatch = useDispatch();
 
     const isSaved = useCallback(() => {
-        return lodash.isEqual(user, {...user, fname, lname, phone_number: phone, county, city, picture, street, postal_code: postalCode});
+        return lodash.isEqual(user, { ...user, fname, lname, phone_number: phone, county, city, picture, street, postal_code: postalCode });
     }, [fname, lname, phone, county, city, picture, street, postalCode, user]);
 
     async function selectPicture() {
@@ -41,27 +43,46 @@ export default function ({navigation}) {
     }
 
     async function logOut() {
-        dispatch({type: LOGOUT});
+        dispatch({ type: LOGOUT });
         await storeLocal(USER_DATA_KEY, {});
         navigation.dispatch(resetRoute('Login'));
     }
 
     async function saveAll() {
-        const request = {id: user.id, fname, lname, phone_number: phone, county, city, street, postal_code: postalCode};
-        const {data} = await cleangigApi.put('customers', request);
-        dispatch({type: LOGIN_SUCCESS, payload: data});
+        const request = { id: user.id, fname, lname, phone_number: phone, county, city, street, postal_code: postalCode };
+        const { data } = await cleangigApi.put('customers', request);
+        dispatch({ type: LOGIN_SUCCESS, payload: data });
         await storeLocal(USER_DATA_KEY, data);
     }
 
     return <>
-        <AppBar navigation={navigation} screenTitle="Profil" customOptions={[
-            isSaved() ? {action: logOut, icon: 'sign-out-alt'} : {action: saveAll, icon: 'save'}
-        ]}/>
+        {<AppBar navigation={navigation} screenTitle="Profil" customOptions={[
+            isSaved() ? { action: logOut, icon: 'sign-out-alt' } : { action: saveAll, icon: 'save' }
+        ]} />}
+
+        <HStack mt="3" mx="3" justifyContent="center">
+            <Pressable
+                style={activeTab === 'profile' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
+                onPress={() => setActiveTab('profile')}
+            >
+                <Text
+                    style={activeTab === 'profile' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
+                >Profile</Text>
+            </Pressable>
+            <Pressable
+               style={activeTab === 'review' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
+               onPress={() => setActiveTab('review')}
+            >
+                <Text
+                    style={activeTab === 'review' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
+                >Reviews</Text>
+            </Pressable>
+        </HStack>
 
         <SafeScrollView flex={1}>
             <HStack m={4} space={2}>
                 <Pressable onPress={selectPicture}>
-                    <Image source={{uri: picture}} w={100} h={100} rounded="md" alt=" "/>
+                    <Image source={{ uri: picture }} w={100} h={100} rounded="md" alt=" " />
                 </Pressable>
                 <VStack space={2}>
                     <Heading size="md" isTruncated noOfLines={2} maxWidth="300">{user.fname} {user.lname}</Heading>
@@ -71,19 +92,39 @@ export default function ({navigation}) {
             </HStack>
 
             <VStack my={4}>
-                <HoshiInput value={fname} label="Förnamn" onChangeText={setFname}/>
-                <HoshiInput value={lname} label="Efternamn" onChangeText={setLname}/>
-                <HoshiInput value={phone} label="Telefonnummer" onChangeText={setPhone} keyboardType="numeric"/>
+                <HoshiInput value={fname} label="Förnamn" onChangeText={setFname} />
+                <HoshiInput value={lname} label="Efternamn" onChangeText={setLname} />
+                <HoshiInput value={phone} label="Telefonnummer" onChangeText={setPhone} keyboardType="numeric" />
                 <HoshiSelectControl label="Län" selectedValue={county} onValueChange={setCounty}
-                                    collection={counties.map(c => ({label: c.name, value: c.code}))}/>
+                    collection={counties.map(c => ({ label: c.name, value: c.code }))} />
                 <HoshiSelectControl label="Stad" selectedValue={city} onValueChange={setCity}
-                                    collection={counties.find(c => c.code === county).cities.map(c => ({label: c, value: c}))}/>
-                <HoshiInput value={postalCode} label="Postnummer" onChangeText={setPostalCode}/>
-                <HoshiInput value={street} label="Gatuadress" onChangeText={setStreet}/>
+                    collection={counties.find(c => c.code === county).cities.map(c => ({ label: c, value: c }))} />
+                <HoshiInput value={postalCode} label="Postnummer" onChangeText={setPostalCode} />
+                <HoshiInput value={street} label="Gatuadress" onChangeText={setStreet} />
             </VStack>
-            <VStack style={{alignItems: 'center', justifyContent: 'center', marginTop: 30}} >
+            <VStack style={{ alignItems: 'center', justifyContent: 'center', marginTop: 30 }} >
                 <Text fontWeight='bold' >version {Constants.manifest.version}</Text>
             </VStack>
         </SafeScrollView>
     </>;
 };
+
+const styles = StyleSheet.create({
+    tabs: {
+        padding: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+    },
+    activeTab: {
+        backgroundColor: '#ff7e1a',
+        borderRadius: 6,
+    },
+    tabTitle: {
+        fontSize: 16,
+        fontWeight: "600"
+    },
+    activeTabTitle: {
+        color: "#ffffff"
+    }
+})
