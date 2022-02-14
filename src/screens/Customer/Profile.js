@@ -7,6 +7,7 @@ import { storeLocal, USER_DATA_KEY } from "../../storage";
 import { resetRoute } from "../../helpers";
 import { Button, Heading, HStack, Image, Pressable, Text, VStack } from "native-base";
 import counties from "../../data/counties";
+import {colors} from '../../helpers';
 import HoshiInput from "../../components/HoshiInput";
 import * as ImagePicker from 'expo-image-picker';
 import lodash from "lodash";
@@ -55,9 +56,13 @@ export default function ({ navigation }) {
         await storeLocal(USER_DATA_KEY, data);
     }
 
+    const openEditPage = () => {
+        navigation.push("EditPorfile");
+    }
+
     return <>
         {<AppBar navigation={navigation} screenTitle="Profil" customOptions={[
-            isSaved() ? { action: logOut, icon: 'sign-out-alt' } : { action: saveAll, icon: 'save' }
+            activeTab === 'profile' && { action: openEditPage, icon: 'edit' }
         ]} />}
 
         <HStack mt="3" mx="3" justifyContent="center">
@@ -79,7 +84,49 @@ export default function ({ navigation }) {
             </Pressable>
         </HStack>
 
-        <SafeScrollView flex={1}>
+        {activeTab === 'profile' ? (
+            <SafeScrollView flex={1}>
+                <HStack m={4} justifyContent="center" space={2}>
+                    <Pressable onPress={selectPicture}>
+                        <Image source={{ uri: picture }} w={100} h={100} rounded="full" alt=" " />
+                    </Pressable>
+                </HStack>
+
+                <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Name</Text>
+                    <Text>{user.fname} {user.lname}</Text>
+                </VStack>
+                <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Email</Text>
+                    <Text>{user.email}</Text>
+                </VStack>
+                <VStack px="3" pb="3"  mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Telefonnummer</Text>
+                    <Text>{user.phone_number}</Text>
+                </VStack>
+                <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Address</Text>
+                    <Text>{street}, {city}, {county}, {postalCode}</Text>
+                </VStack>
+
+                <VStack mt="5" px="3">
+                    <Pressable onPress={logOut}>
+                    <Text color="#FC3D3D" fontWeight="semibold"> Log Out </Text>
+                    </Pressable>
+                </VStack>
+                <VStack style={{ alignItems: 'center', justifyContent: 'center', marginTop: 100 }} >
+                    <Text fontWeight='bold' >version {Constants.manifest.version}</Text>
+                </VStack>
+            </SafeScrollView>
+        ) : (
+            <VStack flex={1} justifyContent="center" alignItems="center">
+                <Text style={{color: colors.gray}}>Inget att visa</Text>
+            </VStack>
+        )}
+
+        
+
+        {/* <SafeScrollView flex={1}>
             <HStack m={4} space={2}>
                 <Pressable onPress={selectPicture}>
                     <Image source={{ uri: picture }} w={100} h={100} rounded="md" alt=" " />
@@ -105,7 +152,7 @@ export default function ({ navigation }) {
             <VStack style={{ alignItems: 'center', justifyContent: 'center', marginTop: 30 }} >
                 <Text fontWeight='bold' >version {Constants.manifest.version}</Text>
             </VStack>
-        </SafeScrollView>
+        </SafeScrollView> */}
     </>;
 };
 

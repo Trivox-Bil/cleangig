@@ -21,7 +21,8 @@ import {
     Progress,
     Select,
     Text,
-    VStack
+    VStack,
+    ScrollView
 } from "native-base";
 import counties from "../data/counties";
 import validator from "validator";
@@ -75,7 +76,9 @@ export default function ({ navigation }) {
     }
 
     function validateStage2() {
-        if (city.length === 0) {
+        if (phone.trim() === '' || phone === '+46 ') {
+            setStage2Error('Phone number is required');
+        } else if (city.length === 0) {
             setStage2Error('Ange en giltig stad');
         } else if (!terms) {
             setStage2Error('Du måste acceptera villkoren för att fortsätta');
@@ -114,8 +117,8 @@ export default function ({ navigation }) {
     }
 
     const part1 =
-        <VStack>
-            <FormControl px="4" mb="5">
+        <VStack flex={1} bg="gray.100" justifyContent="center">
+            <FormControl bg="gray.100" px="4" mb="5" >
                 <FormControl.Label>Förnamn</FormControl.Label>
                 <Input
                     value={firstName}
@@ -218,8 +221,8 @@ export default function ({ navigation }) {
         </VStack>;
 
     const part2 = <>
-        <VStack>
-            <FormControl px="4" mb="5">
+        <VStack flex={1} bg="gray.100" justifyContent="center">
+            <FormControl bg="gray.100" px="4" mb="5">
                 <FormControl.Label>Telefonnummer</FormControl.Label>
                 <Input
                     value={phone}
@@ -306,27 +309,25 @@ export default function ({ navigation }) {
     </>;
 
     return (
-        <VStack safeArea flex={1}>
+        <SafeScrollView flex={1}>
+            {/*  <VStack safeArea flex={1}> */}
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 h={{
                     base: "705px",
                     lg: "auto",
                 }}
-                lex={1}
+                flex={1}
             >
                 <VStack flex={1} justifyContent="space-between">
-                    <VStack>
-                        {/* <Pressable pl="3" onPress={() => navigation.goBack()}>
-                    <FontAwesome name="angle-left" size={35} color="#ff7e1a" />
-                </Pressable> */}
+                    <VStack >
                         <VStack alignItems="center" mt="5">
                             <Heading mb="3" fontWeight="semibold">Registrering</Heading>
                             <Text fontSize="sm">Please fill this information</Text>
                         </VStack>
                     </VStack>
                     {stage === 1 ? part1 : part2}
-                    <VStack>
+                    <VStack >
                         <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">
                             {
                                 stage === 1
@@ -342,6 +343,7 @@ export default function ({ navigation }) {
                     </VStack>
                 </VStack>
             </KeyboardAvoidingView >
-        </VStack >
+        {/*  </VStack > */}
+        </SafeScrollView>
     )
 }

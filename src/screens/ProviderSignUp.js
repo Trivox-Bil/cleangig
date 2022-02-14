@@ -240,7 +240,7 @@ export default function ({ navigation }) {
                     base: "705px",
                     lg: "auto",
                 }}
-                lex={1}
+                flex={1}
             >
                 <VStack flex={1} justifyContent="space-between">
                     <VStack>

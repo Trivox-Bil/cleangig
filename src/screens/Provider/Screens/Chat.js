@@ -61,6 +61,7 @@ export default function ({ navigation, route }) {
             // const { data } = await cleangigApi.get(`jobs/${job.id}/messages`);
             const { data } = await cleangigApi.get(`messages/${job.current.id}/${job.current.customer_id}/${user.id}`);
             // setMessages(data.chats.map(m => ({ ...m, user })));
+            console.log(data.chats.map(m => console.log(m)));
             await cleangigApi.get(`read_messages/${job.current.id}/1`);
             setMessages(data.chats);
             setIsLoading(false);
@@ -158,7 +159,7 @@ export default function ({ navigation, route }) {
         navigation.replace('Provider', { screen: 'Chat' });
     }
 
-    return <VStack flex={1} safeArea justifyContent="space-between">
+    return <VStack flex={1} justifyContent="space-between">
         <AppBar screenTitle={`${job.current?.title} (budget - ${jobPrice} KR)`} navigation={navigation} backButton
             customOptions={[{ action: loadChats, icon: 'sync' }]}
             backButtonHandler={_backButtonHandler} />

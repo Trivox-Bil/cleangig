@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { readNotification } from '../helpers';
 import Notification from './Provider/Notifications';
 import { cleangigApi } from "../network";
+import ProfileStack from './Provider/ProfileStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -104,7 +105,7 @@ export default function ({ navigation }) {
                     },
                   })}
             />
-            <Tab.Screen name="Profile" component={Profile} options={options('Profil', 'user')}/>
+            <Tab.Screen name="Profile" component={ProfileStack} options={options('Profil', 'user')}/>
         </Tab.Navigator>
     );
 }

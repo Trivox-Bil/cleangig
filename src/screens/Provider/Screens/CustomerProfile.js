@@ -1,78 +1,106 @@
-import React, {useEffect, useState} from 'react';
-import {RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Heading, HStack, Image, Pressable, Text, VStack } from "native-base";
 import counties from '../../../data/counties';
-import {Button, Card, Divider, Image, ListItem, Text} from 'react-native-elements';
-import {colors, formatOrgNumber} from '../../../helpers';
-import {cleangigApi} from "../../../network";
+// import { Button, Card, Divider, Image, ListItem, Text } from 'react-native-elements';
+import { colors, formatOrgNumber } from '../../../helpers';
+import { cleangigApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
+import SafeScrollView from "../../../components/SafeScrollView";
 
-export default function ({navigation, route}) {
+export default function ({ navigation, route }) {
     const custmerId = route.params.customer;
     const [loading, setLoading] = useState(false);
     const [customer, setCustomer] = useState(null);
+    const [activeTab, setActiveTab] = useState('profile');
 
     const fatchCustomer = async () => {
         setLoading(true);
-        const {data: result} = await cleangigApi.get(`customers/${custmerId}`);
+        const { data: result } = await cleangigApi.get(`customers/${custmerId}`);
         console.log("customer", result)
         setCustomer(result);
         setLoading(false);
     };
 
-    
+
     useEffect(() => {
         fatchCustomer();
     }, []);
 
     return <>
-        <AppBar screenTitle="Kund" navigation={navigation} backButton/>
-        <ScrollView
-            contentContainerStyle={styles.container}
-            refreshControl={
-                <RefreshControl
-                    refreshing={loading}
-                    onRefresh={fatchCustomer}
-                />
-            }>
-                {console.log("html",customer)}
-            {customer && <>
-                <Card wrapperStyle={{flexDirection: 'row'}}>
-                    <Image
-                        source={{uri: customer.picture}}
-                        resizeMode="cover"
-                        style={{height: 100, width: 100, borderRadius: 50}}/>
-                    <View style={{marginLeft: 20, marginTop: 10}}>
-                        <Text style={{fontSize: 18, fontWeight: 'bold', color: colors.blue}}>{customer.fname} {customer.lname}</Text>
-                        <Text style={{marginTop: 5}}>{customer.email}</Text>
-                        <Text>{customer.phone_number}</Text>
-                        { console.log("customer", customer) /* <Text></Text> */}
-                        <Text>{customer.street}, {customer.postal_code} {customer.city}</Text>
-                        <Text>{customer.county && counties.length ? Array.from(counties).find(c => c.code === customer.county.toUpperCase())?.name : (
-                            <Text style={{fontStyle: 'italic', color: '#777'}}>Plats har inte ställts in</Text>)}</Text>
-                    </View>
-                </Card>
+        <AppBar screenTitle="Kund" navigation={navigation} backButton />
+        {
+            customer &&
+            <>
+                <HStack mt="3" mx="3" justifyContent="center">
+                    <Pressable
+                        style={activeTab === 'profile' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
+                        onPress={() => setActiveTab('profile')}
+                    >
+                        <Text
+                            style={activeTab === 'profile' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
+                        >Profile</Text>
+                    </Pressable>
+                    <Pressable
+                        style={activeTab === 'review' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
+                        onPress={() => setActiveTab('review')}
+                    >
+                        <Text
+                            style={activeTab === 'review' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
+                        >Reviews</Text>
+                    </Pressable>
+                </HStack>
 
+                {activeTab === 'profile' ? (
+                    <SafeScrollView flex={1}>
+                        <HStack m={4} justifyContent="center" space={2}>
+                            <Image source={{ uri: customer?.picture }} w={100} h={100} rounded="full" alt=" " />
+                        </HStack>
 
+                        <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                            <Text mb={1} fontWeight="semibold" color="#ff7e1a">Name</Text>
+                            <Text>{customer.fname} {customer.lname}</Text>
+                        </VStack>
+                        <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                            <Text mb={1} fontWeight="semibold" color="#ff7e1a">Email</Text>
+                            <Text>{customer.email}</Text>
+                        </VStack>
+                        <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                            <Text mb={1} fontWeight="semibold" color="#ff7e1a">Telefonnummer</Text>
+                            <Text>{customer.phone_number}</Text>
+                        </VStack>
+                        <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                            <Text mb={1} fontWeight="semibold" color="#ff7e1a">Address</Text>
+                            <Text>{customer.street}, {customer.city}, {customer.county}, {customer.postalCode}</Text>
+                        </VStack>
 
-
-            </>}
-        </ScrollView>
+                    </SafeScrollView>
+                ) : (
+                    <VStack flex={1} justifyContent="center" alignItems="center">
+                        <Text style={{ color: colors.gray }}>Inget att visa</Text>
+                    </VStack>
+                )}
+            </>
+        }
     </>;
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-    },
-    imageCaption: {
-        width: '100%',
+    tabs: {
         padding: 10,
-        textAlign: 'center',
-        fontSize: 18,
-        color: '#ccc',
-        backgroundColor: '#777777cc',
-        position: 'absolute',
-        left: 5,
-        bottom: 0,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
     },
+    activeTab: {
+        backgroundColor: '#ff7e1a',
+        borderRadius: 6,
+    },
+    tabTitle: {
+        fontSize: 16,
+        fontWeight: "600"
+    },
+    activeTabTitle: {
+        color: "#ffffff"
+    }
 });

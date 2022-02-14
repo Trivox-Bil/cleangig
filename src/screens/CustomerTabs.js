@@ -14,6 +14,7 @@ import Notification from "./Customer/Notifications";
 import { readNotification } from "../helpers";
 import { backgroundColor } from "styled-system";
 import { cleangigApi } from "../network";
+import ProfileStack from "./Customer/ProfileStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -139,7 +140,7 @@ export default function ({ navigation }) {
       />
       <Tab.Screen
         name="Profile"
-        component={Profile}
+        component={ProfileStack}
         options={options("Profil", "user")}
       />
     </Tab.Navigator>

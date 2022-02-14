@@ -1,23 +1,26 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import AppBar from "../../components/AppBar";
-import {useDispatch, useSelector} from "react-redux";
-import {Button, Heading, HStack, Image, Pressable, Text, VStack} from "native-base";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Heading, HStack, Image, Pressable, Text, VStack } from "native-base";
 import counties from "../../data/counties";
-import {logOut} from "../../actions/user";
+import { logOut } from "../../actions/user";
 import * as ImagePicker from 'expo-image-picker';
-import {cleangigApi, sotApi} from "../../network";
-import {LOGIN_SUCCESS, LOGOUT} from "../../actions/types";
-import {storeLocal, USER_DATA_KEY} from "../../storage";
+import { cleangigApi, sotApi } from "../../network";
+import { LOGIN_SUCCESS, LOGOUT } from "../../actions/types";
+import { storeLocal, USER_DATA_KEY } from "../../storage";
 import HoshiInput from "../../components/HoshiInput";
 import SafeScrollView from "../../components/SafeScrollView";
-import {ListItem} from "react-native-elements";
+import { ListItem } from "react-native-elements";
 import services from "../../data/services";
 import FetchContent from "../../components/FetchContent";
-import {resetRoute} from "../../helpers";
+import { resetRoute } from "../../helpers";
 import Constants from 'expo-constants';
 import HoshiMultiSelectControl from '../../components/HoshiMultiSelectControl';
+import { StyleSheet } from 'react-native'
+import { colors } from '../../helpers';
+import PortFolio from '../../components/Portfolio';
 
-export default function ({navigation}) {
+export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
     const [businessName, setBusinessName] = useState(user.name);
     const [contactName] = useState(user.contact);
@@ -28,17 +31,28 @@ export default function ({navigation}) {
     const [offeredServices, setOfferedServices] = useState([]);
     const [addedServices, setAddedServices] = useState([]);
     const [removedServices, setRemovedServices] = useState([]);
+    const [offeredServicesNames, setOfferedServicesName] = useState('');
     const [saveIcon, setSaveIcon] = useState('save');
+    const [activeTab, setActiveTab] = useState('profile');
+    const [isPortfolioRefresh, setIsPortfolioRefresh] = useState(false);
+
     const dispatch = useDispatch();
     // console.log(user)
 
+    useEffect(() => {
+        fetchServices();
+    }, []);
+
     async function fetchServices() {
-        const {data} = await sotApi.get(`services/get_all?provider=${user.id}`);
+        const { data } = await sotApi.get(`services/get_all?provider=${user.id}`);
+        let serviceName = [];
+        data.services.map(service => serviceName.push(service.name));
+        setOfferedServicesName(serviceName.join(", "))
         setOfferedServices(data.services);
     }
 
     async function logOut() {
-        dispatch({type: LOGOUT});
+        dispatch({ type: LOGOUT });
         await storeLocal(USER_DATA_KEY, {});
         navigation.dispatch(resetRoute('Login'));
     }
@@ -58,7 +72,7 @@ export default function ({navigation}) {
     }
 
     function deleteService(service) {
-        let tempOServices = offeredServices.filter(s => s.id !==  service.id);
+        let tempOServices = offeredServices.filter(s => s.id !== service.id);
         setOfferedServices(tempOServices);
         setRemovedServices([...removedServices, service]);
     }
@@ -81,95 +95,137 @@ export default function ({navigation}) {
             add: addedServices.map(s => [s.id]),
             remove: removedServices.map(s => s.id),
         }));
-        const {data} = await sotApi.post(`providers/update`, formData);
+        const { data } = await sotApi.post(`providers/update`, formData);
 
         if (data.success) {
-            const {data} = await cleangigApi.get(`providers/${user.id}`);
+            const { data } = await cleangigApi.get(`providers/${user.id}`);
 
-            dispatch({type: LOGIN_SUCCESS, payload: data});
+            dispatch({ type: LOGIN_SUCCESS, payload: data });
             await storeLocal(USER_DATA_KEY, data);
         }
         setSaveIcon('save');
     }
 
+    const openEditPage = () => {
+        navigation.push("EditPorfile");
+    }
+
+    const openAddPortfolio = () => {
+        navigation.push("AddPortfolio", { refreshPage: refreshPortfolio });
+    }
+
+    const refreshPortfolio = () => { setIsPortfolioRefresh(!isPortfolioRefresh) }
+
+    const openPortfolioDetailPage = (item) => {
+        console.log(item)
+        navigation.push("PortfolioDetails", { portFolio: item });
+    }
+
     return <>
         <AppBar navigation={navigation} screenTitle="Profil"
-                customOptions={[
-                    {action: saveAll, icon: saveIcon},
-                    {action: () => logOut(navigation), icon: 'sign-out-alt'},
-                ]}/>
+            customOptions={[
+                activeTab === 'profile'
+                    ? { action: openEditPage, icon: 'edit' }
+                    : activeTab === 'portfolio' && { action: openAddPortfolio, icon: 'plus' }
+            ]} />
 
-        <SafeScrollView flex={1}>
-            <HStack m={4} space={2}>
-                <Pressable onPress={selectPicture}>
-                    <Image source={{uri: picture}} w={100} h={100} rounded="md" alt=" "/>
-                </Pressable>
-                <VStack space={2}>
-                    <Heading size="md" isTruncated noOfLines={2} maxWidth="300">{user.name}</Heading>
-                    <Text>{user.contact}</Text>
+        <HStack mt="3" mx="3" justifyContent="center">
+            <Pressable
+                style={activeTab === 'profile' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
+                onPress={() => setActiveTab('profile')}
+            >
+                <Text
+                    style={activeTab === 'profile' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
+                >Profile</Text>
+            </Pressable>
+            <Pressable
+                style={activeTab === 'review' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
+                onPress={() => setActiveTab('review')}
+            >
+                <Text
+                    style={activeTab === 'review' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
+                >Reviews</Text>
+            </Pressable>
+            <Pressable
+                style={activeTab === 'portfolio' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
+                onPress={() => setActiveTab('portfolio')}
+            >
+                <Text
+                    style={activeTab === 'portfolio' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
+                >Portfolio</Text>
+            </Pressable>
+        </HStack>
+
+        {activeTab === 'profile' ? (
+            <SafeScrollView flex={1}>
+                <HStack m={4} justifyContent="center" space={2}>
+                    <Pressable onPress={selectPicture}>
+                        <Image source={{ uri: picture }} w={100} h={100} rounded="full" alt=" " />
+                    </Pressable>
+                </HStack>
+
+                <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Name</Text>
+                    <Text>{user.name}</Text>
+                </VStack>
+                <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Description</Text>
+                    <Text>{user.description}</Text>
+                </VStack>
+                <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Email</Text>
                     <Text>{user.email}</Text>
                 </VStack>
-            </HStack>
-
-            <VStack my={4}>
-                <HoshiInput value={businessName} label="Förnamn" onChangeText={setBusinessName}/>
-                <HoshiInput value={phone} label="Telefonnummer" onChangeText={setPhone} keyboardType="numeric"/>
-                <HoshiInput value={description} label="Företagsbeskrivning" onChangeText={setDescription} multiline
-                            height={100}/>
-                <HoshiMultiSelectControl label="Plats" selectedValue={county} onValueChange={setCounty}
-                                    collection={counties.map(c => ({id: c.code, name: c.name, value: c.code}))}/>
-
-            </VStack>
-
-            <FetchContent fetch={fetchServices}>
-                <VStack>
-                    <Heading size="sm">Tjänster</Heading>
-                    <VStack style={{marginVertical: 10}}>
-                        {offeredServices
-                            .filter(s => !removedServices.find(r => r.id === s.id))
-                            .map(service => (
-                                <ListItem key={service.id} bottomDivider>
-                                    <Text style={{flex: 1}}>{service.name}</Text>
-                                    <Button variant="ghost" colorScheme="brand" onPress={() => deleteService(service)}>
-                                        Radera
-                                    </Button>
-                                </ListItem>
-                            ))
-                        }
-                        {addedServices.map(service => (
-                            <ListItem key={service.id} bottomDivider>
-                                <Text style={{flex: 1}}>{service.name}</Text>
-                                <Button variant="ghost" colorScheme="brand"
-                                        onPress={() => setAddedServices([...addedServices].filter(s => s.id !== service.id))}>
-                                    Radera
-                                </Button>
-                            </ListItem>
-                        ))}
-                    </VStack>
-                    {/* {
-                        console.log('offeredServices ===>>>', offeredServices)}
-                        {console.log('addedServices ===>>> ', addedServices)}
-                       { console.log('removedServices ===>>>', removedServices)
-                    } */}
-                    {services
-                        .filter(as => {
-                            return offeredServices.concat(addedServices).findIndex(s => s.id === as.id) < 0
-                                || removedServices.findIndex(s => s.id === as.id) > 0
-                        })
-                        .map(service => (
-                            <ListItem key={service.id} containerStyle={{justifyContent: 'space-between', padding: 8}}>
-                                <Text style={{flex: 1}}>{service.name}</Text>
-                                <Button variant="ghost" colorScheme="brand" onPress={() => addService(service.id)}>
-                                    Lägg till
-                                </Button>
-                            </ListItem>
-                        ))
-                    }
+                <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Telefonnummer</Text>
+                    <Text>{user.phone_number}</Text>
                 </VStack>
-            </FetchContent>
-            <VStack style={{alignItems: 'center', justifyContent: 'center', marginTop: 30}} >
-                <Text fontWeight='bold' >version {Constants.manifest.version}</Text>
+                <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Plats</Text>
+                    <Text>{county}</Text>
+                </VStack>
+                <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Tjänster</Text>
+                    <Text>{offeredServicesNames}</Text>
+                </VStack>
+
+                <VStack mt="5" px="3">
+                    <Pressable onPress={logOut}>
+                        <Text color="#FC3D3D" fontWeight="semibold"> Log Out </Text>
+                    </Pressable>
+                </VStack>
+                <VStack style={{ alignItems: 'center', justifyContent: 'center', marginTop: 50 }} >
+                    <Text fontWeight='bold' >version {Constants.manifest.version}</Text>
+                </VStack>
+            </SafeScrollView>
+        ) : activeTab === 'review' ? (
+            <VStack flex={1} justifyContent="center" alignItems="center">
+                <Text style={{ color: colors.gray }}>Inget att visa</Text>
             </VStack>
-        </SafeScrollView>
+        ) : (
+            <>
+                <PortFolio providerId={user.id} refresh={isPortfolioRefresh} openDetailPage={openPortfolioDetailPage}></PortFolio>
+            </>
+        )}
     </>;
 };
+
+const styles = StyleSheet.create({
+    tabs: {
+        padding: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+    },
+    activeTab: {
+        backgroundColor: '#ff7e1a',
+        borderRadius: 6,
+    },
+    tabTitle: {
+        fontSize: 16,
+        fontWeight: "600"
+    },
+    activeTabTitle: {
+        color: "#ffffff"
+    }
+})
