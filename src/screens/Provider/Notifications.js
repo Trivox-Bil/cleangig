@@ -9,12 +9,14 @@ import {
     HStack,
     VStack,
     Text,
-    Box
+    Box,
+    Icon
 } from 'native-base';
 import AppBar from "../../components/AppBar";
 import FetchContent from "../../components/FetchContent";
 import { StyleSheet, TouchableOpacity, TouchableHighlight, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 
 const Notification = ({ navigation }) => {
@@ -112,16 +114,11 @@ const Notification = ({ navigation }) => {
     const renderHiddenItem = (data, rowMap) => (
         <View style={styles.rowBack}>
             <TouchableOpacity
-                style={[styles.actionButton, styles.closeBtn]}
-                onPress={() => closeItem(rowMap, data.item.id)}
-            >
-                <Text style={styles.btnText}>Close</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
                 style={[styles.actionButton, styles.deleteBtn]}
-                onPress={() => deleteItem(data.item)}
+                onPress={() => { deleteItem(data.item) }}
             >
-                <Text style={styles.btnText}>Delete</Text>
+                {/* <Text style={styles.btnText}>Delete</Text> */}
+                <Icon as={FontAwesome5} name="trash" color="#ffffff" size="6"></Icon>
             </TouchableOpacity>
         </View>
     );
@@ -147,14 +144,14 @@ const Notification = ({ navigation }) => {
                         );
                     }}
                 /> */}
-                 <SwipeListView
+                <SwipeListView
                     data={notifications}
                     // data={listData}
                     keyExtractor={(noti) => noti.id}
                     renderItem={ListItem}
                     renderHiddenItem={renderHiddenItem}
-                    leftOpenValue={75}
-                    rightOpenValue={-150}
+                    leftOpenValue={0}
+                    rightOpenValue={-75}
                     previewRowKey={'0'}
                     previewOpenValue={-40}
                     previewOpenDelay={3000}
@@ -185,7 +182,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 4,
         paddingVertical: 2,
-        height: 50,
+        // height: 50,
     },
     rowBack: {
         alignItems: 'center',

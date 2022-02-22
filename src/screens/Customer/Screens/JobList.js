@@ -11,11 +11,13 @@ import {
   Pressable,
   Text,
   VStack,
+  Icon
 } from "native-base";
 import AppBar from "../../../components/AppBar";
 import FetchContent from "../../../components/FetchContent";
 import JobStatusFilter from "../../../components/JobStatusFilter";
 import services from "../../../data/services";
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const STATUS_ALL = ["pending", "initial", "assigned", "done"];
 const STATUS_PENDING = ["pending"];
@@ -29,6 +31,7 @@ export default function ({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [statusFilter, setStatusFilter] = useState(STATUS_ALL);
+  const [showListId, setShowListId] = useState(0);
 
   useEffect(() => {
     fetchProjects().then(() => {
@@ -43,9 +46,32 @@ export default function ({ navigation }) {
   async function fetchProjects() {
     setLoading(true);
     const { data } = await cleangigApi.get(`customers/${user.id}/jobs`);
-    setJobs(data.jobs);
+    let temp = {
+      all: data.jobs,
+      pending: data.jobs.filter(j => STATUS_PENDING.includes(j.status)),
+      initial: data.jobs.filter(j => STATUS_INITIAL.includes(j.status)),
+      assigned: data.jobs.filter(j => STATUS_ASSIGNED.includes(j.status)),
+      unpaid: data.jobs.filter(j => STATUS_UNPAID.includes(j.status)),
+      done: data.jobs.filter(j => STATUS_DONE.includes(j.status))
+    }
+    setJobs(temp);
+    // setJobs(data.jobs);
     setLoading(false);
   }
+
+  const ListHead = (id, title) => {
+    return <Pressable borderBottomWidth={1} borderColor="#ccc" onPress={() => showListId === id ? setShowListId(null) : setShowListId(id)}>
+        <HStack px={2} py={4} space={2}  justifyContent="space-between">
+            <Text fontWeight="bold">{title}</Text>
+            {
+                id === showListId 
+                ? <Icon as={FontAwesome5} size="5" name="chevron-down" />
+                : <Icon as={FontAwesome5} size="5" name="chevron-right" />
+            }
+            
+        </HStack>
+    </Pressable>
+}
 
   function ListItem({ item: job }) {
     return (
@@ -93,7 +119,85 @@ export default function ({ navigation }) {
         navigation={navigation}
         customOptions={[{ action: fetchProjects, icon: "sync" }]}
       />
-      <VStack flex={0.2}>
+      {ListHead(0, 'Allt')}
+        {0 === showListId && <FlatList
+            refreshing={loading}
+            onRefresh={fetchProjects}
+            data={jobs.all}
+            keyExtractor={job => job.id}
+            renderItem={ListItem}
+            ListEmptyComponent={function () {
+                return <Center flex={1} py={150}>
+                    <Heading size="md" color="dark.300">Inget att visa</Heading>
+                </Center>
+            }}
+        />}
+      {ListHead(1, 'Väntar Godkännande')}
+        {1 === showListId && <FlatList
+            refreshing={loading}
+            onRefresh={fetchProjects}
+            data={jobs.pending}
+            keyExtractor={job => job.id}
+            renderItem={ListItem}
+            ListEmptyComponent={function () {
+                return <Center flex={1} py={150}>
+                    <Heading size="md" color="dark.300">Inget att visa</Heading>
+                </Center>
+            }}
+        />}
+      {ListHead(2, 'Inte tilldelats')}
+        {2 === showListId && <FlatList
+            refreshing={loading}
+            onRefresh={fetchProjects}
+            data={jobs.initial}
+            keyExtractor={job => job.id}
+            renderItem={ListItem}
+            ListEmptyComponent={function () {
+                return <Center flex={1} py={150}>
+                    <Heading size="md" color="dark.300">Inget att visa</Heading>
+                </Center>
+            }}
+        />}
+      {ListHead(3, 'Pågående')}
+        {3 === showListId && <FlatList
+            refreshing={loading}
+            onRefresh={fetchProjects}
+            data={jobs.assigned}
+            keyExtractor={job => job.id}
+            renderItem={ListItem}
+            ListEmptyComponent={function () {
+                return <Center flex={1} py={150}>
+                    <Heading size="md" color="dark.300">Inget att visa</Heading>
+                </Center>
+            }}
+        />}
+      {ListHead(4, 'Fakturor')}
+        {4 === showListId && <FlatList
+            refreshing={loading}
+            onRefresh={fetchProjects}
+            data={jobs.unpaid}
+            keyExtractor={job => job.id}
+            renderItem={ListItem}
+            ListEmptyComponent={function () {
+                return <Center flex={1} py={150}>
+                    <Heading size="md" color="dark.300">Inget att visa</Heading>
+                </Center>
+            }}
+        />}
+      {ListHead(5, 'Slutfört arbete')}
+        {5 === showListId && <FlatList
+            refreshing={loading}
+            onRefresh={fetchProjects}
+            data={jobs.done}
+            keyExtractor={job => job.id}
+            renderItem={ListItem}
+            ListEmptyComponent={function () {
+                return <Center flex={1} py={150}>
+                    <Heading size="md" color="dark.300">Inget att visa</Heading>
+                </Center>
+            }}
+        />}
+     {/*  <VStack flex={0.2}>
         <JobStatusFilter
           value={statusFilter}
           onChange={setStatusFilter}
@@ -126,7 +230,7 @@ export default function ({ navigation }) {
             }}
           />
         </FetchContent>
-      </VStack>
+      </VStack> */}
     </VStack>
   );
 }

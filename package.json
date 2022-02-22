@@ -25,6 +25,7 @@
     "date-fns": "^2.25.0",
     "expo": "^43.0.0",
     "expo-app-loading": "^1.2.1",
+    "expo-auth-session": "~3.4.2",
     "expo-camera": "~12.0.3",
     "expo-document-picker": "~10.0.3",
     "expo-file-system": "~13.0.3",
@@ -37,6 +38,7 @@
     "expo-notifications": "~0.13.3",
     "expo-permissions": "~13.0.3",
     "expo-print": "~11.0.4",
+    "expo-random": "~12.0.1",
     "expo-screen-orientation": "~4.0.3",
     "expo-sharing": "~10.0.3",
     "expo-status-bar": "~1.1.0",
@@ -58,6 +60,7 @@
     "react-native-in-app-notification": "^3.2.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
     "react-native-modal-datetime-picker": "^13.0.1",
+    "react-native-pager-view": "5.4.6",
     "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.8.0",
@@ -78,8 +81,7 @@
     "styled-system": "^5.1.5",
     "unimodules-permissions-interface": "^6.1.0",
     "validator": "^13.6.0",
-    "voca": "^1.4.0",
-    "react-native-pager-view": "5.4.6"
+    "voca": "^1.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

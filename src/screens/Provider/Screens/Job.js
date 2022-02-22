@@ -122,13 +122,15 @@ export default function ({ route, navigation }) {
                 <Card>
                     <Card.Title style={{ marginBottom: 10 }}>Publicerat {formatDate(job.created_at)}</Card.Title>
                     <Card.Divider />
+                    <Text style={{ opacity: 0.6 }}>{job.street}{job.city ? `, ${job.city}` : ''}, {job.county.name}</Text>
+                    <Text style={{ opacity: 0.6, marginBottom: 10 }}>Förfaller den {formatDate(job.deadline_to)}</Text>
+                    {/* <Card.Divider /> */}
                     <Text style={{ marginBottom: 10 }}>{job.description}</Text>
                     <HStack minH={200} ml={5} my={10}>
                         <ImageCarousel images={pictures} />
                     </HStack>
                     <Card.Divider />
-                    <Text style={{ opacity: 0.6 }}>{job.street}{job.city ? `, ${job.city}` : ''}, {job.county.name}</Text>
-                    <Text style={{ opacity: 0.6 }}>Förfaller den {formatDate(job.deadline)}</Text>
+                    
                 </Card>
 
                 <Card>

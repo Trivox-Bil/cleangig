@@ -42,6 +42,7 @@ export default function ({navigation}) {
                     <Modal.Header _text={{fontSize: '2xl'}} >{chosenService.name}</Modal.Header>
                     <Modal.Body px={6}>
                         {/* <ScrollView horizontal> */}
+                            <Text fontSize="md" mb="2" fontWeight="medium" >Exempel på jobb som kan utföras</Text>
                             <Flex direction='column'>
                                 {chosenService.description.split('\n').map((item, i) => (
                                     // flexDirection: "row", maxWidth: "100%", flex: 1, flexWrap: 'wrap'

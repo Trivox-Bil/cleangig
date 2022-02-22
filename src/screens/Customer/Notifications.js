@@ -7,12 +7,16 @@ import {
     Heading,
     Pressable,
     HStack,
-    VStack
+    VStack,
+    Text,
+    Box,
+    Icon
 } from 'native-base';
 import AppBar from "../../components/AppBar";
 import FetchContent from "../../components/FetchContent";
-import { StyleSheet, TouchableOpacity, TouchableHighlight, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, TouchableHighlight, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const Notification = ({ navigation }) => {
     const user = useSelector(state => state.user.data);
@@ -58,58 +62,56 @@ const Notification = ({ navigation }) => {
     const ListItem = ({ item }) => {
 
         return (
-            <TouchableHighlight
-                onPress={() => openPage(item)}
-                style={styles.rowFront}
-                underlayColor={'#fff'}
-            >
-                {/* <HStack alignItems="center">
-                    <VStack space={4} flex={0.95}>
-                    <Text>{item.content}</Text>
-                    </VStack>
-                </HStack> */}
-                <View>
-                    <Heading fontWeight={item.seen == 1 ? 400 : 700} size="sm" mb={2} >{item.title}</Heading>
-                    <Text>{item.content}</Text>
-            </View>
-            </TouchableHighlight>
+            <Box bg="#fff">
+                <Pressable
+                    _pressed={{ bg: "gray.200" }}
+                    onPress={() => openPage(item)}
+                    px={2}
+                    py={4}
+                    space={2}
+                    borderBottomWidth={1}
+                    borderColor="#ccc"
+                >
+                    <HStack alignItems="center">
+                        <VStack space={4} flex={0.95}>
+                            <Heading fontWeight={item.seen == 1 ? 400 : 700} size="sm" >{item.title}</Heading>
+                            <Text>{item.content}</Text>
+                        </VStack>
+                    </HStack>
+                </Pressable>
+            </Box>
         );
     }
 
-const closeItem = (rowMap, rowKey) => {
-    if (rowMap[rowKey]) {
-        rowMap[rowKey].closeRow();
+    const closeItem = (rowMap, rowKey) => {
+        if (rowMap[rowKey]) {
+            rowMap[rowKey].closeRow();
+        }
+    };
+
+    const deleteItem = async item => {
+        const { data } = await cleangigApi.get(`delete_notification/${item.id}`);
+        fatchNotifications().then();
     }
-};
 
-const deleteItem = async item => {
-    const { data } = await cleangigApi.get(`delete_notification/${item.id}`);
-    fatchNotifications().then();
-}
+    const renderHiddenItem = (data, rowMap) => (
+        <View style={styles.rowBack}>
+            <TouchableOpacity
+                style={[styles.actionButton, styles.deleteBtn]}
+                onPress={() => { deleteItem(data.item) }}
+            >
+                {/* <Text style={styles.btnText}>Delete</Text> */}
+                <Icon as={FontAwesome5} name="trash" color="#ffffff" size="6"></Icon>
+            </TouchableOpacity>
+        </View>
+    );
 
-const renderHiddenItem = (data, rowMap) => (
-    <View style={styles.rowBack}>
-        <TouchableOpacity
-            style={[styles.actionButton, styles.closeBtn]}
-            onPress={() => closeItem(rowMap, data.item.id)}
-        >
-            <Text style={styles.btnText}>Close</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={[styles.actionButton, styles.deleteBtn]}
-            onPress={() => deleteItem(data.item)}
-        >
-            <Text style={styles.btnText}>Delete</Text>
-        </TouchableOpacity>
-    </View>
-);
+    return (
+        <>
+            <AppBar navigation={navigation} screenTitle="Aviseringar" />
 
-return (
-    <>
-        <AppBar navigation={navigation} screenTitle="Aviseringar" />
-
-        <FetchContent fetch={fatchNotifications}>
-            {/* <FlatList
+            <FetchContent fetch={fatchNotifications}>
+                {/* <FlatList
                     refreshing={loading}
                     onRefresh={fatchNotifications}
                     data={notifications}
@@ -125,21 +127,21 @@ return (
                         );
                     }}
                 /> */}
-            <SwipeListView
-                data={notifications}
-                // data={listData}
-                keyExtractor={(noti) => noti.id}
-                renderItem={ListItem}
-                renderHiddenItem={renderHiddenItem}
-                leftOpenValue={75}
-                rightOpenValue={-150}
-                previewRowKey={'0'}
-                previewOpenValue={-40}
-                previewOpenDelay={3000}
-            ></SwipeListView>
-        </FetchContent>
-    </>
-);
+                <SwipeListView
+                    data={notifications}
+                    // data={listData}
+                    keyExtractor={(noti) => noti.id}
+                    renderItem={ListItem}
+                    renderHiddenItem={renderHiddenItem}
+                    leftOpenValue={0}
+                    rightOpenValue={-75}
+                    previewRowKey={'0'}
+                    previewOpenValue={-40}
+                    previewOpenDelay={3000}
+                ></SwipeListView>
+            </FetchContent>
+        </>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 4,
         paddingVertical: 2,
-        height: 50,
+        // height: 50,
     },
     rowBack: {
         alignItems: 'center',

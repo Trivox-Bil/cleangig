@@ -72,7 +72,7 @@ export default function ({ navigation }) {
             >
                 <Text
                     style={activeTab === 'profile' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
-                >Profile</Text>
+                >Profil</Text>
             </Pressable>
             <Pressable
                style={activeTab === 'review' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
@@ -80,7 +80,7 @@ export default function ({ navigation }) {
             >
                 <Text
                     style={activeTab === 'review' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
-                >Reviews</Text>
+                >Omdömen</Text>
             </Pressable>
         </HStack>
 
@@ -93,7 +93,7 @@ export default function ({ navigation }) {
                 </HStack>
 
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
-                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Name</Text>
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Namn</Text>
                     <Text>{user.fname} {user.lname}</Text>
                 </VStack>
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
@@ -105,13 +105,13 @@ export default function ({ navigation }) {
                     <Text>{user.phone_number}</Text>
                 </VStack>
                 <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
-                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Address</Text>
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Adress</Text>
                     <Text>{street}, {city}, {county}, {postalCode}</Text>
                 </VStack>
 
                 <VStack mt="5" px="3">
                     <Pressable onPress={logOut}>
-                    <Text color="#FC3D3D" fontWeight="semibold"> Log Out </Text>
+                    <Text color="#FC3D3D" fontWeight="semibold"> Logga ut </Text>
                     </Pressable>
                 </VStack>
                 <VStack style={{ alignItems: 'center', justifyContent: 'center', marginTop: 100 }} >

@@ -25,7 +25,7 @@ import mime from "mime";
 
 const AddPortFolio = ({ navigation, route }) => {
   const user = useSelector(state => state.user.data);
-  const screenTitle = 'Add Portfolio';
+  const screenTitle = 'Lägg till tidigare jobb';
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedServices, setSelectedServices] = useState([]);
@@ -116,10 +116,10 @@ const AddPortFolio = ({ navigation, route }) => {
     let valid = true;
     if (title === '') {
       valid = false;
-      setError('Title is require');
+      setError('Titel krävs');
     } else if (selectedServices.length == 0) {
       valid = false;
-      setError('Service is require');
+      setError('Tjänster krävs');
     }
 
     if (valid) {
@@ -137,7 +137,7 @@ const AddPortFolio = ({ navigation, route }) => {
       <ScrollView my="3">
         {error !== '' && <Text px="4" fontSize="md" fontWeight="medium" mb="2" color="red.400" >{error}</Text>}
         <FormControl px="4" mb="3">
-          <FormControl.Label>Title</FormControl.Label>
+          <FormControl.Label>Titel</FormControl.Label>
           <Input
             value={title}
             onChangeText={setTitle}
@@ -151,7 +151,7 @@ const AddPortFolio = ({ navigation, route }) => {
           />
         </FormControl>
         <FormControl px="4" mb="3">
-          <FormControl.Label>Description</FormControl.Label>
+          <FormControl.Label>Beskrivning</FormControl.Label>
           <TextArea
             value={description}
             borderRadius="8"
@@ -165,7 +165,7 @@ const AddPortFolio = ({ navigation, route }) => {
           />
         </FormControl>
         <FormControl px="4" mb="3">
-          <FormControl.Label>Services</FormControl.Label>
+          <FormControl.Label>Tjänster</FormControl.Label>
           <Checkbox.Group onChange={setSelectedServices} value={selectedServices} accessibilityLabel="choose values">
             {
               offeredServices.map(service => (

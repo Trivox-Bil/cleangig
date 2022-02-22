@@ -188,7 +188,7 @@ export default function ({ navigation, route }) {
 
     <VStack flex={1} safeArea justifyContent="space-between">
       <AppBar
-        screenTitle={`${job.current?.title} (budget - ${jobPrice} KR)`}
+        screenTitle={`${job.current?.title} (prisförslag - ${jobPrice} KR)`}
         navigation={navigation}
         backButton
         backButtonHandler={_backButtonHandler}

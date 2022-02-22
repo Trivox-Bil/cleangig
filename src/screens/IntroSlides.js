@@ -8,23 +8,23 @@ import { storeLocal } from '../storage';
 const slides = [
     {
       key: 1,
-      title: 'Easily to look for thousands of handymen to help your problems',
+      title: 'Har du något som behöver åtgärdas hemma?',
     //   text: 'Description.\nSay something cool',
-      image: require('../../assets/slide1.png'),
+      image: require('../../assets/house.png'),
       backgroundColor: '#ff7e1a',
     },
     {
       key: 2,
-      title: 'Cheaper and faster than hiring normal craftman ',
+      title: 'Vi på Cleangig hjälper er med detta. Allt från att städa förrådet till att skära buskar',
     //   text: 'Other cool stuff',
-      image: require('../../assets/slide2.png'),
+      image: require('../../assets/idea.png'),
       backgroundColor: '#ff7e1a',
     },
     {
       key: 3,
-      title: 'Be one of the handyman and start to work and earn money',
+      title: 'Skapa ett konto och få proffesionell hjälp med dina ärenden.',
     //   text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
-      image: require('../../assets/slide3.png'),
+      image: require('../../assets/happiness.png'),
       backgroundColor: '#ff7e1a',
     }
   ];
@@ -43,13 +43,13 @@ const IntroSlides = ({navigation}) => {
               <Box flex={1} alignItems="flex-end" pr="3">
                 <Pressable onPress={skipHandler}>
                     <HStack alignItems="center">
-                        <Text fontWeight="600" fontSize="md" color="#ffffff" mr="1"> Skip </Text>
+                        <Text fontWeight="600" fontSize="md" color="#ffffff" mr="1"> hoppa </Text>
                         <FontAwesome name="angle-right" size={35} color="white" />
                     </HStack>
                 </Pressable>
               </Box>
               <Box flex={3} alignItems="center">
-                <Image width="5/6" height="5/6" borderRadius="20" source={item.image}></Image>
+                <Image width="5/6" height="5/6" background="white" resizeMode="contain" source={item.image}></Image>
               </Box>
               <Box flex={3} justifyContent="center" px="6" alignItems="center">
                 <Text textAlign="center" color="white" fontWeight="600" fontSize="md">{item.title}</Text>
@@ -63,6 +63,8 @@ const IntroSlides = ({navigation}) => {
             renderItem={renderItem} 
             data={slides} 
             onDone={skipHandler}
+            doneLabel="Gjort"
+            nextLabel="Nästa"
         />
     );
 } 
