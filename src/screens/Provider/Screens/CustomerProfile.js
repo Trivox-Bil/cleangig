@@ -39,7 +39,7 @@ export default function ({ navigation, route }) {
                     >
                         <Text
                             style={activeTab === 'profile' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
-                        >Profile</Text>
+                        >Profil</Text>
                     </Pressable>
                     <Pressable
                         style={activeTab === 'review' ? { ...styles.tabs, ...styles.activeTab } : { ...styles.tabs }}
@@ -47,7 +47,7 @@ export default function ({ navigation, route }) {
                     >
                         <Text
                             style={activeTab === 'review' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
-                        >Reviews</Text>
+                        >Omdömen</Text>
                     </Pressable>
                 </HStack>
 

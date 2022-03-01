@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Card, Image, Input, ListItem, Text } from 'react-native-elements';
+import { Button, Card, Image, Input, ListItem } from 'react-native-elements';
 import { cleangigApi, sotApi } from "../../../network";
 import { formatDate } from "../../../helpers";
 import ImageCarousel from "../../../components/ImageCarousel";
-import { HStack } from "native-base";
+import { HStack, Text, VStack } from "native-base";
 import SafeScrollView from "../../../components/SafeScrollView";
 import FetchContent from "../../../components/FetchContent";
 import { useSelector } from "react-redux";
@@ -130,14 +130,10 @@ export default function ({ route, navigation }) {
                         <ImageCarousel images={pictures} />
                     </HStack>
                     <Card.Divider />
-                    
-                </Card>
 
-                <Card>
-                    <Card.Title>Förslag</Card.Title>
-                    <FetchContent fetch={fetchProposals}>
-                        {proposals.length > 0 ? proposals.map(offer => (
-                            <ListItem
+                </Card>
+                {/* 
+<ListItem
                                 key={offer.id}
                                 bottomDivider
                                 containerStyle={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -149,6 +145,21 @@ export default function ({ route, navigation }) {
                                     onPress={() => deleteProposal(offer.id)}
                                 />
                             </ListItem>
+*/}
+                <Card>
+                    <Card.Title>Förslag</Card.Title>
+                    <FetchContent fetch={fetchProposals}>
+                        {proposals.length > 0 ? proposals.map(offer => (
+                            <HStack key={offer.id}>
+                                <Text flex={1} mr="2">{offer.message}</Text>
+                                <Text flex={1} textAlign="center">{offer.price}kr</Text>
+                                <Button
+                                    flex={1}
+                                    type="clear"
+                                    icon={{ type: 'font-awesome', name: 'trash', color: 'red' }}
+                                    onPress={() => deleteProposal(offer.id)}
+                                />
+                            </HStack>
                         )) : (
                             <>
                                 <Input

@@ -24,6 +24,7 @@ import { storeLocal, USER_DATA_KEY } from "../storage";
 import { resetRoute } from "../helpers";
 import { login } from "../actions/user";
 import { FontAwesome } from '@expo/vector-icons';
+import * as Google from "expo-google-app-auth"
 
 export default function ({ navigation }) {
     const loggedInStatus = useSelector(state => state.user.loggedInStatus);
@@ -69,6 +70,18 @@ export default function ({ navigation }) {
         } else {
             navigation.navigate('ProviderSignUp');
         }
+    }
+
+    const handleGoogleSignIn = () => {
+        // 1071325411415-fsg5q3ms0bflgih4rn4bslvk4sso46r3.apps.googleusercontent.com
+        const config = {
+            iosClientId: `1071325411415-fsg5q3ms0bflgih4rn4bslvk4sso46r3.apps.googleusercontent.com`,
+            scopes: ['profile', 'email']
+        }
+
+        Google.logInAsync(config)
+        .then((result) => { console.log(result) })
+        .catch((error) => { console.log(error) });
     }
 
     return (
@@ -159,6 +172,8 @@ export default function ({ navigation }) {
 
                         </VStack>
                         <VStack>
+                            {/* <Button variant="outline" onPress={handleGoogleSignIn}>Google Sign In</Button> */}
+
                             {/* <Button py="3" alignSelf="center" width={100} _text={{color: 'white', fontWeight: 600, fontSize: 15}}>Log In</Button> */}
                             <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">
                                 <Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} variant="ghost" onPress={submit}>Logga in</Button>

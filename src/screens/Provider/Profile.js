@@ -152,7 +152,7 @@ export default function ({ navigation }) {
             >
                 <Text
                     style={activeTab === 'portfolio' ? { ...styles.tabTitle, ...styles.activeTabTitle } : { ...styles.tabTitle }}
-                >Tidigare jobb</Text>
+                >Tidigare arbeten</Text>
             </Pressable>
         </HStack>
 

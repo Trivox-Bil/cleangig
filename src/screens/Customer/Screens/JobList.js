@@ -18,6 +18,7 @@ import FetchContent from "../../../components/FetchContent";
 import JobStatusFilter from "../../../components/JobStatusFilter";
 import services from "../../../data/services";
 import { FontAwesome5 } from '@expo/vector-icons';
+import { SearchBar } from 'react-native-elements';
 
 const STATUS_ALL = ["pending", "initial", "assigned", "done"];
 const STATUS_PENDING = ["pending"];
@@ -32,10 +33,12 @@ export default function ({ navigation }) {
   const [jobs, setJobs] = useState([]);
   const [statusFilter, setStatusFilter] = useState(STATUS_ALL);
   const [showListId, setShowListId] = useState(0);
+  const [searching, setSearching] = useState(false);
+  const [searchToken, setSearchToken] = useState('');
 
   useEffect(() => {
     fetchProjects().then(() => {
-      setInterval(fetchProjects, 20000);
+      // setInterval(fetchProjects, 20000);
     });
   }, []);
 
@@ -46,18 +49,65 @@ export default function ({ navigation }) {
   async function fetchProjects() {
     setLoading(true);
     const { data } = await cleangigApi.get(`customers/${user.id}/jobs`);
-    let temp = {
+    let temp = {};
+/*     let temp = {
       all: data.jobs,
       pending: data.jobs.filter(j => STATUS_PENDING.includes(j.status)),
       initial: data.jobs.filter(j => STATUS_INITIAL.includes(j.status)),
       assigned: data.jobs.filter(j => STATUS_ASSIGNED.includes(j.status)),
       unpaid: data.jobs.filter(j => STATUS_UNPAID.includes(j.status)),
       done: data.jobs.filter(j => STATUS_DONE.includes(j.status))
-    }
+    } */
+    if (searchToken.trim() === "") {
+      temp = {
+        all: data.jobs,
+        pending: data.jobs.filter(j => STATUS_PENDING.includes(j.status)),
+        initial: data.jobs.filter(j => STATUS_INITIAL.includes(j.status)),
+        assigned: data.jobs.filter(j => STATUS_ASSIGNED.includes(j.status)),
+        unpaid: data.jobs.filter(j => STATUS_UNPAID.includes(j.status)),
+        done: data.jobs.filter(j => STATUS_DONE.includes(j.status))
+      }
+  } else {
+      temp = {
+          all: data.jobs.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken)),
+          pending: data.jobs.filter(j => STATUS_PENDING.includes(j.status) && (j.title.includes(searchToken) || j.city.includes(searchToken) || j.street.includes(searchToken))),
+          initial: data.jobs.filter(j => STATUS_INITIAL.includes(j.status) && (j.title.includes(searchToken) || j.city.includes(searchToken) || j.street.includes(searchToken))),
+          assigned: data.jobs.filter(j => STATUS_ASSIGNED.includes(j.status) && (j.title.includes(searchToken) || j.city.includes(searchToken) || j.street.includes(searchToken))),
+          unpaid: data.jobs.filter(j => STATUS_UNPAID.includes(j.status) && (j.title.includes(searchToken) || j.city.includes(searchToken) || j.street.includes(searchToken))),
+          done: data.jobs.filter(j => STATUS_DONE.includes(j.status) && (j.title.includes(searchToken) || j.city.includes(searchToken) || j.street.includes(searchToken))),
+      }
+  }
     setJobs(temp);
     // setJobs(data.jobs);
     setLoading(false);
   }
+
+  const filterJobs = () => {
+    if (searchToken.trim() === "") {
+        fetchProjects()
+    } else {
+        let temp = { ...jobs };
+        if (temp?.all.length > 0) {
+            temp.all = temp.all.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken))
+        }
+        if (temp?.pending.length > 0) {
+            temp.pending = temp.pending.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken))
+        }
+        if (temp?.initial.length > 0) {
+            temp.initial = temp.initial.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken))
+        }
+        if (temp?.assigned.length > 0) {
+            temp.assigned = temp.assigned.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken))
+        }
+        if (temp?.unpaid.length > 0) {
+            temp.unpaid = temp.unpaid.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken))
+        }
+        if (temp?.done.length > 0) {
+            temp.done = temp.done.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken))
+        }
+        setJobs(temp)
+    }
+}
 
   const ListHead = (id, title) => {
     return <Pressable borderBottomWidth={1} borderColor="#ccc" onPress={() => showListId === id ? setShowListId(null) : setShowListId(id)}>
@@ -119,6 +169,14 @@ export default function ({ navigation }) {
         navigation={navigation}
         customOptions={[{ action: fetchProjects, icon: "sync" }]}
       />
+      <SearchBar
+            placeholder="Sök"
+            platform={Platform.OS}
+            onChangeText={setSearchToken}
+            value={searchToken}
+            showLoading={searching}
+            onSubmitEditing={filterJobs}
+        />
       {ListHead(0, 'Allt')}
         {0 === showListId && <FlatList
             refreshing={loading}

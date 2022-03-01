@@ -20,7 +20,7 @@ export default function ({invoice, job}) {
                 </View>
             ) : (
                 <View style={{marginLeft: 15, marginBottom: 10, flexDirection: 'row'}}>
-                    <Text color="dark.700" style={{fontWeight: '700'}} > Customer: </Text>
+                    <Text color="dark.700" style={{fontWeight: '700'}} > Kund: </Text>
                     <Text color="dark.400">{job.customer.fname} {job.customer.lname}</Text>
                 </View>
             )
@@ -65,15 +65,16 @@ export default function ({invoice, job}) {
                 <Text h4>{totalPayment(invoice)}kr</Text>
             </View>
         </Card>
-
-        <Button
-            title="Betala"
-            // icon={{type: 'font-awesome', name: 'file-pdf-o', color: '#fa0f00'}}
-            type="clear"
-            titleStyle={{color: '#ff7e1a'}}
-            onPress={() => {}}
-            containerStyle={{marginTop: 30}}
-        />
+        { user.id === job.customer_id &&
+            <Button
+                title="Betala"
+                // icon={{type: 'font-awesome', name: 'file-pdf-o', color: '#fa0f00'}}
+                type="clear"
+                titleStyle={{color: '#ff7e1a'}}
+                onPress={() => {}}
+                containerStyle={{marginTop: 30}}
+            />
+        }
     </>;
 }
 
