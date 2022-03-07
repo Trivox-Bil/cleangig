@@ -19,6 +19,7 @@ import HoshiMultiSelectControl from '../../components/HoshiMultiSelectControl';
 import { StyleSheet } from 'react-native'
 import { colors } from '../../helpers';
 import PortFolio from '../../components/Portfolio';
+import Reviews from '../../components/Reviews';
 
 export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
@@ -35,12 +36,14 @@ export default function ({ navigation }) {
     const [saveIcon, setSaveIcon] = useState('save');
     const [activeTab, setActiveTab] = useState('profile');
     const [isPortfolioRefresh, setIsPortfolioRefresh] = useState(false);
+    const [reviews, setReviews] = useState([]);
 
     const dispatch = useDispatch();
     // console.log(user)
 
     useEffect(() => {
         fetchServices();
+        fetchReviews();
     }, []);
 
     async function fetchServices() {
@@ -49,6 +52,11 @@ export default function ({ navigation }) {
         data.services.map(service => serviceName.push(service.name));
         setOfferedServicesName(serviceName.join(", "))
         setOfferedServices(data.services);
+    }
+
+    async function fetchReviews() {
+        const { data } = await cleangigApi.get(`providers/${user.id}/get_review`);
+        setReviews(data.reviews);
     }
 
     async function logOut() {
@@ -199,9 +207,7 @@ export default function ({ navigation }) {
                 </VStack>
             </SafeScrollView>
         ) : activeTab === 'review' ? (
-            <VStack flex={1} justifyContent="center" alignItems="center">
-                <Text style={{ color: colors.gray }}>Inget att visa</Text>
-            </VStack>
+            <Reviews reviews={reviews}></Reviews>
         ) : (
             <>
                 <PortFolio providerId={user.id} refresh={isPortfolioRefresh} openDetailPage={openPortfolioDetailPage}></PortFolio>

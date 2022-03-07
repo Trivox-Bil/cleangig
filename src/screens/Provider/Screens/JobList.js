@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Image, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { VStack } from "native-base";
+import { Button, Pressable, VStack } from "native-base";
 import { CheckBox, ListItem, Text } from 'react-native-elements';
 import { useSelector } from "react-redux";
 import { sotApi } from "../../../network";
@@ -10,6 +10,7 @@ import { county } from "../../../data/counties";
 import { formatDate } from "../../../helpers";
 import JobStatusFilter from "../../../components/JobStatusFilter";
 import { includes } from 'lodash';
+import { SearchBar } from 'react-native-elements';
 
 export default function ({ navigation }) {
     const provider = useSelector(state => state.user.data);
@@ -20,10 +21,12 @@ export default function ({ navigation }) {
     const [filteredJobs, setFilteredJobs] = useState([]);
     // const [statusFilter, setStatusFilter] = useState('all');
     const statusFilter = useRef('all');
+    const [searchToken, setSearchToken] = useState('');
+    const [searching, setSearching] = useState(false);
 
     useEffect(() => {
         fetchJobs().then();
-        setInterval(fetchJobs, 20000);
+        // setInterval(fetchJobs, 20000);
     }, []);
 
     async function fetchJobs() {
@@ -31,30 +34,49 @@ export default function ({ navigation }) {
         const { data } = await sotApi.get(`jobs/relevant?provider=${provider.id}`);
         if (data.success) {
             jobs.current=data.jobs;
-            filter(statusFilter.current)
+            filterJobs()
             // setFilteredJobs(data.jobs.filter(j => j.status === 'initial'))
         }
         setLoading(false);
     }
 
-    const filter = (status) => {
+    /* const filter = (status) => {
         statusFilter.current = status;
          if (status === 'archived') {
             setFilteredJobs(jobs.current.filter(job => job.archived));
         } else {
             setFilteredJobs(jobs.current.filter(job => !job.archived && provider.county_code.split(",").includes(job.county_code)));
         }
-        /* if (status === 'local') {
-            setFilteredJobs(jobs.current.filter(job => includes(provider.county_code.split(",") && !job.archived, job.county_code, 0)));
-        } else if (status === 'archived') {
-            setFilteredJobs(jobs.current.filter(job => job.archived));
+        // if (status === 'local') {
+        //     setFilteredJobs(jobs.current.filter(job => includes(provider.county_code.split(",") && !job.archived, job.county_code, 0)));
+        // } else if (status === 'archived') {
+        //     setFilteredJobs(jobs.current.filter(job => job.archived));
+        // } else {
+        //     setFilteredJobs(jobs.current.filter(job => !job.archived));
+        // }
+    } */
+
+    const filterJobs = () => {
+        let tempJobs = jobs.current.filter(job => !job.archived && provider.county_code.split(",").includes(job.county_code));
+        if (searchToken.trim() !== "") {
+            console.log('yes here', searchToken);
+            setFilteredJobs(tempJobs.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken)));
         } else {
-            setFilteredJobs(jobs.current.filter(job => !job.archived));
-        } */
+            setFilteredJobs(tempJobs)
+        }
     }
 
-    return <VStack flex={1}>
-        <AppBar screenTitle="Sök lediga jobb" navigation={navigation} />
+
+    return <VStack flex={1} position='relative'>
+        <AppBar screenTitle="Tillgängliga jobb" navigation={navigation} />
+        <SearchBar
+            placeholder="Sök"
+            platform={Platform.OS}
+            onChangeText={setSearchToken}
+            value={searchToken}
+            showLoading={searching}
+            onSubmitEditing={filterJobs}
+        />
 
         <ScrollView contentContainerStyle={styles.container}
             refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchJobs} />}>
@@ -65,14 +87,14 @@ export default function ({ navigation }) {
                     <Text>Via enbart lokala jobb</Text>
                 </TouchableOpacity>
             </View> */}
-            <VStack flex={0.1}>
+            {/* <VStack flex={0.1}>
                 <JobStatusFilter value={statusFilter.current} onChange={(status) => {filter(status)}} options={[
                     { value: 'all', title: 'Allt' },
                     // { value: 'local', title: 'Via only local jobs' },
                     { value: 'archived', title: 'Arkiverade jobb' },
                 ]} />
-            </VStack>
-            <VStack flex={0.9}>
+            </VStack> */}
+            <VStack flex={0.9} style={{borderTopColor: '#CCCCCC', borderTopWidth: 1, marginBottom: 10}}>
                 {filteredJobs.map(job => (
                     <ListItem key={job.id} bottomDivider onPress={() => navigation.push('Job', { job })}>
                         <View style={{ padding: 12.5 }}>
@@ -94,6 +116,9 @@ export default function ({ navigation }) {
                 )}
             </VStack>
         </ScrollView>
+        <Button position='absolute' bottom={2} right={2} rounded="full" _text={{color: 'white'}} onPress={() => navigation.navigate('ArchiveJobList')}>
+            Arkiverade jobb
+        </Button>
     </VStack>;
 }
 

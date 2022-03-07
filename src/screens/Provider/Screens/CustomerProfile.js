@@ -7,12 +7,14 @@ import { colors, formatOrgNumber } from '../../../helpers';
 import { cleangigApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
 import SafeScrollView from "../../../components/SafeScrollView";
+import Reviews from '../../../components/Reviews';
 
 export default function ({ navigation, route }) {
     const custmerId = route.params.customer;
     const [loading, setLoading] = useState(false);
     const [customer, setCustomer] = useState(null);
     const [activeTab, setActiveTab] = useState('profile');
+    const [reviews, setReviews] = useState([]);
 
     const fatchCustomer = async () => {
         setLoading(true);
@@ -22,9 +24,14 @@ export default function ({ navigation, route }) {
         setLoading(false);
     };
 
+    async function fetchReviews() {
+        const { data } = await cleangigApi.get(`customer/${custmerId}/get_review`);
+        setReviews(data.reviews);
+    }
 
     useEffect(() => {
         fatchCustomer();
+        fetchReviews();
     }, []);
 
     return <>
@@ -76,9 +83,7 @@ export default function ({ navigation, route }) {
 
                     </SafeScrollView>
                 ) : (
-                    <VStack flex={1} justifyContent="center" alignItems="center">
-                        <Text style={{ color: colors.gray }}>Inget att visa</Text>
-                    </VStack>
+                    <Reviews reviews={reviews}></Reviews>
                 )}
             </>
         }

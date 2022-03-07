@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import AppBar from "../../components/AppBar";
 import { useDispatch, useSelector } from "react-redux";
 import { StyleSheet } from 'react-native'
@@ -15,6 +15,7 @@ import { cleangigApi } from "../../network";
 import SafeScrollView from "../../components/SafeScrollView";
 import HoshiSelectControl from "../../components/HoshiSelectControl";
 import Constants from 'expo-constants';
+import Reviews from '../../components/Reviews';
 
 export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
@@ -27,6 +28,7 @@ export default function ({ navigation }) {
     const [street, setStreet] = useState(user.street);
     const [postalCode, setPostalCode] = useState(user.postal_code);
     const [activeTab, setActiveTab] = useState('profile');
+    const [reviews, setReviews] = useState([]);
     const dispatch = useDispatch();
 
     const isSaved = useCallback(() => {
@@ -41,6 +43,15 @@ export default function ({ navigation }) {
             quality: 1,
         });
         !image.cancelled && setPicture(image.uri);
+    }
+
+    useEffect(() => {
+        fetchReviews();
+    }, []);
+
+    async function fetchReviews() {
+        const { data } = await cleangigApi.get(`customer/${user.id}/get_review`);
+        setReviews(data.reviews);
     }
 
     async function logOut() {
@@ -119,9 +130,7 @@ export default function ({ navigation }) {
                 </VStack>
             </SafeScrollView>
         ) : (
-            <VStack flex={1} justifyContent="center" alignItems="center">
-                <Text style={{color: colors.gray}}>Inget att visa</Text>
-            </VStack>
+            <Reviews reviews={reviews}></Reviews>
         )}
 
         

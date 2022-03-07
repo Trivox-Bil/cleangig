@@ -5,15 +5,17 @@ import counties from '../../../data/counties';
 import SafeScrollView from "../../../components/SafeScrollView";
 // import { Button, Card, Divider, Image, ListItem, Text } from 'react-native-elements';
 import { colors, formatOrgNumber } from '../../../helpers';
-import { sotApi } from "../../../network";
+import { sotApi, cleangigApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
 import PortFolio from '../../../components/Portfolio';
+import Reviews from '../../../components/Reviews';
 
 export default function ({ navigation, route }) {
     const providerId = route.params.provider;
     const [activeTab, setActiveTab] = useState('profile');
     const [loading, setLoading] = useState(false);
     const [provider, setProvider] = useState(null);
+    const [reviews, setReviews] = useState([]);
     const [services, setServices] = useState([]);
     const [pastWorks, setPastWorks] = useState([]);
     const [ratings, setRatings] = useState([]);
@@ -36,9 +38,15 @@ export default function ({ navigation, route }) {
         setOfferedServices(data.services);
     }
 
+    async function fetchReviews() {
+        const { data } = await cleangigApi.get(`providers/${providerId}/get_review`);
+        setReviews(data.reviews);
+    }
+
     useEffect(() => {
         fetchProvider();
         fetchServices();
+        fetchReviews();
     }, []);
 
     const openPortfolioDetailPage = (item) => {
@@ -112,9 +120,7 @@ export default function ({ navigation, route }) {
                         </VStack>
                     </SafeScrollView>
                 ) : activeTab === 'review' ? (
-                    <VStack flex={1} justifyContent="center" alignItems="center">
-                        <Text style={{ color: colors.gray }}>Inget att visa</Text>
-                    </VStack>
+                        <Reviews reviews={reviews}></Reviews>
                 ) : (
                     <>
                         <PortFolio providerId={providerId} openDetailPage={openPortfolioDetailPage} />
@@ -125,6 +131,10 @@ export default function ({ navigation, route }) {
 
     </>;
 }
+
+/* <VStack flex={1} justifyContent="center" alignItems="center">
+                        <Text style={{ color: colors.gray }}>Inget att visa</Text>
+                    </VStack> */
 
 const styles = StyleSheet.create({
     tabs: {

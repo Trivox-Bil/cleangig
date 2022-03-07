@@ -7,8 +7,11 @@ import WarningDialog from "./WarningDialog";
 import {cleangigApi} from "../network";
 import voca from "voca";
 import InvoiceCard from "./InvoiceCard";
+import LeaveReview from './LeaveReview';
+import { useSelector } from "react-redux";
 
 export default function ({id, pictures}) {
+    const user = useSelector((state) => state.user.data);
     const [job, setJob] = useState(null);
     const [invoice, setInvoice] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -16,6 +19,7 @@ export default function ({id, pictures}) {
     const fetchProject = async () => {
         setLoading(true);
         const {data} = await cleangigApi.get(`jobs/${id}`);
+        console.log(data.job)
         setJob(data.job);
         setInvoice(JSON.parse(voca.unescapeHtml(data.job.invoice)));
         setLoading(false);
@@ -38,6 +42,8 @@ export default function ({id, pictures}) {
             )}
 
             <InvoiceCard job={job} invoice={invoice}/>
+
+            <LeaveReview job={job} reviewer={user.id === job?.customer.id ? '1' : '0'}/>
 
         </VStack>
     ) : null;
