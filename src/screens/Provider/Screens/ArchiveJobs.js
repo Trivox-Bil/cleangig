@@ -56,7 +56,18 @@ export default function ({ navigation }) {
         let tempJobs = jobs.current.filter(job => job.archived);
         if (searchToken.trim() !== "") {
             console.log('yes here', searchToken);
-            setFilteredJobs(tempJobs.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken)));
+            const searchedService = [];
+            services.map(s => {
+                if (s.name.includes(searchToken)) {
+                    searchedService.push(s.id)
+                }
+            });
+            setFilteredJobs(tempJobs.filter(job => 
+                job.title.includes(searchToken) 
+                || job.city.includes(searchToken) 
+                || job.street.includes(searchToken)
+                || (searchedService.length > 0 && searchedService.includes(job.service_id))
+            ));
         } else {
             setFilteredJobs(tempJobs)
         }

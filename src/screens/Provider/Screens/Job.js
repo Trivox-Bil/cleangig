@@ -100,7 +100,7 @@ export default function ({ route, navigation }) {
     }
 
     return <>
-        <AppBar screenTitle={job.title} navigation={navigation} backButton />
+        <AppBar screenTitle={""} navigation={navigation} backButton />
         <SafeScrollView flex={1}>
             {job && <>
                 <Card>
@@ -120,9 +120,10 @@ export default function ({ route, navigation }) {
                     />
                 </Card>
                 <Card>
-                    <Card.Title style={{ marginBottom: 10 }}>Publicerat {formatDate(job.created_at)}</Card.Title>
+                    <Card.Title style={{ marginBottom: 10 }}>{job.title}</Card.Title>
                     <Card.Divider />
                     <Text style={{ opacity: 0.6 }}>{job.street}{job.city ? `, ${job.city}` : ''}, {job.county.name}</Text>
+                    <Text style={{ opacity: 0.6 }}>Publicerat {formatDate(job.created_at)}</Text>
                     <Text style={{ opacity: 0.6, marginBottom: 10 }}>Förfaller den {formatDate(job.deadline_to)}</Text>
                     {/* <Card.Divider /> */}
                     <Text style={{ marginBottom: 10 }}>{job.description}</Text>

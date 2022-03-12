@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Image, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Button, Pressable, VStack } from "native-base";
-import { CheckBox, ListItem, Text } from 'react-native-elements';
+import { Button, Box, HStack, Pressable, Icon, Text, VStack } from "native-base";
+// import { CheckBox, ListItem, Text } from 'react-native-elements';
 import { useSelector } from "react-redux";
 import { sotApi } from "../../../network";
 import AppBar from "../../../components/AppBar";
@@ -11,8 +11,12 @@ import { formatDate } from "../../../helpers";
 import JobStatusFilter from "../../../components/JobStatusFilter";
 import { includes } from 'lodash';
 import { SearchBar } from 'react-native-elements';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import FetchContent from "../../../components/FetchContent";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ({ navigation }) {
+    const user = useSelector(state => state.user.data);
     const provider = useSelector(state => state.user.data);
     const [loading, setLoading] = useState(false);
     const [onlyLocation, setOnlyLocation] = useState(false);
@@ -23,6 +27,7 @@ export default function ({ navigation }) {
     const statusFilter = useRef('all');
     const [searchToken, setSearchToken] = useState('');
     const [searching, setSearching] = useState(false);
+    const [selectedJob, setSelectedJob] = useState(false);
 
     useEffect(() => {
         fetchJobs().then();
@@ -60,12 +65,68 @@ export default function ({ navigation }) {
         let tempJobs = jobs.current.filter(job => !job.archived && provider.county_code.split(",").includes(job.county_code));
         if (searchToken.trim() !== "") {
             console.log('yes here', searchToken);
-            setFilteredJobs(tempJobs.filter(job => job.title.includes(searchToken) || job.city.includes(searchToken) || job.street.includes(searchToken)));
+            const searchedService = [];
+            services.map(s => {
+                if (s.name.includes(searchToken)) {
+                    searchedService.push(s.id)
+                }
+            });
+            setFilteredJobs(tempJobs.filter(job => 
+                job.title.includes(searchToken) 
+                || job.city.includes(searchToken) 
+                || job.street.includes(searchToken) 
+                || (searchedService.length > 0 && searchedService.includes(job.service_id))
+            ));
         } else {
             setFilteredJobs(tempJobs)
         }
     }
 
+    const archive = async (job) => {
+        const formData = new FormData();
+        formData.append('job', job.id);
+        formData.append('provider', user.id);
+        await sotApi.post(`jobs/archive`, formData);
+        fetchJobs();
+    }
+
+    function ListItem({ item }) {
+        return (
+            <Box bg="#fff">
+                <Pressable _pressed={{ bg: 'gray.200' }} borderBottomWidth={1} borderColor="#ccc" onPress={() => navigation.push('Job', { item })}>
+                    <HStack alignItems="center">
+                        <View style={{ padding: 12.5, paddingHorizontal: 25 }}>
+                            <Image
+                                source={services.find(s => s.id === item.service_id).icon}
+                                style={{ width: 50, height: 50 }} />
+                        </View>
+                        <View>
+                            <Text fontSize={16}>{item.title}</Text>
+                            <Text fontSize={13}>{county(item.county_code).name} • {services.find(s => s.id === item.service_id).name}</Text>
+                            <Text fontSize={13}>{formatDate(item.deadline, true)}</Text>
+                        </View>
+                    </HStack>
+                </Pressable>
+            </Box>
+        )
+    }
+
+    const renderHiddenItem = (data, rowMap) => (
+        <View style={styles.rowBack}>
+            <TouchableOpacity
+                style={[styles.actionButton, styles.deleteBtn]}
+                onPress={() => { closeItem(rowMap, data.item.id); archive(data.item)}}
+            >
+                <Icon as={Ionicons} name="archive" color="#ffffff" size="6"></Icon>
+            </TouchableOpacity>
+        </View>
+    );
+
+    const closeItem = (rowMap, rowKey) => {
+        if (rowMap[rowKey]) {
+            rowMap[rowKey].closeRow();
+        }
+    };
 
     return <VStack flex={1} position='relative'>
         <AppBar screenTitle="Tillgängliga jobb" navigation={navigation} />
@@ -78,22 +139,8 @@ export default function ({ navigation }) {
             onSubmitEditing={filterJobs}
         />
 
-        <ScrollView contentContainerStyle={styles.container}
+        {/* <ScrollView contentContainerStyle={styles.container}
             refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchJobs} />}>
-
-            {/* <View style={{flexDirection: 'row', margin: 10, alignItems: 'center'}}>
-                <CheckBox checked={onlyLocation} onPress={() => setOnlyLocation(!onlyLocation)} checkedColor="#ff7e1a"/>
-                <TouchableOpacity onPress={() => setOnlyLocation(!onlyLocation)}>
-                    <Text>Via enbart lokala jobb</Text>
-                </TouchableOpacity>
-            </View> */}
-            {/* <VStack flex={0.1}>
-                <JobStatusFilter value={statusFilter.current} onChange={(status) => {filter(status)}} options={[
-                    { value: 'all', title: 'Allt' },
-                    // { value: 'local', title: 'Via only local jobs' },
-                    { value: 'archived', title: 'Arkiverade jobb' },
-                ]} />
-            </VStack> */}
             <VStack flex={0.9} style={{borderTopColor: '#CCCCCC', borderTopWidth: 1, marginBottom: 10}}>
                 {filteredJobs.map(job => (
                     <ListItem key={job.id} bottomDivider onPress={() => navigation.push('Job', { job })}>
@@ -115,7 +162,21 @@ export default function ({ navigation }) {
                     </View>
                 )}
             </VStack>
-        </ScrollView>
+        </ScrollView> */}
+        <FetchContent fetch={fetchJobs}>
+            <SwipeListView
+                data={filteredJobs}
+                keyExtractor={(job) => job.id}
+                renderItem={ListItem}
+                renderHiddenItem={renderHiddenItem}
+                leftOpenValue={0}
+                rightOpenValue={-75}
+                previewRowKey={'0'}
+                previewOpenValue={-40}
+                previewOpenDelay={3000}
+            ></SwipeListView>
+        </FetchContent>
+        
         <Button position='absolute' bottom={2} right={2} rounded="full" _text={{color: 'white'}} onPress={() => navigation.navigate('ArchiveJobList')}>
             Arkiverade jobb
         </Button>
@@ -126,4 +187,38 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
     },
+    list: {
+        // color: '#FFF',
+    },
+    btnText: {
+        color: '#FFF',
+    },
+    rowFront: {
+        backgroundColor: 'white',
+        borderBottomColor: '#ccc',
+        borderBottomWidth: 0.5,
+        justifyContent: 'center',
+        paddingHorizontal: 4,
+        paddingVertical: 2,
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 5,
+    },
+    actionButton: {
+        alignItems: 'center',
+        bottom: 0,
+        justifyContent: 'center',
+        position: 'absolute',
+        top: 0,
+        width: 75,
+    },
+    deleteBtn: {
+        backgroundColor: 'red',
+        right: 0,
+    }
 });

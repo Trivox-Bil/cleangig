@@ -4,9 +4,15 @@ import counties from "../data/counties";
 import {formatDate} from "../helpers";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
+import FetchContent from "./FetchContent";
+import { Card } from 'react-native-elements';
+import { useSelector } from "react-redux";
+import { sotApi } from "../network";
 
 export default function ({job, onDelete, pictures, navigation, isProvider = false}) {
+    const user = useSelector(state => state.user.data);
     const [warnDelete, setWarnDelete] = useState(false);
+    const [proposals, setProposals] = useState([]);
 
     function goToChat() {
         if (isProvider) {
@@ -23,6 +29,11 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
     function goToCustomer() {
         navigation.navigate('customer', {customer: job.customer_id});
     }
+
+    const fetchProposals = async () => {
+        const { data: result } = await sotApi.get(`proposals/get_all?job=${job.id}&provider=${user.id}`);
+        result.success && setProposals(result.proposals);
+    };
 
     return <VStack m={4} space={4}>
         <Heading>{job.title}</Heading>
@@ -48,6 +59,20 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
                 Fakturera färdigt arbete
             </Button>}
         </HStack>
+
+        { isProvider && <>
+            <Card>
+                    <Card.Title>Proposa</Card.Title>
+                    <FetchContent fetch={fetchProposals}>
+                        {proposals.length > 0 && proposals.map(offer => (
+                            <HStack key={offer.id}>
+                                <Text flex={1} mr="2">{offer.message}</Text>
+                                <Text flex={1} textAlign="center">{offer.price}kr</Text>
+                            </HStack>
+                        ))}
+                    </FetchContent>
+                </Card>
+        </> }
 
         <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}
                        message="Är du säker att du vill radera"/>
