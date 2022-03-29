@@ -14,7 +14,7 @@ export default function ({navigation}) {
     return <>
         <StatusBar backgroundColor="#ff7e1a"/>
 
-        <VStack flexGrow={1} bg="dark.400">
+        <VStack flexGrow={1} >
             <Center flexBasis={Dimensions.get('window').height * .35} bg="brand.400" roundedBottomRight="full"
                     alignItems="flex-start" px={2} shadow={4}>
                 <Text fontSize="2xl" color="light.100" bold>Hur kan vi hjälpa dig?</Text>
@@ -24,11 +24,12 @@ export default function ({navigation}) {
                 <HStack flexWrap="wrap">
                     {/* { console.log('services', services) } */}
                     {services.map(service => (
-                        <Pressable key={service.id} p={4} bg="dark.700" rounded="md" flexBasis="40%" m={4} flex={1}
+                        <Pressable disabled={service.disabled} opacity={service.disabled ? 0.5 : 1} key={service.id} p={4} bg="dark.700" rounded="md" flexBasis="40%" m={4} flex={1}
                                    alignItems="center" onPress={() => setChosenService(service)}>
                                        {/* { console.log(service.icon) } */}
                             <Image source={service.icon} w={75} h={75} alt=" "/>
                             <Text mt={4} fontSize="md" bold>{service.name}</Text>
+                           { service.disabled && <Text mt={2}>Fler tjänster kommer inom kort</Text>}
                         </Pressable>
                     ))}
                 </HStack>
@@ -52,6 +53,7 @@ export default function ({navigation}) {
                                     </Flex>
                                 ))}
                             </Flex>
+                           {chosenService.id == 4 && <Text mt={4}>Fler tjänster kommer inom kort..</Text>}
                         {/* </ScrollView> */}
                     </Modal.Body>
                     <Modal.Footer>

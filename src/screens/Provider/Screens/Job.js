@@ -24,10 +24,13 @@ export default function ({ route, navigation }) {
 
     useEffect(() => {
         let pictures;
-        try {
-            pictures = JSON.parse(voca.unescapeHtml(job.picture));
-        } catch (e) {
-            console.error(e);
+        console.log("route.params", route.params)
+        if (job && job.picture != null) {
+            try {
+                pictures = JSON.parse(voca.unescapeHtml(job.picture));
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         setPictures(pictures || []);
@@ -103,7 +106,7 @@ export default function ({ route, navigation }) {
         <AppBar screenTitle={""} navigation={navigation} backButton />
         <SafeScrollView flex={1}>
             {job && <>
-                <Card>
+                {/* <Card>
                     <Card.Title>Kund</Card.Title>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Image source={{ uri: job.customer.picture }} style={{ width: 70, height: 70, borderRadius: 35 }} />
@@ -118,13 +121,14 @@ export default function ({ route, navigation }) {
                         titleStyle={{ color: '#ff7e1a' }}
                         onPress={() => navigation.navigate('Chat', { screen: 'Chat', params: { job } })}
                     />
-                </Card>
+                </Card> */}
                 <Card>
                     <Card.Title style={{ marginBottom: 10 }}>{job.title}</Card.Title>
                     <Card.Divider />
                     <Text style={{ opacity: 0.6 }}>{job.street}{job.city ? `, ${job.city}` : ''}, {job.county.name}</Text>
                     <Text style={{ opacity: 0.6 }}>Publicerat {formatDate(job.created_at)}</Text>
-                    <Text style={{ opacity: 0.6, marginBottom: 10 }}>Förfaller den {formatDate(job.deadline_to)}</Text>
+                    {/* <Text style={{ opacity: 0.6, marginBottom: 10 }}>Förfaller den {formatDate(job.deadline_to)}</Text> */}
+                    <Text style={{ opacity: 0.6, marginBottom: 10 }}>Deadline från {formatDate(job.deadline)} till {formatDate(job.deadline_to)}</Text>
                     {/* <Card.Divider /> */}
                     <Text style={{ marginBottom: 10 }}>{job.description}</Text>
                     <HStack minH={200} ml={5} my={10}>
@@ -165,7 +169,7 @@ export default function ({ route, navigation }) {
                             <>
                                 <Input
                                     placeholder="Text"
-                                    label="Skicka in förslag på jobb"
+                                    
                                     value={proposal}
                                     onChangeText={setProposal}
                                     multiline
@@ -173,9 +177,13 @@ export default function ({ route, navigation }) {
                                     blurOnSubmit={false}
                                     numberOfLines={4}
                                 />
+                                {/* 
+                                label="Skicka in förslag på jobb"
+                                label="Pris(SEK)"
+                                
+                                */}
                                 <Input
                                     placeholder="Pris"
-                                    label="Pris(SEK)"
                                     value={price}
                                     ref={(input) => priceRef.current = input}
                                     onChangeText={setPrice}

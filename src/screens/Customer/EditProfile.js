@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import AppBar from "../../components/AppBar";
 import { useDispatch, useSelector } from "react-redux";
+import { Image } from "react-native";
 import { LOGIN_SUCCESS } from "../../actions/types";
 import { storeLocal, USER_DATA_KEY } from "../../storage";
-import { HStack, Image, Pressable, VStack } from "native-base";
+import { HStack, Pressable, VStack } from "native-base";
 import counties from "../../data/counties";
 import HoshiInput from "../../components/HoshiInput";
 import * as ImagePicker from 'expo-image-picker';
@@ -11,6 +12,7 @@ import lodash from "lodash";
 import { cleangigApi } from "../../network";
 import SafeScrollView from "../../components/SafeScrollView";
 import HoshiSelectControl from "../../components/HoshiSelectControl";
+import mime from "mime";
 
 export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
@@ -20,6 +22,7 @@ export default function ({ navigation }) {
     const [county, setCounty] = useState(user.county);
     const [city, setCity] = useState(user.city);
     const [picture, setPicture] = useState(user.picture);
+    const [pictureData, setPictureData] = useState(null);
     const [street, setStreet] = useState(user.street);
     const [postalCode, setPostalCode] = useState(user.postal_code);
     const [activeTab, setActiveTab] = useState('profile');
@@ -36,27 +39,45 @@ export default function ({ navigation }) {
             aspect: [1, 1],
             quality: 1,
         });
-        !image.cancelled && setPicture(image.uri);
+        if (!image.cancelled) {
+            setPicture(image.uri)
+            setPictureData({
+                uri: image.uri,
+                name: `${new Date().getTime()}.JPG`,
+                type: mime.getType(image.uri),
+            });
+        }
+    }
+
+    async function uploadPictures() {
+        const request = new FormData();
+        request.append("files[]", pictureData);
+        const { data } = await cleangigApi.post("files", request);
+        return data?.files && data?.files.length > 0 ? data.files[0] : null;
     }
 
     async function saveAll() {
-        const request = { id: user.id, fname, lname, phone_number: phone, county, city, street, postal_code: postalCode };
+        const pics = pictureData === null ? null : await uploadPictures();
+        const request = { id: user.id, fname, lname, phone_number: phone, county, city, street, postal_code: postalCode, picture: pics };
         const { data } = await cleangigApi.put('customers', request);
         dispatch({ type: LOGIN_SUCCESS, payload: data });
         await storeLocal(USER_DATA_KEY, data);
+        navigation.goBack();
     }
 
     return <>
         {<AppBar backButton navigation={navigation} screenTitle="Edit Profile" customOptions={[
-           !isSaved() && { action: saveAll, icon: 'save' }
+            !isSaved() && { action: saveAll, icon: 'save' }
         ]} />}
 
-            <SafeScrollView flex={1}>
-                <HStack m={4} justifyContent="center" space={2}>
-                    <Pressable onPress={selectPicture}>
-                        <Image source={{ uri: picture }} w={100} h={100} rounded="full" alt=" " />
-                    </Pressable>
-                </HStack>
+        <SafeScrollView flex={1}>
+            <HStack m={4} justifyContent="center" space={2}>
+                <Pressable onPress={selectPicture}>
+                    {console.log("picture ===>>>", picture)}
+                    <Image source={{ uri: picture }} style={{ width: 100, height: 100, borderRadius: 50 }} />
+                    {/* <Image source={{ uri: picture }} w={100} h={100} rounded="full" alt=" " /> */}
+                </Pressable>
+            </HStack>
 
             <VStack my={4}>
                 <HoshiInput value={fname} label="Förnamn" onChangeText={setFname} />

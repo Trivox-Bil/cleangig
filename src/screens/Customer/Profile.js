@@ -5,7 +5,8 @@ import { StyleSheet } from 'react-native'
 import { LOGIN_SUCCESS, LOGOUT } from "../../actions/types";
 import { storeLocal, USER_DATA_KEY } from "../../storage";
 import { resetRoute } from "../../helpers";
-import { Button, Heading, HStack, Image, Pressable, Text, VStack } from "native-base";
+import { Image } from 'react-native';
+import { Button, Heading, HStack, Pressable, Text, VStack } from "native-base";
 import counties from "../../data/counties";
 import {colors} from '../../helpers';
 import HoshiInput from "../../components/HoshiInput";
@@ -19,19 +20,20 @@ import Reviews from '../../components/Reviews';
 
 export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
+    console.log(user)
     const [fname, setFname] = useState(user.fname);
     const [lname, setLname] = useState(user.lname);
     const [phone, setPhone] = useState(user.phone_number);
     const [county, setCounty] = useState(user.county);
     const [city, setCity] = useState(user.city);
-    const [picture, setPicture] = useState(user.picture);
+    // const [picture, setPicture] = useState(user.picture);
     const [street, setStreet] = useState(user.street);
     const [postalCode, setPostalCode] = useState(user.postal_code);
     const [activeTab, setActiveTab] = useState('profile');
     const [reviews, setReviews] = useState([]);
     const dispatch = useDispatch();
 
-    const isSaved = useCallback(() => {
+    /* const isSaved = useCallback(() => {
         return lodash.isEqual(user, { ...user, fname, lname, phone_number: phone, county, city, picture, street, postal_code: postalCode });
     }, [fname, lname, phone, county, city, picture, street, postalCode, user]);
 
@@ -43,7 +45,7 @@ export default function ({ navigation }) {
             quality: 1,
         });
         !image.cancelled && setPicture(image.uri);
-    }
+    } */
 
     useEffect(() => {
         fetchReviews();
@@ -98,9 +100,9 @@ export default function ({ navigation }) {
         {activeTab === 'profile' ? (
             <SafeScrollView flex={1}>
                 <HStack m={4} justifyContent="center" space={2}>
-                    <Pressable onPress={selectPicture}>
-                        <Image source={{ uri: picture }} w={100} h={100} rounded="full" alt=" " />
-                    </Pressable>
+                    {/* <Pressable onPress={selectPicture}> */}
+                        <Image source={{ uri: user.picture }} style={{ width: 100, height: 100, borderRadius: 50 }} alt=" " />
+                    {/* </Pressable> */}
                 </HStack>
 
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">

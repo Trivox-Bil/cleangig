@@ -107,6 +107,10 @@ export default function ({ navigation, route }) {
                             <Text>{provider.email}</Text>
                         </VStack>
                         <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                            <Text mb={1} fontWeight="semibold" color="#ff7e1a">Hemsida</Text>
+                            <Text>{provider.website}</Text>
+                        </VStack>
+                        <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                             <Text mb={1} fontWeight="semibold" color="#ff7e1a">Telefonnummer</Text>
                             <Text>{provider.contact}</Text>
                         </VStack>

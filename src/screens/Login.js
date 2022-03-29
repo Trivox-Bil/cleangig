@@ -46,6 +46,8 @@ export default function ({ navigation }) {
     }, [userType]);
 
     async function afterLogin() {
+        console.log('loggedInStatus', loggedInStatus)
+        console.log('LOGIN_SUCCESS', LOGIN_SUCCESS)
         if (loggedInStatus !== LOGIN_SUCCESS) {
             setPassword('');
         } else {
@@ -64,11 +66,11 @@ export default function ({ navigation }) {
         dispatch(login(userType, request));
     }
 
-    const openSignUpPage = () => {
+    const openSignUpPage = (params = null) => {
         if (userType === 'private') {
-            navigation.navigate('CustomerSignUp');
+            navigation.navigate('CustomerSignUp', params);
         } else {
-            navigation.navigate('ProviderSignUp');
+            navigation.navigate('ProviderSignUp', params);
         }
     }
 
@@ -76,12 +78,48 @@ export default function ({ navigation }) {
         // 1071325411415-fsg5q3ms0bflgih4rn4bslvk4sso46r3.apps.googleusercontent.com
         const config = {
             iosClientId: `1071325411415-fsg5q3ms0bflgih4rn4bslvk4sso46r3.apps.googleusercontent.com`,
+            iosStandaloneAppClientId: '1071325411415-8dqa81l75lbhm1jtpnu63pen06p6bevv.apps.googleusercontent.com',
             scopes: ['profile', 'email']
         }
 
-        Google.logInAsync(config)
-        .then((result) => { console.log(result) })
-        .catch((error) => { console.log(error) });
+        try {
+            Google.logInAsync(config)
+                .then(async (result) => {
+                    if (result.type === "success" && result.user) {
+                        const request = new FormData();
+                        // setGoogleId(result.user.id)
+                        request.append('other_login_api_id', result.user.id);
+                        await dispatch(login(userType, request));
+                        console.log("result.user", result.user)
+                        console.log("user", user)
+                        if (user === null) {
+                            console.log('LoginScreen user user user if', user)
+                            // storeLocal('@other_login_api_id', JSON.stringify(result.user.id))
+                            openSignUpPage({
+                                firstName: result.user?.givenName || '',
+                                lastName: result.user?.familyName || '',
+                                email: result.user?.email || '',
+                                otherLoginApiId: result.user.id || ''
+                            })
+                            // navigation.navigate('Register', {
+                            //     firstName: result.user?.givenName || '',
+                            //     lastName: result.user?.familyName || '',
+                            //     email: result.user?.email || ''
+                            // })
+                        }
+                        // else {
+                        //     console.log('LoginScreen user user user else', user)
+                        //     storeLocal('@user', JSON.stringify(user)) && storeLocal('@loggedIn', '1')
+                        //     navigation.navigate('Inventory')
+                        // }
+
+
+                    }
+                })
+                .catch((error) => { console.log(error) });
+        } catch (error) {
+            console.log("error", error)
+        }
     }
 
     return (
@@ -92,10 +130,10 @@ export default function ({ navigation }) {
                         <Image source={require("../../assets/logo-small.png")} w={200} h={200} alt="CleanGig" resizeMode="contain" />
                     </VStack>
                     <Box mb={30}>
-                        <Button py={4} _text={{ color: 'white', fontWeight: 600, fontSize: 15 }} onPress={() => setUserType('private')}>Fortsätt som privatperson</Button>
+                        <Button py={4} _text={{ color: 'white', fontWeight: 600, fontSize: 15 }} onPress={() => setUserType('private')}>Fortsätt som Beställare</Button>
                     </Box>
                     <Box>
-                        <Button py={4} _text={{ color: 'white', fontWeight: 600, fontSize: 15 }} onPress={() => setUserType('company')}>Fortsätt som företag</Button>
+                        <Button py={4} _text={{ color: 'white', fontWeight: 600, fontSize: 15 }} onPress={() => setUserType('company')}>Fortsätt som Leverantör</Button>
                     </Box>
                 </VStack>
             ) : (
@@ -172,7 +210,9 @@ export default function ({ navigation }) {
 
                         </VStack>
                         <VStack>
-                            {/* <Button variant="outline" onPress={handleGoogleSignIn}>Google Sign In</Button> */}
+                            {
+                                userType === 'private' && <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Google Sign In</Button>
+                            }
 
                             {/* <Button py="3" alignSelf="center" width={100} _text={{color: 'white', fontWeight: 600, fontSize: 15}}>Log In</Button> */}
                             <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">

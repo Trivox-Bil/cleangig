@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AppBar from "../../components/AppBar";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Heading, HStack, Image, Pressable, Text, VStack } from "native-base";
+import { Image } from "react-native";
+import { Button, Heading, HStack, Pressable, Text, VStack } from "native-base";
 import counties from "../../data/counties";
 import { logOut } from "../../actions/user";
 import * as ImagePicker from 'expo-image-picker';
@@ -26,7 +27,7 @@ export default function ({ navigation }) {
     const [businessName, setBusinessName] = useState(user.name);
     const [contactName] = useState(user.contact);
     const [phone, setPhone] = useState(user.phone_number);
-    const [county, setCounty] = useState(user.county_code.split(","));
+    const [county, setCounty] = useState(user?.county_code ? user?.county_code.split(",") : []);
     const [description, setDescription] = useState(user.description);
     const [picture, setPicture] = useState(user.picture);
     const [offeredServices, setOfferedServices] = useState([]);
@@ -167,9 +168,9 @@ export default function ({ navigation }) {
         {activeTab === 'profile' ? (
             <SafeScrollView flex={1}>
                 <HStack m={4} justifyContent="center" space={2}>
-                    <Pressable onPress={selectPicture}>
-                        <Image source={{ uri: picture }} w={100} h={100} rounded="full" alt=" " />
-                    </Pressable>
+                    {/* <Pressable onPress={selectPicture}> */}
+                        <Image source={{ uri: user.picture }} style={{ width: 100, height: 100, borderRadius: 50 }} alt=" " />
+                    {/* </Pressable> */}
                 </HStack>
 
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
@@ -185,12 +186,16 @@ export default function ({ navigation }) {
                     <Text>{user.email}</Text>
                 </VStack>
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
+                    <Text mb={1} fontWeight="semibold" color="#ff7e1a">Hemsida</Text>
+                    <Text>{user.website}</Text>
+                </VStack>
+                <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Telefonnummer</Text>
                     <Text>{user.phone_number}</Text>
                 </VStack>
                 <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Plats</Text>
-                    <Text>{county}</Text>
+                    <Text>{county.join()}</Text>
                 </VStack>
                 <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Tjänster</Text>

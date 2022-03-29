@@ -235,20 +235,20 @@ export default function ({ route, navigation }) {
         backButtonHandler={backHandler}
         navigation={navigation}
         screenTitle="Skapa nytt jobb"
-        customOptions={[
-          step === 0 && { action: validate, icon: 'check' }
-        ]}
+      // customOptions={[
+      //   step === 0 && { action: validate, icon: 'check' }
+      // ]}
       />
 
       <SafeScrollView flex={1}>
         <VStack space={2} m={4}>
           <Heading>{service.name}</Heading>
 
-          <Center bg="accent.400" p={4} rounded="lg" my={4}>
+          {/* <Center bg="accent.400" p={4} rounded="lg" my={4}>
             <Text color="dark.200">
               Enbart Swish används som betalningsalternativ
             </Text>
-          </Center>
+          </Center> */}
 
           {error !== '' && <Text color="danger.700" fontWeight={500}>{error}</Text>}
 
@@ -317,6 +317,18 @@ export default function ({ route, navigation }) {
                 </>
               )}
 
+              <Button
+                _text={{ color: "light.200" }}
+                my={5}
+                rounded="md"
+                p="3"
+                mt={5}
+                onPress={validate}
+                isLoading={loading}
+                isLoadingText="Läser in..."
+              >
+                Nästa
+              </Button>
             </>
           ) : (
             <>
@@ -413,7 +425,7 @@ export default function ({ route, navigation }) {
                 />
               </FormControl>
 
-              <FormControl>
+              {/* <FormControl>
                 <VStack>
                   <CheckBox
                     title="Låt företag svara mig"
@@ -481,7 +493,7 @@ export default function ({ route, navigation }) {
                     </View>
                   </>
                   : <></>
-              }
+              } */}
 
               <Button
                 _text={{ color: "light.200" }}

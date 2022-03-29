@@ -117,7 +117,7 @@ export default function ({ navigation }) {
         options={options("Chatt", "comments")}
         listeners={({ navigation, route }) => ({
           tabPress: () => {
-            navigation.navigate("ChatMain", { screen: "ChatList" });
+            // navigation.navigate("ChatMain", { screen: "ChatList" });
           },
         })}
       />

@@ -162,8 +162,8 @@ export default function ({ navigation, route }) {
     return <VStack flex={1} justifyContent="space-between">
         <AppBar screenTitle={`${job.current?.title} (prisförslag - ${jobPrice} KR)`} navigation={navigation} backButton
             customOptions={[{ action: loadChats, icon: 'sync' }]}
-            backButtonHandler={_backButtonHandler} />
-
+            />
+            {/* backButtonHandler={_backButtonHandler}  */}
         <KeyboardAvoidingView
             h={{
                 base: "705px",

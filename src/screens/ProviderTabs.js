@@ -83,9 +83,9 @@ export default function ({ navigation }) {
                 name="Chat" 
                 component={ChatStack} 
                 options={options('Chatt', 'comments')}
-                listeners={({ navigation, route }) => ({
-                    tabPress: () => {navigation.navigate("Chat", {screen: "ChatList"})},
-                })}
+                // listeners={({ navigation, route }) => ({
+                //     tabPress: () => {navigation.navigate("Chat", {screen: "ChatList"})},
+                // })}
             />
 
             <Tab.Screen

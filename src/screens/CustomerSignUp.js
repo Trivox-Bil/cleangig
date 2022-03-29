@@ -22,7 +22,8 @@ import {
     Select,
     Text,
     VStack,
-    ScrollView
+    ScrollView,
+    Radio
 } from "native-base";
 import counties from "../data/counties";
 import validator from "validator";
@@ -31,19 +32,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../actions/user";
 import { resetRoute } from "../helpers";
 import { FontAwesome } from '@expo/vector-icons';
+import { getLocal } from "../storage";
 
-export default function ({ navigation }) {
+export default function ({ navigation, route }) {
     const pushToken = useSelector(state => state.notification.pushToken);
     const [stage, setStage] = useState(1);
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState(route?.params?.firstName ? route?.params?.firstName  : '');
+    const [companyName, setCompanyName] = useState('');
+    const [lastName, setLastName] = useState(route?.params?.lastName ? route?.params?.lastName  : '');
+    const [email, setEmail] = useState(route?.params?.email ? route?.params?.email  : '');
     const [password, setPassword] = useState('');
     const [passConfirm, setPassConfirm] = useState('');
     const [county, setCounty] = useState('AB');
     const [city, setCity] = useState('');
     const [street, setStreet] = useState('');
     const [postalCode, setPostalCode] = useState('');
+    const [type, setType] = useState('private');
     const [phone, setPhone] = useState('+46 ');
     const [terms, setTerms] = useState(true);
     const [stage1Error, setStage1Error] = useState('');
@@ -58,10 +62,7 @@ export default function ({ navigation }) {
     const streetRef = useRef();
     const [passVisible, setPassVisible] = useState(false)
     const [passConfVisible, setPassConfVisible] = useState(false)
-
-    useEffect(() => {
-        // console.log('pushToken ===>>>', pushToken)
-    }, [])
+    const [id, setId] = useState(route?.params?.otherLoginApiId ? route?.params?.otherLoginApiId  : '');
 
     function validateStage1() {
         if ([firstName, lastName, email, password, phone].some(field => field.trim() === '')) {
@@ -91,6 +92,8 @@ export default function ({ navigation }) {
         try {
             setSubmitting(true);
             const request = new FormData();
+            request.append('type', type);
+            request.append('company_name', companyName);
             request.append('first_name', firstName);
             request.append('last_name', lastName);
             request.append('email', email);
@@ -100,6 +103,8 @@ export default function ({ navigation }) {
             request.append('county', county);
             request.append('phone_number', phone);
             request.append('postal_code', postalCode);
+            request.append('other_login_api_id', id);
+            // console.log('request11', request)
             const { data: response } = await cleangigApi.post('customers', request);
             if (response.success) {
                 request.append('pushToken', pushToken);
@@ -117,7 +122,38 @@ export default function ({ navigation }) {
     }
 
     const part1 =
-        <VStack flex={1} bg="gray.100" justifyContent="center">
+        <SafeScrollView bg="gray.100">
+            <FormControl px="4" mb="5">
+                <FormControl.Label>Typ</FormControl.Label>
+                <Radio.Group name="type" value={type} onChange={nextValue => {
+                    setType(nextValue);
+                }}>
+                    <Radio value="1" my={1} >
+                        Privat
+                    </Radio>
+                    <Radio value="2" my={1}>
+                        Företag
+                    </Radio>
+                </Radio.Group>
+            </FormControl>
+            {type == 2 && (
+                <FormControl bg="gray.100" px="4" mb="5" >
+                    <FormControl.Label>Företagsnamn</FormControl.Label>
+                    <Input
+                        value={companyName}
+                        onChangeText={setCompanyName}
+                        placeholder="Företagsnamn"
+                        _focus={{
+                            borderColor: "#ff7e1a"
+                        }}
+                        borderRadius="8"
+                        borderColor="#ff7e1a"
+                        borderWidth={1}
+                        InputLeftElement={<Icon as={<FontAwesome name="user" />} size="sm" m={2}
+                            color="#ff7e1a" />}
+                    />
+                </FormControl>
+            )}
             <FormControl bg="gray.100" px="4" mb="5" >
                 <FormControl.Label>Förnamn</FormControl.Label>
                 <Input
@@ -218,10 +254,10 @@ export default function ({ navigation }) {
                     </HStack>
                 </Alert>
             </Collapse>
-        </VStack>;
+        </SafeScrollView>;
 
     const part2 = <>
-        <VStack flex={1} bg="gray.100" justifyContent="center">
+        <SafeScrollView flex={1} bg="gray.100" justifyContent="center">
             <FormControl bg="gray.100" px="4" mb="5">
                 <FormControl.Label>Telefonnummer</FormControl.Label>
                 <Input
@@ -305,45 +341,45 @@ export default function ({ navigation }) {
             </Collapse>
 
             <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > Terms of Use.</Link></Text>
-        </VStack>
+        </SafeScrollView>
     </>;
 
     return (
-        <SafeScrollView flex={1}>
-            {/*  <VStack safeArea flex={1}> */}
-            <KeyboardAvoidingView
+        <VStack safeArea flex={1}>
+            {/* <SafeScrollView flex={1}> */}
+            {/* <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 h={{
                     base: "705px",
                     lg: "auto",
                 }}
                 flex={1}
-            >
-                <VStack flex={1} justifyContent="space-between">
-                    <VStack >
-                        <VStack alignItems="center" mt="5">
-                            <Heading mb="3" fontWeight="semibold">Registrering</Heading>
-                            <Text fontSize="sm">Please fill this information</Text>
-                        </VStack>
-                    </VStack>
-                    {stage === 1 ? part1 : part2}
-                    <VStack >
-                        <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">
-                            {
-                                stage === 1
-                                    ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
-                                    : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(1)} >Back</Button>
-                            }
-                            {
-                                stage === 1
-                                    ? <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Next</Button>
-                                    : <Button flex={1} py="4" variant="ghost" onPress={validateStage2} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>
-                            }
-                        </HStack>
+            > */}
+            <VStack flex={1} justifyContent="space-between">
+                <VStack >
+                    <VStack alignItems="center" mt="5">
+                        <Heading mb="3" fontWeight="semibold">Registrering</Heading>
+                        <Text fontSize="sm">Please fill this information</Text>
                     </VStack>
                 </VStack>
-            </KeyboardAvoidingView >
-        {/*  </VStack > */}
-        </SafeScrollView>
+                {stage === 1 ? part1 : part2}
+                <VStack >
+                    <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">
+                        {
+                            stage === 1
+                                ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
+                                : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(1)} >Back</Button>
+                        }
+                        {
+                            stage === 1
+                                ? <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Next</Button>
+                                : <Button flex={1} py="4" variant="ghost" onPress={validateStage2} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>
+                        }
+                    </HStack>
+                </VStack>
+            </VStack>
+            {/* </KeyboardAvoidingView > */}
+            {/* </SafeScrollView> */}
+        </VStack >
     )
 }

@@ -93,7 +93,7 @@ export default function ({ navigation }) {
     function ListItem({ item }) {
         return (
             <Box bg="#fff">
-                <Pressable _pressed={{ bg: 'gray.200' }} borderBottomWidth={1} borderColor="#ccc" onPress={() => navigation.push('Job', { item })}>
+                <Pressable _pressed={{ bg: 'gray.200' }} borderBottomWidth={1} borderColor="#ccc" onPress={() => navigation.push('Job', { job: item })}>
                     <HStack alignItems="center">
                         <View style={{ padding: 12.5, paddingHorizontal: 25 }}>
                             <Image

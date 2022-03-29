@@ -8,7 +8,9 @@ export const login = (userType, formData) => async dispatch => {
 
     try {
         dispatch({type: LOGIN});
+        console.log(formData)
         const {data: response} = await cleangigApi.post(endPoint, formData);
+        console.log(response)
         if (response.length === 0) {
             dispatch({type: LOGIN_ERROR_NOT_FOUND});
         } else {
