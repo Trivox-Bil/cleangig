@@ -37,10 +37,10 @@ import { getLocal } from "../storage";
 export default function ({ navigation, route }) {
     const pushToken = useSelector(state => state.notification.pushToken);
     const [stage, setStage] = useState(1);
-    const [firstName, setFirstName] = useState(route?.params?.firstName ? route?.params?.firstName  : '');
+    const [firstName, setFirstName] = useState(route?.params?.firstName ? route?.params?.firstName : '');
     const [companyName, setCompanyName] = useState('');
-    const [lastName, setLastName] = useState(route?.params?.lastName ? route?.params?.lastName  : '');
-    const [email, setEmail] = useState(route?.params?.email ? route?.params?.email  : '');
+    const [lastName, setLastName] = useState(route?.params?.lastName ? route?.params?.lastName : '');
+    const [email, setEmail] = useState(route?.params?.email ? route?.params?.email : '');
     const [password, setPassword] = useState('');
     const [passConfirm, setPassConfirm] = useState('');
     const [county, setCounty] = useState('AB');
@@ -58,19 +58,24 @@ export default function ({ navigation, route }) {
     const emailRef = useRef();
     const phoneRef = useRef();
     const passwordRef = useRef();
-    const passConfirmRef = useRef();
+    const passConfirmRef = useRef(); 
     const streetRef = useRef();
     const [passVisible, setPassVisible] = useState(false)
     const [passConfVisible, setPassConfVisible] = useState(false)
-    const [id, setId] = useState(route?.params?.otherLoginApiId ? route?.params?.otherLoginApiId  : '');
+    const [id, setId] = useState(route?.params?.otherLoginApiId ? route?.params?.otherLoginApiId : '');
 
     function validateStage1() {
-        if ([firstName, lastName, email, password, phone].some(field => field.trim() === '')) {
+        console.log(id)
+        if ([firstName, lastName, email, phone].some(field => field.trim() === '')) {
             setStage1Error('Vänligen ange alla obligatoriska fält');
         } else if (!validator.isEmail(email)) {
             setStage1Error('Ange en giltig e-postadress');
-        } else if (password !== passConfirm) {
-            setStage1Error('Lösenorden matchar inte');
+        } else if (id === '') {
+            if (password.trim() === '') {
+                setStage1Error('Vänligen ange alla obligatoriska fält');
+            } else if (password !== passConfirm) {
+                setStage1Error('Lösenorden matchar inte');
+            } 
         } else {
             setStage(2);
         }
@@ -106,6 +111,7 @@ export default function ({ navigation, route }) {
             request.append('other_login_api_id', id);
             // console.log('request11', request)
             const { data: response } = await cleangigApi.post('customers', request);
+            console.log(response);
             if (response.success) {
                 request.append('pushToken', pushToken);
                 dispatch(login('private', request));
@@ -115,6 +121,7 @@ export default function ({ navigation, route }) {
             }
         } catch (e) {
             console.error(e);
+            console.log(e);
             setStage2Error('Ett fel inträffade. Försök igen');
         } finally {
             setSubmitting(false);
@@ -203,46 +210,53 @@ export default function ({ navigation, route }) {
                         color="#ff7e1a" />}
                 />
             </FormControl>
-            <FormControl px="4" mb="5">
-                <FormControl.Label>Lösenord</FormControl.Label>
-                <Input
-                    borderRadius="8"
-                    borderColor="#ff7e1a"
-                    placeholder="Lösenord"
-                    borderWidth={1}
-                    value={password}
-                    _focus={{
-                        borderColor: "#ff7e1a"
-                    }}
-                    onChangeText={setPassword}
-                    autoCompleteType="password"
-                    secureTextEntry={!passVisible}
-                    InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
-                        color="#ff7e1a" />}
-                    InputRightElement={<Icon as={<FontAwesome name={passVisible ? "eye" : "eye-slash"} />} onPress={() => setPassVisible(!passVisible)} size="sm" m={2}
-                        color="#bdbcb9" />}
-                />
-            </FormControl>
-            <FormControl px="4" mb="5">
-                <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
-                <Input
-                    borderRadius="8"
-                    borderColor="#ff7e1a"
-                    placeholder="Bekräfta lösenordet"
-                    borderWidth={1}
-                    _focus={{
-                        borderColor: "#ff7e1a"
-                    }}
-                    value={passConfirm}
-                    onChangeText={setPassConfirm}
-                    autoCompleteType="password"
-                    secureTextEntry={!passConfVisible}
-                    InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
-                        color="#ff7e1a" />}
-                    InputRightElement={<Icon as={<FontAwesome name={passConfVisible ? "eye" : "eye-slash"} />} onPress={() => setPassConfVisible(!passConfVisible)} size="sm" m={2}
-                        color="#bdbcb9" />}
-                />
-            </FormControl>
+
+            {id === '' && (
+                <>
+                    <FormControl px="4" mb="5">
+                        <FormControl.Label>Lösenord</FormControl.Label>
+                        <Input
+                            borderRadius="8"
+                            borderColor="#ff7e1a"
+                            placeholder="Lösenord"
+                            borderWidth={1}
+                            value={password}
+                            _focus={{
+                                borderColor: "#ff7e1a"
+                            }}
+                            onChangeText={setPassword}
+                            autoCompleteType="password"
+                            secureTextEntry={!passVisible}
+                            InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
+                                color="#ff7e1a" />}
+                            InputRightElement={<Icon as={<FontAwesome name={passVisible ? "eye" : "eye-slash"} />} onPress={() => setPassVisible(!passVisible)} size="sm" m={2}
+                                color="#bdbcb9" />}
+                        />
+                    </FormControl>
+                    <FormControl px="4" mb="5">
+                        <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
+                        <Input
+                            borderRadius="8"
+                            borderColor="#ff7e1a"
+                            placeholder="Bekräfta lösenordet"
+                            borderWidth={1}
+                            _focus={{
+                                borderColor: "#ff7e1a"
+                            }}
+                            value={passConfirm}
+                            onChangeText={setPassConfirm}
+                            autoCompleteType="password"
+                            secureTextEntry={!passConfVisible}
+                            InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
+                                color="#ff7e1a" />}
+                            InputRightElement={<Icon as={<FontAwesome name={passConfVisible ? "eye" : "eye-slash"} />} onPress={() => setPassConfVisible(!passConfVisible)} size="sm" m={2}
+                                color="#bdbcb9" />}
+                        />
+                    </FormControl>
+                </>
+            )}
+
+
 
             <Collapse isOpen={stage1Error.length > 0}>
                 <Alert status="error">
@@ -340,7 +354,8 @@ export default function ({ navigation, route }) {
                 </Alert>
             </Collapse>
 
-            <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > Terms of Use.</Link></Text>
+            <Text flex={1} textAlign="center">Genom att gå vidare godkänner du våra<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > avtal</Link></Text>
+            {/* <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > Terms of Use.</Link></Text> */}
         </SafeScrollView>
     </>;
 
@@ -359,7 +374,7 @@ export default function ({ navigation, route }) {
                 <VStack >
                     <VStack alignItems="center" mt="5">
                         <Heading mb="3" fontWeight="semibold">Registrering</Heading>
-                        <Text fontSize="sm">Please fill this information</Text>
+                        {/* <Text fontSize="sm">Please fill this information</Text> */}
                     </VStack>
                 </VStack>
                 {stage === 1 ? part1 : part2}
@@ -368,7 +383,7 @@ export default function ({ navigation, route }) {
                         {
                             stage === 1
                                 ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
-                                : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(1)} >Back</Button>
+                                : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(1)} >Tillbaka</Button>
                         }
                         {
                             stage === 1

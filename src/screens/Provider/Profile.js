@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AppBar from "../../components/AppBar";
 import { useDispatch, useSelector } from "react-redux";
-import { Image } from "react-native";
+import { Image, Linking } from "react-native";
 import { Button, Heading, HStack, Pressable, Text, VStack } from "native-base";
 import counties from "../../data/counties";
 import { logOut } from "../../actions/user";
@@ -21,6 +21,7 @@ import { StyleSheet } from 'react-native'
 import { colors } from '../../helpers';
 import PortFolio from '../../components/Portfolio';
 import Reviews from '../../components/Reviews';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
@@ -169,7 +170,7 @@ export default function ({ navigation }) {
             <SafeScrollView flex={1}>
                 <HStack m={4} justifyContent="center" space={2}>
                     {/* <Pressable onPress={selectPicture}> */}
-                        <Image source={{ uri: user.picture }} style={{ width: 100, height: 100, borderRadius: 50 }} alt=" " />
+                    <Image source={{ uri: user.picture }} style={{ width: 100, height: 100, borderRadius: 50 }} alt=" " />
                     {/* </Pressable> */}
                 </HStack>
 
@@ -187,7 +188,11 @@ export default function ({ navigation }) {
                 </VStack>
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Hemsida</Text>
-                    <Text>{user.website}</Text>
+                    <TouchableOpacity onPress={() => {
+                        Linking.openURL(`${user.website.indexOf('http')>0 ? user.website : `https://${user.website}`}`)
+                    }}>
+                        <Text>{user.website}</Text>
+                    </TouchableOpacity>
                 </VStack>
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Telefonnummer</Text>

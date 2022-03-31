@@ -260,7 +260,7 @@ export default function ({ navigation }) {
             />
         </FormControl>
 
-        <FormControl px="4" mb="5">
+        {/* <FormControl px="4" mb="5">
             <FormControl.Label>Hur vill du få betalt</FormControl.Label>
             <Radio.Group name="paidOption" value={paidOption} onChange={nextValue => {
                 setPaidOption(nextValue);
@@ -272,10 +272,10 @@ export default function ({ navigation }) {
                     Swish
                 </Radio>
             </Radio.Group>
-        </FormControl>
+        </FormControl> */}
 
         <FormControl px="4" mb="5">
-            <FormControl.Label>från vem vill du se jobb?</FormControl.Label>
+            <FormControl.Label>Från vem vill du ta emot jobb?</FormControl.Label>
             <Radio.Group name="jobFrom" value={jobFrom} onChange={nextValue => {
                 setJobFrom(nextValue);
             }}>
@@ -302,15 +302,18 @@ export default function ({ navigation }) {
             </Alert>
         </Collapse>
 
-        <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > Terms of Use.</Link></Text>
+        {/* <Text textAlign="center">By creating an account, you agree to the<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > Terms of Use.</Link></Text> */}
+        <Text flex={1} textAlign="center">Genom att gå vidare godkänner du våra<Link href="https://cleangig.se/privacy.html" _text={{ textDecoration: 'none', fontWeight: 'bold' }}  > avtal</Link></Text>
     </SafeScrollView>;
 
     const part3 = <SafeScrollView justifyContent="center">
         <FormControl px="4" mb="5">
-            <FormControl.Label>Plats</FormControl.Label>
+            <FormControl.Label>Vart utför ni jobb?</FormControl.Label>
             <SectionedMultiSelect
                 items={counties.map(c => ({ id: c.code, name: c.name, value: c.code }))} uniqueKey="id"
                 selectText="Välj plats..."
+                searchPlaceholderText="Sök"
+                confirmText="Välj"
                 onSelectedItemsChange={setCounty}
                 selectedItems={county}
                 styles={{ container: { borderColor: "black", borderWidth: 1 } }}
@@ -354,7 +357,7 @@ export default function ({ navigation }) {
                 </Pressable> */}
                     <VStack alignItems="center" mt="5">
                         <Heading mb="3" fontWeight="semibold">Registrering</Heading>
-                        <Text fontSize="sm">Please fill this information</Text>
+                        {/* <Text fontSize="sm">Please fill this information</Text> */}
                     </VStack>
                 </VStack>
                 {stage === 1 && part1}
@@ -365,7 +368,7 @@ export default function ({ navigation }) {
                         {
                             stage === 1
                                 ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
-                                : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(stage - 1)} >Back</Button>
+                                : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(stage - 1)} >Tillbaka</Button>
                         }
                         {stage === 1 && <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Next</Button>}
                         {stage === 2 && <Button flex={1} py="4" variant="ghost" onPress={validateStage2} >Next</Button>}

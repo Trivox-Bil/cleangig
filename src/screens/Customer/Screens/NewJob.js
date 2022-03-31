@@ -287,7 +287,7 @@ export default function ({ route, navigation }) {
 
               <HStack justifyContent="space-between">
                 <Text fontWeight="medium">Lägg till bilder</Text>
-                <Icon as={FontAwesome} name="plus" color="#ff7e1a" size="6" onPress={onOpen}></Icon>
+                <Icon as={FontAwesome} name="plus" color="#ff7e1a" size="6" onPress={() => { Keyboard.dismiss(); onOpen()}}></Icon>
               </HStack>
 
               <Actionsheet isOpen={isOpen} onClose={onClose}>

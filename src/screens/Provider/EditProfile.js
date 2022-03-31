@@ -152,7 +152,8 @@ export default function ({ navigation }) {
                 <HoshiInput value={website} label="Hemsida" onChangeText={setWebsite} />
                 <HoshiInput value={description} label="Företagsbeskrivning" onChangeText={setDescription} multiline
                     height={100} />
-                <HoshiMultiSelectControl label="Plats" selectedValue={county} onValueChange={setCounty}
+                <HoshiMultiSelectControl label="Plats" searchPlaceholderText="Sök"
+                confirmText="Välj" selectedValue={county} onValueChange={setCounty}
                     collection={counties.map(c => ({ id: c.code, name: c.name, value: c.code }))} />
 
             </VStack>

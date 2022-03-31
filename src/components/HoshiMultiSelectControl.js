@@ -3,7 +3,7 @@ import React from "react";
 import {MaterialIcons} from '@expo/vector-icons';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 
-export default function ({label, collection, onValueChange, selectedValue}) {
+export default function ({label, collection, onValueChange, selectedValue, searchPlaceholderText, confirmText}) {
 
     return <>
         <VStack px={4} borderColor="brand.400" borderBottomWidth={4}>
@@ -17,6 +17,8 @@ export default function ({label, collection, onValueChange, selectedValue}) {
             <SectionedMultiSelect 
                 items={collection} uniqueKey="id" 
                 selectText="Välj plats..." 
+                searchPlaceholderText={searchPlaceholderText}
+                confirmText={confirmText}
                 onSelectedItemsChange={onValueChange} 
                 selectedItems={selectedValue}
                 IconRenderer={MaterialIcons} />
