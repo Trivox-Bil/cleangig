@@ -123,9 +123,6 @@ export default function ({ navigation }) {
                 )}
             </VStack>
         </ScrollView>
-        <Button position='absolute' bottom={2} right={2} rounded="full" _text={{color: 'white'}}>
-            Arkiverade jobb
-        </Button>
     </VStack>;
 }
 

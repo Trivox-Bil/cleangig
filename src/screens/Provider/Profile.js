@@ -29,6 +29,7 @@ export default function ({ navigation }) {
     const [contactName] = useState(user.contact);
     const [phone, setPhone] = useState(user.phone_number);
     const [county, setCounty] = useState(user?.county_code ? user?.county_code.split(",") : []);
+    const [selectedCounties, setSelectedCounties] = useState([]);
     const [description, setDescription] = useState(user.description);
     const [picture, setPicture] = useState(user.picture);
     const [offeredServices, setOfferedServices] = useState([]);
@@ -46,6 +47,15 @@ export default function ({ navigation }) {
     useEffect(() => {
         fetchServices();
         fetchReviews();
+        if (user?.county_code) {
+            let selected = []
+            counties.map(item => {
+                if (user?.county_code.includes(item.code)) {
+                    selected.push(item.name);
+                }
+            })
+            setSelectedCounties(selected)
+        }
     }, []);
 
     async function fetchServices() {
@@ -189,18 +199,21 @@ export default function ({ navigation }) {
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Hemsida</Text>
                     <TouchableOpacity onPress={() => {
-                        Linking.openURL(`${user.website.indexOf('http')>0 ? user.website : `https://${user.website}`}`)
+                        Linking.openURL(`${user.website.indexOf('http') > 0 ? user.website : `https://${user.website}`}`)
                     }}>
                         <Text>{user.website}</Text>
                     </TouchableOpacity>
                 </VStack>
                 <VStack px="3" pb="3" mb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Telefonnummer</Text>
-                    <Text>{user.phone_number}</Text>
+                    {console.log("user", user)}
+                    <Text>{user.phone}</Text>
                 </VStack>
                 <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Plats</Text>
-                    <Text>{county.join()}</Text>
+                    {console.log("county", county)}
+                    {/* <Text>{county.join()}</Text> */}
+                    <Text>{selectedCounties.join()}</Text>
                 </VStack>
                 <VStack px="3" pb="3" borderBottomColor="#cccccc" borderBottomWidth="1">
                     <Text mb={1} fontWeight="semibold" color="#ff7e1a">Tjänster</Text>

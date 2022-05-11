@@ -95,12 +95,30 @@ export default function ({ navigation }) {
                         if (user === null) {
                             console.log('LoginScreen user user user if', user)
                             // storeLocal('@other_login_api_id', JSON.stringify(result.user.id))
-                            openSignUpPage({
-                                firstName: result.user?.givenName || '',
-                                lastName: result.user?.familyName || '',
-                                email: result.user?.email || '',
-                                otherLoginApiId: result.user.id || ''
-                            })
+
+                            if (userType === 'private') {
+                                navigation.navigate('CustomerSignUp', {
+                                    firstName: result.user?.givenName || '',
+                                    lastName: result.user?.familyName || '',
+                                    email: result.user?.email || '',
+                                    otherLoginApiId: result.user.id || ''
+                                });
+                            } else {
+                                let firstName = result.user?.givenName || ''
+                                let lastName = result.user?.familyName || ''
+                                navigation.navigate('ProviderSignUp', {
+                                    contactName: `${firstName} ${lastName}`,
+                                    email: result.user?.email || '',
+                                    otherLoginApiId: result.user.id || ''
+                                });
+                            }
+
+                            // openSignUpPage({
+                            //     firstName: result.user?.givenName || '',
+                            //     lastName: result.user?.familyName || '',
+                            //     email: result.user?.email || '',
+                            //     otherLoginApiId: result.user.id || ''
+                            // })
                             // navigation.navigate('Register', {
                             //     firstName: result.user?.givenName || '',
                             //     lastName: result.user?.familyName || '',
@@ -210,9 +228,7 @@ export default function ({ navigation }) {
 
                         </VStack>
                         <VStack>
-                            {
-                                userType === 'private' && <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Google Sign In</Button>
-                            }
+                            <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Google Sign In</Button>
 
                             {/* <Button py="3" alignSelf="center" width={100} _text={{color: 'white', fontWeight: 600, fontSize: 15}}>Log In</Button> */}
                             <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">

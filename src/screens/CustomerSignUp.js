@@ -73,9 +73,12 @@ export default function ({ navigation, route }) {
         } else if (id === '') {
             if (password.trim() === '') {
                 setStage1Error('Vänligen ange alla obligatoriska fält');
-            } else if (password !== passConfirm) {
-                setStage1Error('Lösenorden matchar inte');
-            } 
+            } else {
+                setStage(2);
+            }
+            // else if (password !== passConfirm) {
+            //     setStage1Error('Lösenorden matchar inte');
+            // } 
         } else {
             setStage(2);
         }
@@ -233,7 +236,7 @@ export default function ({ navigation, route }) {
                                 color="#bdbcb9" />}
                         />
                     </FormControl>
-                    <FormControl px="4" mb="5">
+                    {/* <FormControl px="4" mb="5">
                         <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
                         <Input
                             borderRadius="8"
@@ -252,7 +255,7 @@ export default function ({ navigation, route }) {
                             InputRightElement={<Icon as={<FontAwesome name={passConfVisible ? "eye" : "eye-slash"} />} onPress={() => setPassConfVisible(!passConfVisible)} size="sm" m={2}
                                 color="#bdbcb9" />}
                         />
-                    </FormControl>
+                    </FormControl> */}
                 </>
             )}
 
@@ -383,11 +386,11 @@ export default function ({ navigation, route }) {
                         {
                             stage === 1
                                 ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
-                                : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(1)} >Tillbaka</Button>
+                                : <Button flex={1} py="4" variant="ghost" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => setStage(1)} >Tillbaka</Button>
                         }
                         {
                             stage === 1
-                                ? <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Next</Button>
+                                ? <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Nästa</Button>
                                 : <Button flex={1} py="4" variant="ghost" onPress={validateStage2} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>
                         }
                     </HStack>

@@ -32,12 +32,13 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import services from "../data/services";
 
-export default function ({ navigation }) {
+export default function ({ navigation, route }) {
     const pushToken = useSelector(state => state.notification.pushToken);
     const [stage, setStage] = useState(1);
     const [businessName, setBusinessName] = useState('');
-    const [contactName, setContactName] = useState('');
-    const [email, setEmail] = useState('');
+    const [contactName, setContactName] = useState(route?.params?.contactName ? route?.params?.contactName : '');
+    const [email, setEmail] = useState(route?.params?.email ? route?.params?.email : '');
+    const [economyEmail, setEconomyEmail] = useState('');
     const [website, setWebsite] = useState('');
     const [paidOption, setPaidOption] = useState('');
     const [jobFrom, setJobFrom] = useState('');
@@ -46,6 +47,8 @@ export default function ({ navigation }) {
     const [orgNumber, setOrgNumber] = useState('');
     const [insurance, setInsurance] = useState(false);
     const [terms, setTerms] = useState(true);
+    const [phone, setPhone] = useState('');
+    const [companyPhone, setCompanyPhone] = useState('');
     const [stage1Error, setStage1Error] = useState('');
     const [stage2Error, setStage2Error] = useState('');
     const [stage3Error, setStage3Error] = useState('');
@@ -59,6 +62,7 @@ export default function ({ navigation }) {
     const [passConfVisible, setPassConfVisible] = useState(false)
     const [county, setCounty] = useState([]);
     const [offeredServices, setOfferedServices] = useState([]);
+    const [id, setId] = useState(route?.params?.otherLoginApiId ? route?.params?.otherLoginApiId : '');
 
     function validateStage1() {
         if ([businessName, contactName, orgNumber].some(field => field.trim() === '')) {
@@ -69,15 +73,24 @@ export default function ({ navigation }) {
     }
 
     function validateStage2() {
-        if ([email, password].some(field => field.trim() === '')) {
+        console.log('test');
+        if ([email].some(field => field.trim() === '')) {
+            console.log('y 1 test');
             setStage2Error('Vänligen ange alla obligatoriska fält');
         } else if (!validator.isEmail(email)) {
+            console.log('y 2 test');
             setStage2Error('Ange en giltig e-postadress');
-        } else if (password !== passConfirm) {
-            setStage2Error('Lösenorden matchar inte');
-        } else if (!terms) {
-            setStage2Error('Du måste acceptera villkoren för att fortsätta');
+        } else if (id === '') {
+            console.log('y  3 test');
+            if (password.trim() === '') {
+                console.log('y 4 test');
+                setStage2Error('Vänligen ange alla obligatoriska fält');
+            } else {
+                console.log('y test');
+                setStage(3);
+            }
         } else {
+            console.log('y test');
             setStage(3);
         }
     }
@@ -101,6 +114,9 @@ export default function ({ navigation }) {
             request.append('business_name', businessName);
             request.append('contact_name', contactName);
             request.append('email', email);
+            request.append('economyEmail', economyEmail);
+            request.append('phone', phone);
+            request.append('companyPhone', companyPhone);
             request.append('website', website);
             request.append('password', password);
             request.append('insurance', insurance);
@@ -109,6 +125,7 @@ export default function ({ navigation }) {
             request.append('job_from', jobFrom);
             request.append('county_code', county.join());
             request.append('services', offeredServices.join());
+            request.append('other_login_api_id', id);
             const { data: response } = await cleangigApi.post('providers', request);
             if (response.success) {
                 request.append('pushToken', pushToken);
@@ -172,9 +189,9 @@ export default function ({ navigation }) {
                 borderWidth={1}
             />
         </FormControl>
-        <FormControl px="4" mb="5">
+        {/* <FormControl px="4" mb="5">
             <Checkbox value={insurance} onChange={setInsurance}>Försäkring?</Checkbox>
-        </FormControl>
+        </FormControl> */}
 
         <Collapse isOpen={stage1Error.length > 0}>
             <Alert status="error">
@@ -206,6 +223,54 @@ export default function ({ navigation }) {
             />
         </FormControl>
         <FormControl px="4" mb="5">
+            <FormControl.Label>E-post för ekonomi</FormControl.Label>
+            <Input
+                value={economyEmail}
+                onChangeText={setEconomyEmail}
+                placeholder="E-post för ekonomi"
+                borderRadius="8"
+                borderColor="#ff7e1a"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
+                borderWidth={1}
+                InputLeftElement={<Icon as={<FontAwesome name="envelope" />} size="sm" m={2}
+                    color="#ff7e1a" />}
+            />
+        </FormControl>
+        <FormControl px="4" mb="5">
+            <FormControl.Label>Telefon</FormControl.Label>
+            <Input
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="Telefon"
+                borderRadius="8"
+                borderColor="#ff7e1a"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
+                borderWidth={1}
+                InputLeftElement={<Icon as={<FontAwesome name="phone" />} size="sm" m={2}
+                        color="#ff7e1a" />}
+            />
+        </FormControl>
+        <FormControl px="4" mb="5">
+            <FormControl.Label>Företagstelefon</FormControl.Label>
+            <Input
+                value={companyPhone}
+                onChangeText={setCompanyPhone}
+                placeholder="Företagstelefon"
+                borderRadius="8"
+                borderColor="#ff7e1a"
+                _focus={{
+                    borderColor: "#ff7e1a"
+                }}
+                borderWidth={1}
+                InputLeftElement={<Icon as={<FontAwesome name="phone" />} size="sm" m={2}
+                        color="#ff7e1a" />}
+            />
+        </FormControl>
+        <FormControl px="4" mb="5">
             <FormControl.Label>Hemsida</FormControl.Label>
             <Input
                 value={website}
@@ -221,44 +286,48 @@ export default function ({ navigation }) {
                     color="#ff7e1a" />}
             />
         </FormControl>
-        <FormControl px="4" mb="5">
-            <FormControl.Label>Lösenord</FormControl.Label>
-            <Input
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Lösenord"
-                borderRadius="8"
-                borderColor="#ff7e1a"
-                _focus={{
-                    borderColor: "#ff7e1a"
-                }}
-                borderWidth={1}
-                secureTextEntry={!passVisible}
-                InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
-                    color="#ff7e1a" />}
-                InputRightElement={<Icon as={<FontAwesome name={passVisible ? "eye" : "eye-slash"} />} onPress={() => setPassVisible(!passVisible)} size="sm" m={2}
-                    color="#bdbcb9" />}
-            />
-        </FormControl>
-        <FormControl px="4" mb="5">
-            <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
-            <Input
-                value={passConfirm}
-                onChangeText={setPassConfirm}
-                placeholder="Bekräfta lösenordet"
-                borderRadius="8"
-                _focus={{
-                    borderColor: "#ff7e1a"
-                }}
-                borderColor="#ff7e1a"
-                borderWidth={1}
-                secureTextEntry={!passConfVisible}
-                InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
-                    color="#ff7e1a" />}
-                InputRightElement={<Icon as={<FontAwesome name={passConfVisible ? "eye" : "eye-slash"} />} onPress={() => setPassConfVisible(!passConfVisible)} size="sm" m={2}
-                    color="#bdbcb9" />}
-            />
-        </FormControl>
+        {id === '' && (
+            <>
+                <FormControl px="4" mb="5">
+                    <FormControl.Label>Lösenord</FormControl.Label>
+                    <Input
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="Lösenord"
+                        borderRadius="8"
+                        borderColor="#ff7e1a"
+                        _focus={{
+                            borderColor: "#ff7e1a"
+                        }}
+                        borderWidth={1}
+                        secureTextEntry={!passVisible}
+                        InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
+                            color="#ff7e1a" />}
+                        InputRightElement={<Icon as={<FontAwesome name={passVisible ? "eye" : "eye-slash"} />} onPress={() => setPassVisible(!passVisible)} size="sm" m={2}
+                            color="#bdbcb9" />}
+                    />
+                </FormControl>
+                {/* <FormControl px="4" mb="5">
+                    <FormControl.Label>Bekräfta lösenordet</FormControl.Label>
+                    <Input
+                        value={passConfirm}
+                        onChangeText={setPassConfirm}
+                        placeholder="Bekräfta lösenordet"
+                        borderRadius="8"
+                        _focus={{
+                            borderColor: "#ff7e1a"
+                        }}
+                        borderColor="#ff7e1a"
+                        borderWidth={1}
+                        secureTextEntry={!passConfVisible}
+                        InputLeftElement={<Icon as={<FontAwesome name="lock" />} size="sm" m={2}
+                            color="#ff7e1a" />}
+                        InputRightElement={<Icon as={<FontAwesome name={passConfVisible ? "eye" : "eye-slash"} />} onPress={() => setPassConfVisible(!passConfVisible)} size="sm" m={2}
+                            color="#bdbcb9" />}
+                    />
+                </FormControl> */}
+            </>
+        )}
 
         {/* <FormControl px="4" mb="5">
             <FormControl.Label>Hur vill du få betalt</FormControl.Label>
@@ -279,14 +348,14 @@ export default function ({ navigation }) {
             <Radio.Group name="jobFrom" value={jobFrom} onChange={nextValue => {
                 setJobFrom(nextValue);
             }}>
-                <Radio value="1" my={1}>
-                    både
-                </Radio>
                 <Radio value="2" my={1}>
-                    privat
+                    Privatpersoner
                 </Radio>
                 <Radio value="3" my={1} >
-                    företag
+                    Företag
+                </Radio>
+                <Radio value="1" my={1}>
+                    Båda funkar
                 </Radio>
             </Radio.Group>
         </FormControl>
@@ -368,10 +437,10 @@ export default function ({ navigation }) {
                         {
                             stage === 1
                                 ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
-                                : <Button flex={1} py="4" variant="ghost" onPress={() => setStage(stage - 1)} >Tillbaka</Button>
+                                : <Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} variant="ghost" onPress={() => setStage(stage - 1)} >Tillbaka</Button>
                         }
-                        {stage === 1 && <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Next</Button>}
-                        {stage === 2 && <Button flex={1} py="4" variant="ghost" onPress={validateStage2} >Next</Button>}
+                        {stage === 1 && <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Nästa</Button>}
+                        {stage === 2 && <Button flex={1} py="4" variant="ghost" onPress={validateStage2} >Nästa</Button>}
                         {stage === 3 && <Button flex={1} py="4" variant="ghost" onPress={validateStage3} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>}
                     </HStack>
                 </VStack>

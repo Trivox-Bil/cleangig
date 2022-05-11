@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Button, Card, Image, Input, ListItem } from 'react-native-elements';
 import { cleangigApi, sotApi } from "../../../network";
 import { formatDate } from "../../../helpers";
@@ -102,6 +102,10 @@ export default function ({ route, navigation }) {
         navigation.navigate('JobList');
     }
 
+    function goToChat() {
+        navigation.navigate('Chat', { screen: 'Chat', params: { job } })
+    }
+
     return <>
         <AppBar screenTitle={""} navigation={navigation} backButton />
         <SafeScrollView flex={1}>
@@ -135,7 +139,7 @@ export default function ({ route, navigation }) {
                         <ImageCarousel images={pictures} />
                     </HStack>
                     <Card.Divider />
-
+                    <Pressable onPress={goToChat} style={{ alignItems: 'center', flex: 1 }}><Text style={{ color: '#ff7e1a', fontWeight: '700' }}>Chatt</Text></Pressable>
                 </Card>
                 {/* 
 <ListItem
@@ -169,7 +173,7 @@ export default function ({ route, navigation }) {
                             <>
                                 <Input
                                     placeholder="Text"
-                                    
+
                                     value={proposal}
                                     onChangeText={setProposal}
                                     multiline

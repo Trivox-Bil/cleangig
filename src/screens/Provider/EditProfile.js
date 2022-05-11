@@ -25,7 +25,7 @@ export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
     const [businessName, setBusinessName] = useState(user.name);
     const [contactName] = useState(user.contact);
-    const [phone, setPhone] = useState(user.phone_number);
+    const [phone, setPhone] = useState(user.phone);
     const [county, setCounty] = useState(user?.county_code ? user.county_code.split(",") : []);
     const [description, setDescription] = useState(user.description);
     const [website, setWebsite] = useState(user.website);
@@ -100,7 +100,7 @@ export default function ({ navigation }) {
         formData.append('id', user.id);
         formData.append('name', businessName);
         formData.append('county_code', county.join());
-        formData.append('phone_number', phone);
+        formData.append('phone', phone);
         formData.append('description', description);
         formData.append('picture', pics);
         formData.append('website', website);
