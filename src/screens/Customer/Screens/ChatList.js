@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { cleangigApi } from "../../../network";
 import { useSelector } from "react-redux";
-import { Badge, Center, FlatList, Heading, HStack, Image, Icon, Pressable, Text, VStack, Box } from "native-base";
+import { Badge, Center, FlatList, Heading, HStack, Icon, Pressable, Text, VStack, Box } from "native-base";
 import FetchContent from "../../../components/FetchContent";
 import AppBar from "../../../components/AppBar";
-import { StyleSheet, TouchableOpacity, TouchableHighlight, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, TouchableHighlight, View ,Image} from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { FontAwesome5 } from '@expo/vector-icons';
 import WarningDialog from "../../../components/WarningDialog";
@@ -37,12 +37,11 @@ export default function ({ navigation }) {
         return <Box bg="#fff">
             <Pressable _pressed={{ bg: 'gray.200' }} borderBottomWidth={1} borderColor="#ccc"
                 onPress={() => navigation.navigate('Chat', { job: item })} >
-                <HStack justifyContent="space-between">
+                <HStack justifyContent="space-between" style={{height:90}}>
                     <HStack alignItems="center">
-                        <Image source={{ uri: item.provider.picture }} size="16" m={3} rounded="full" borderColor="accent.400"
-                            borderWidth={2} alt=" " />
+                        <Image source={{ uri: 'https://www.crictracker.com/wp-content/uploads/2020/08/Tim-Seifert.jpg'}} style={{height:60,width:60,borderRadius:40,marginHorizontal:10}} />
                         <VStack space={2}>
-                            <Heading size="sm">{item.provider.name}</Heading>
+                            <Heading size="sm" >{item.provider.name}</Heading>
                             <Text>{item.title}</Text>
                         </VStack>
                     </HStack>

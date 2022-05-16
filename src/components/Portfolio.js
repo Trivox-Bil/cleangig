@@ -57,8 +57,7 @@ const PortFolio = ({ providerId, openDetailPage, refresh }) => {
                         columnWrapperStyle={{ justifyContent: 'space-between' }}
                         data={portfolios}
                         renderItem={ListItem}
-                        keyExtractor={item => item.id}
-                    >
+                        keyExtractor={item => item.id}>
                     </FlatList>
                 </VStack>
             ) : (

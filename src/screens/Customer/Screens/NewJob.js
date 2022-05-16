@@ -19,7 +19,8 @@ import {
   Checkbox,
   IconButton,
   Icon,
-  Radio
+  Radio,
+  AlertDialog, Popover, Box
 } from "native-base";
 import mime from "mime";
 import { askForCamera } from "../../../helpers";
@@ -31,11 +32,17 @@ import { cleangigApi } from "../../../network";
 import { CheckBox } from "react-native-elements";
 import SafeScrollView from "../../../components/SafeScrollView";
 import ImageCarousel from "../../../components/ImageCarousel";
-import { Image, Keyboard, View } from "react-native";
+import { Image, Keyboard, View, TouchableOpacity } from "react-native";
 import { ListItem } from 'react-native-elements';
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { position } from "styled-system";
 
 export default function ({ route, navigation }) {
+
+  const [infoOpen, setInfoOpen] = React.useState(false);                          //for Info Icon Alert
+  const infoClose = () => setInfoOpen(false);                                     //for Info Icon Alert
+  const cancelRef = React.useRef(null);                                       //for Info Icon Alert
+
   const service = route.params.service;
   const user = useSelector((state) => state.user.data);
   const [title, setTitle] = useState(route.params.title || "");
@@ -263,33 +270,21 @@ export default function ({ route, navigation }) {
           {step === 0 ? (
             <>
 
-              {service.name !== "Avfall"
-                ?
-                <FormControl isRequired mb="3">
-                  <FormControl.Label>Rubrik</FormControl.Label>
-                  <Input
-                    ref={titleInput}
-                    onSubmitEditing={() => descInput.current.focus()}
-                    blurOnSubmit={false} value={title} onChangeText={setTitle}
-                    borderRadius="8"
-                    _focus={{
-                      borderColor: "#ff7e1a"
-                    }}
-                    borderColor="#ff7e1a"
-                    borderWidth={1}
-                  />
-                </FormControl>
-                : <>
+              {service.name === "Avfall"
+                && <>
                   <FormControl isRequired mb="3">
                     <FormControl.Label>Vad vill du boka?</FormControl.Label>
                     <Radio.Group name="type" value={bookType} onChange={nextValue => {
                       setBookType(nextValue);
                     }}>
                       <Radio value="1" my={1} >
-                        Behållare
+                        Container
                       </Radio>
                       <Radio value="2" my={1}>
                         Byggsäckar
+                      </Radio>
+                      <Radio value="3" my={1} >
+                        Upphämtning
                       </Radio>
                     </Radio.Group>
                   </FormControl>
@@ -308,8 +303,21 @@ export default function ({ route, navigation }) {
                         </Checkbox.Group>
                     }
                   </FormControl>
-                  <FormControl mb="3">
+                  <FormControl mb="3" style={{ flexDirection: 'row' }}>
                     <Checkbox value={dangerousMaterial} onChange={() => setDangerousMaterial(!dangerousMaterial)}>Farligt avfall?</Checkbox>
+
+                    <Popover placement='left' trigger={triggerProps => {
+                      return <TouchableOpacity {...triggerProps}>
+                        <Icon as={FontAwesome} name='info-circle' colorScheme="danger" size={4} mt={1} ml={2}> </Icon>
+                      </TouchableOpacity>;
+                    }}>
+                      <Popover.Content accessibilityLabel="Delete Customerd" w="56">
+                        <Popover.Arrow />
+                        <Popover.Body>
+                          Elektronik, kemikalier, tryckimpregnerat trä mm.
+                        </Popover.Body>
+                      </Popover.Content>
+                    </Popover>
                   </FormControl>
                 </>
               }
@@ -709,6 +717,7 @@ export default function ({ route, navigation }) {
                     </ListItem>
                   ))}
                 </View>
+                
               </>
               : <></>
           }
@@ -724,6 +733,7 @@ export default function ({ route, navigation }) {
           </Button> */}
         </VStack>
       </SafeScrollView>
+
     </>
   );
 }

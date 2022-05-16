@@ -102,7 +102,7 @@ export default function ({ navigation }) {
                                 style={{ width: 50, height: 50 }} />
                         </View>
                         <View>
-                            <Text fontSize={16}>{item.title}</Text>
+                            <Text fontSize={16}>{item.service.name}</Text>
                             <Text fontSize={13}>{county(item.county_code).name} • {services.find(s => s.id === item.service_id).name}</Text>
                             <Text fontSize={13}>{formatDate(item.deadline, true)}</Text>
                         </View>

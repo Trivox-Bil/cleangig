@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import ServicesStack from "./Customer/ServicesStack";
 import BrowseStack from "./Customer/BrowseStack";
@@ -15,6 +15,7 @@ import { readNotification } from "../helpers";
 import { backgroundColor } from "styled-system";
 import { cleangigApi } from "../network";
 import ProfileStack from "./Customer/ProfileStack";
+import { Icon } from 'native-base';
 
 const Tab = createBottomTabNavigator();
 
@@ -114,7 +115,9 @@ export default function ({ navigation }) {
       <Tab.Screen
         name="ChatMain"
         component={ChatStack}
-        options={options("Chatt", "comments")}
+        options={{tabBarLabel: "Chatt",
+        tabBarIcon: ({ color, size }) =>
+            <Icon name="comments-o" as={FontAwesome}   size={size} color={color} />}}
         listeners={({ navigation, route }) => ({
           tabPress: () => {
             // navigation.navigate("ChatMain", { screen: "ChatList" });

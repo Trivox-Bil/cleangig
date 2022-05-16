@@ -197,6 +197,8 @@ export default function ({ route, navigation }) {
                                 */}
                                 <Input
                                     placeholder="Pris"
+                                    keyboardType='numeric'
+                                    
                                     value={price}
                                     ref={(input) => priceRef.current = input}
                                     onChangeText={setPrice}

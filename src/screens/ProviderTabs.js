@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {FontAwesome5, Ionicons} from '@expo/vector-icons';
+import {FontAwesome5, Ionicons, FontAwesome} from '@expo/vector-icons';
 import Profile from "./Provider/Profile";
 import ChatStack from "./Provider/ChatStack";
 import JobTab from "./Provider/JobTab";
@@ -13,6 +13,7 @@ import { readNotification } from '../helpers';
 import Notification from './Provider/Notifications';
 import { cleangigApi } from "../network";
 import ProfileStack from './Provider/ProfileStack';
+import { Icon } from 'native-base';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,7 +26,7 @@ export default function ({ navigation }) {
         tabBarBadge: null
     })
     function options(label, iconName) {
-        const tabIcon = name => ({color, size}) => <FontAwesome5 name={name} size={size} color={color}/>;
+        const tabIcon = name => ({color, size}) => <FontAwesome5 name={name} size={size}  color={color}/>;
         return {
             tabBarLabel: label,
             tabBarIcon: tabIcon(iconName),
@@ -82,7 +83,9 @@ export default function ({ navigation }) {
             <Tab.Screen 
                 name="Chat" 
                 component={ChatStack} 
-                options={options('Chatt', 'comments')}
+                options={{tabBarLabel: "Chatt",
+                tabBarIcon: ({ color, size }) =>
+                    <Icon name="comments-o" as={FontAwesome}   size={size} color={color} />,}}
                 // listeners={({ navigation, route }) => ({
                 //     tabPress: () => {navigation.navigate("Chat", {screen: "ChatList"})},
                 // })}

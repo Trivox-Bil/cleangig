@@ -22,8 +22,8 @@ export default [
     },
     {
         "id": "2",
-        "name": "Snickeri",
-        "icon": require("../../assets/hammer.png"),
+        "name": "Flytthjälp",
+        "icon": require("../../assets/cartPusht.png"),
         "description": "Bygga ny altan\r\nByta dörrar\r\nByta fönster\r\nByta kök och montera luckor\r\nRenovera inomhus och utomhus\r\nSätta upp innerväggar\r\nByta fasadpanel\r\nSätta upp lister\r\nBygga Attefallshus",
         "disabled": true
     }

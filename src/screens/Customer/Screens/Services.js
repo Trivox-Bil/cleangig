@@ -27,7 +27,7 @@ export default function ({navigation}) {
                         <Pressable disabled={service.disabled} opacity={service.disabled ? 0.5 : 1} key={service.id} p={4} bg="dark.700" rounded="md" flexBasis="40%" m={4} flex={1}
                                    alignItems="center" onPress={() => setChosenService(service)}>
                                        {/* { console.log(service.icon) } */}
-                            <Image source={service.icon} w={75} h={75} alt=" "/>
+                            <Image source={service.icon} w={75} h={75} alt=" " resizeMode='contain'/>
                             <Text mt={4} fontSize="md" bold>{service.name}</Text>
                            { service.disabled && <Text mt={2}>Fler tjänster kommer inom kort</Text>}
                         </Pressable>

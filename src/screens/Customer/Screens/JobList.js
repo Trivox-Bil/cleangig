@@ -143,12 +143,12 @@ export default function ({ navigation }) {
             alt=" "
           />
           <VStack space={4}>
-            <Heading size="sm">{job.title}</Heading>
+            <Heading size="sm">{job.id}</Heading> 
             <HStack space={4}>
               <Badge>
                 {job.visibility === "private" ? "Privat" : "Offentligt"}
               </Badge>
-              <Badge>
+              <Badge>{console.log(job)}
                 {job.status === "pending" && "Väntar Godkännande"}
                 {job.status === "initial" && "Inte tilldelats"}
                 {job.status === "assigned" && "Pågående"}
