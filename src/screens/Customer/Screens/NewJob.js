@@ -18,7 +18,8 @@ import {
   VStack,
   Checkbox,
   IconButton,
-  Icon
+  Icon,
+  Radio
 } from "native-base";
 import mime from "mime";
 import { askForCamera } from "../../../helpers";
@@ -52,10 +53,10 @@ export default function ({ route, navigation }) {
   //   route.params.deadlineFrom || addDays(new Date(), 7)
   // );
   const [deadlineFrom, setDeadlineFrom] = useState(
-    route.params.deadlineFrom || new Date()
+    route.params.deadlineFrom || addDays(new Date(), 1)
   );
   const [deadlineTo, setDeadlineTo] = useState(
-    route.params.deadlineTo || addDays(new Date(), 7)
+    route.params.deadlineTo || addDays(new Date(), 8)
   );
   const [visibility, setVisibility] = useState(
     route.params.visibility || "public"
@@ -66,6 +67,9 @@ export default function ({ route, navigation }) {
   const [selectedProviders, setSelectedProviders] = useState([]);
   const [error, setError] = useState('');
   const [step, setStep] = useState(0)
+  const [bookType, setBookType] = useState('1')
+  const [dangerousMaterial, setDangerousMaterial] = useState(false)
+  const [sizes, setSizes] = useState([])
   const titleInput = useRef(null);
   const descInput = useRef(null);
   function choosePictures() {
@@ -136,7 +140,10 @@ export default function ({ route, navigation }) {
         deadline_end: deadlineTo,
         visibility,
         pictures: noPictures ? null : JSON.stringify(pics),
-        posted_for: Object.keys(selectedProviders).join()
+        posted_for: Object.keys(selectedProviders).join(),
+        book_type: bookType,
+        size: sizes.join(),
+        dangerous_material: dangerousMaterial ? 1 : 0
       };
       const resp = await fetch("https://cleangig.se/api/jobs", {
         method: "POST",
@@ -161,13 +168,14 @@ export default function ({ route, navigation }) {
 
   const validate = () => {
     let valid = true
-    if (title === '') {
-
+    if (title === '' && service.name !== "Avfall") {
       setError('Rubrik krävs');
       titleInput.current.focus();
       valid = false
+    } else if (sizes.length === 0 && service.name === "Avfall") {
+      setError('Storlek krävs');
+      valid = false
     } else if (description === '') {
-
       descInput.current.focus();
       setError('Beskrivande text krävs');
       valid = false
@@ -254,20 +262,57 @@ export default function ({ route, navigation }) {
 
           {step === 0 ? (
             <>
-              <FormControl isRequired mb="3">
-                <FormControl.Label>Rubrik</FormControl.Label>
-                <Input
-                  ref={titleInput}
-                  onSubmitEditing={() => descInput.current.focus()}
-                  blurOnSubmit={false} value={title} onChangeText={setTitle}
-                  borderRadius="8"
-                  _focus={{
-                    borderColor: "#ff7e1a"
-                  }}
-                  borderColor="#ff7e1a"
-                  borderWidth={1}
-                />
-              </FormControl>
+
+              {service.name !== "Avfall"
+                ?
+                <FormControl isRequired mb="3">
+                  <FormControl.Label>Rubrik</FormControl.Label>
+                  <Input
+                    ref={titleInput}
+                    onSubmitEditing={() => descInput.current.focus()}
+                    blurOnSubmit={false} value={title} onChangeText={setTitle}
+                    borderRadius="8"
+                    _focus={{
+                      borderColor: "#ff7e1a"
+                    }}
+                    borderColor="#ff7e1a"
+                    borderWidth={1}
+                  />
+                </FormControl>
+                : <>
+                  <FormControl isRequired mb="3">
+                    <FormControl.Label>Vad vill du boka?</FormControl.Label>
+                    <Radio.Group name="type" value={bookType} onChange={nextValue => {
+                      setBookType(nextValue);
+                    }}>
+                      <Radio value="1" my={1} >
+                        Behållare
+                      </Radio>
+                      <Radio value="2" my={1}>
+                        Byggsäckar
+                      </Radio>
+                    </Radio.Group>
+                  </FormControl>
+                  <FormControl isRequired mb="3">
+                    <FormControl.Label>Storlek</FormControl.Label>
+                    {
+                      bookType === "1"
+                        ? <Checkbox.Group onChange={setSizes} value={sizes}>
+                          <Checkbox value="10">10</Checkbox>
+                          <Checkbox value="20">20</Checkbox>
+                          <Checkbox value="30">30</Checkbox>
+                        </Checkbox.Group>
+                        : <Checkbox.Group onChange={setSizes} value={sizes}>
+                          <Checkbox value="1">1</Checkbox>
+                          <Checkbox value="2">2</Checkbox>
+                        </Checkbox.Group>
+                    }
+                  </FormControl>
+                  <FormControl mb="3">
+                    <Checkbox value={dangerousMaterial} onChange={() => setDangerousMaterial(!dangerousMaterial)}>Farligt avfall?</Checkbox>
+                  </FormControl>
+                </>
+              }
 
               <FormControl isRequired mb="5">
                 <FormControl.Label>Beskrivande text</FormControl.Label>
@@ -287,7 +332,7 @@ export default function ({ route, navigation }) {
 
               <HStack justifyContent="space-between">
                 <Text fontWeight="medium">Lägg till bilder</Text>
-                <Icon as={FontAwesome} name="plus" color="#ff7e1a" size="6" onPress={() => { Keyboard.dismiss(); onOpen()}}></Icon>
+                <Icon as={FontAwesome} name="plus" color="#ff7e1a" size="6" onPress={() => { Keyboard.dismiss(); onOpen() }}></Icon>
               </HStack>
 
               <Actionsheet isOpen={isOpen} onClose={onClose}>

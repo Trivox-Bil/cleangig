@@ -134,6 +134,15 @@ export default function ({ route, navigation }) {
                     {/* <Text style={{ opacity: 0.6, marginBottom: 10 }}>Förfaller den {formatDate(job.deadline_to)}</Text> */}
                     <Text style={{ opacity: 0.6, marginBottom: 10 }}>Deadline från {formatDate(job.deadline)} till {formatDate(job.deadline_to)}</Text>
                     {/* <Card.Divider /> */}
+                    {
+                        job?.service?.name === "Avfall"
+                            ? <>
+                                <Text style={{ marginBottom: 2 }}>Boka för: {job.book_type === "1" ? "Behållare" : "Byggsäckar"}</Text>
+                                <Text style={{ marginBottom: 2 }}>Storlek: {job.size}</Text>
+                                <Text style={{ marginBottom: 10 }}>Farligt avfall: {job.dangerous_material === "1" ? "Ja" : "Nej"}</Text>
+                            </>
+                            : null
+                    }
                     <Text style={{ marginBottom: 10 }}>{job.description}</Text>
                     <HStack minH={200} ml={5} my={10}>
                         <ImageCarousel images={pictures} />

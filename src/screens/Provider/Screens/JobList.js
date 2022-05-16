@@ -39,6 +39,7 @@ export default function ({ navigation }) {
         const { data } = await sotApi.get(`jobs/relevant?provider=${provider.id}`);
         if (data.success) {
             jobs.current=data.jobs;
+            console.log("jobsss  ===>>>", data.jobs)
             filterJobs()
             // setFilteredJobs(data.jobs.filter(j => j.status === 'initial'))
         }

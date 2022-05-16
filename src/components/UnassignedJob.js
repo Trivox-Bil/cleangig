@@ -1,19 +1,19 @@
-import React, {useState} from 'react';
-import {Button, Center, Heading, HStack, Text, VStack} from "native-base";
+import React, { useState } from 'react';
+import { Button, Center, Heading, HStack, Text, VStack } from "native-base";
 import counties from "../data/counties";
-import {formatDate} from "../helpers";
+import { formatDate } from "../helpers";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
-import {cleangigApi, sotApi} from "../network";
+import { cleangigApi, sotApi } from "../network";
 import FetchContent from "./FetchContent";
 import Proposal from "./Proposal";
 
-export default function ({job, onDelete, pictures, navigation}) {
+export default function ({ job, onDelete, pictures, navigation }) {
     const [warnDelete, setWarnDelete] = useState(false);
     const [proposals, setProposals] = useState([]);
 
     const fetchProposals = async (id) => {
-        const {data: result} = await sotApi.get(`proposals/get_all?job=${job.id}`);
+        const { data: result } = await sotApi.get(`proposals/get_all?job=${job.id}`);
         result.success && setProposals(result.proposals);
     };
 
@@ -24,15 +24,15 @@ export default function ({job, onDelete, pictures, navigation}) {
         formData.append('proposal', proposal.id);
 
         const { data: result } = await sotApi.post(`proposals/approve`, formData);
-        
-        job.status='assigned';
+
+        job.status = 'assigned';
         if (result.token) {
             const message = {
                 to: result.token,
                 sound: 'default',
                 title: `Nya jobb`,
                 body: `En köpare har tilldelat dig ett jobb. Du kan se jobbet på fliken historik.`,
-                data: {type: 'assigned-job', details: {job: job}},
+                data: { type: 'assigned-job', details: { job: job } },
             };
             const notificationData = new FormData();
             notificationData.append('customer_id', job.customer.id);
@@ -62,7 +62,7 @@ export default function ({job, onDelete, pictures, navigation}) {
         await sotApi.post(`jobs/assign-direct`, formData);
         navigation.replace('CustomerTab', {
             screen: 'History',
-            params: {screen: 'Ongoing'},
+            params: { screen: 'Ongoing' },
         });
     }
 
@@ -70,11 +70,21 @@ export default function ({job, onDelete, pictures, navigation}) {
         <Heading>{job.title}</Heading>
         <Text color="dark.400">{job.street}, {job.city}, {counties.find(c => c.code === job.county_code).name}</Text>
         <Text color="dark.400">Publicerad ons {formatDate(job.created_at)}</Text>
+        {console.log('clinet jobs', job)}
+        {
+            job?.service_id === "3"
+                ? <>
+                    <Text style={{ marginBottom: 2 }}>Boka för: {job.book_type === "1" ? "Behållare" : "Byggsäckar"}</Text>
+                    <Text style={{ marginBottom: 2 }}>Storlek: {job.size}</Text>
+                    <Text style={{ marginBottom: 10 }}>Farligt avfall: {job.dangerous_material === "1" ? "Ja" : "Nej"}</Text>
+                </>
+                : null
+        }
         <Text m={4} borderLeftWidth={2} borderColor="dark.600" p={4}>{job.description}</Text>
 
         {pictures.length > 0 && (
             <HStack minH={200} ml={5} my={10}>
-                <ImageCarousel images={pictures}/>
+                <ImageCarousel images={pictures} />
             </HStack>
         )}
 
@@ -82,10 +92,10 @@ export default function ({job, onDelete, pictures, navigation}) {
             <VStack>
                 <Heading size="sm">Prisförslag på jobbet</Heading>
                 {proposals.map(proposal =>
-                    <Proposal navigation={navigation} job={job} proposal={proposal} onAssign={assignJob}/>)}
+                    <Proposal navigation={navigation} job={job} proposal={proposal} onAssign={assignJob} />)}
                 {proposals.length > 0 || (
                     <Center>
-                        <Text style={{fontSize: 18, textAlign: 'center', color: '#555'}}>Inga förslag ännu</Text>
+                        <Text style={{ fontSize: 18, textAlign: 'center', color: '#555' }}>Inga förslag ännu</Text>
                     </Center>
                 )}
             </VStack>
@@ -93,6 +103,6 @@ export default function ({job, onDelete, pictures, navigation}) {
 
         <Button colorScheme="red" onPress={() => setWarnDelete(true)} my={4}>Ta bort jobb</Button>
         <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}
-                       message="Är du säker att du vill radera"/>
+            message="Är du säker att du vill radera" />
     </VStack>;
 }

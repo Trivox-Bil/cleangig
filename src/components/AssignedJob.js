@@ -40,6 +40,17 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
         <Text color="dark.400">{job.street}, {job.city}, {counties.find(c => c.code === job.county_code).name}</Text>
         <Text color="dark.400">Publicerad ons {formatDate(job.created_at)}</Text>
         <Text color="dark.400">Deadline {formatDate(job.deadline)}</Text>
+
+        {
+            job?.service_id === "3"
+                ? <>
+                    <Text style={{ marginBottom: 2 }}>Boka för: {job.book_type === "1" ? "Behållare" : "Byggsäckar"}</Text>
+                    <Text style={{ marginBottom: 2 }}>Storlek: {job.size}</Text>
+                    <Text style={{ marginBottom: 10 }}>Farligt avfall: {job.dangerous_material === "1" ? "Ja" : "Nej"}</Text>
+                </>
+                : null
+        }
+
         <Text m={4} borderLeftWidth={2} borderColor="dark.600" p={4}>{job.description}</Text>
         {/* {console.log("pictures ===>>>", pictures)} */}
         {pictures.length > 0 && (

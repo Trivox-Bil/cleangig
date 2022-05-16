@@ -3,7 +3,7 @@ export default [
         "id": "3",
         "name": "Avfall",
         "icon": require("../../assets/waste.png"),
-        "description": "Containers \r\nPåsar\r\nUpphämtning",
+        "description": "Container: 10, 20 eller 30m3 \r\nByggsäckar: 1 eller 2m3\r\nUpphämtning",
         "disabled": false
     },
     {
