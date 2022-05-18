@@ -106,7 +106,7 @@ export default function ({ navigation }) {
             <HStack alignItems="center">
                 <Image source={services.find(s => s.id === item.service_id).icon} w={10} h={10} m={4} alt=" " />
                 <VStack space={4}>{console.log(item)}
-                    <Heading size="sm">{item.title}</Heading>
+                    <Heading size="sm">{item.service_name}</Heading>
                     <HStack space={4}>
                         <Badge>{item.visibility === 'private' ? 'Privat' : 'Offentligt'}</Badge>
                         <Badge>

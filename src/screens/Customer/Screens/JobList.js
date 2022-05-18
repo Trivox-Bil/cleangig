@@ -143,7 +143,7 @@ export default function ({ navigation }) {
             alt=" "
           />
           <VStack space={4}>
-            <Heading size="sm">{job.id}</Heading> 
+            <Heading size="sm">{job.service_name}</Heading> 
             <HStack space={4}>
               <Badge>
                 {job.visibility === "private" ? "Privat" : "Offentligt"}
