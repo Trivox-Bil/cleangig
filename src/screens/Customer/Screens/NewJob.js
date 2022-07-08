@@ -175,11 +175,12 @@ export default function ({ route, navigation }) {
 
   const validate = () => {
     let valid = true
-    if (title === '' && service.name !== "Avfall") {
-      setError('Rubrik krävs');
-      titleInput.current.focus();
-      valid = false
-    } else if (sizes.length === 0 && service.name === "Avfall") {
+    // if (title === '' && service.name !== "Avfall") {
+    //   setError('Rubrik krävs');
+    //   titleInput.current.focus();
+    //   valid = false
+    // } else 
+    if (sizes.length === 0 && service.name === "Avfall") {
       setError('Storlek krävs');
       valid = false
     } else if (description === '') {

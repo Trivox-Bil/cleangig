@@ -33,6 +33,7 @@ import { login } from "../actions/user";
 import { resetRoute } from "../helpers";
 import { FontAwesome } from '@expo/vector-icons';
 import { getLocal } from "../storage";
+import { Item } from 'native-base/src/components/primitives/Select/SelectItem';
 
 export default function ({ navigation, route }) {
     const pushToken = useSelector(state => state.notification.pushToken);
@@ -63,6 +64,12 @@ export default function ({ navigation, route }) {
     const [passVisible, setPassVisible] = useState(false)
     const [passConfVisible, setPassConfVisible] = useState(false)
     const [id, setId] = useState(route?.params?.otherLoginApiId ? route?.params?.otherLoginApiId : '');
+    const [myCounty, setMyCounty] = useState()
+
+    
+    const myData = counties.map((item)=>{
+        return {...item,cities:item.cities.sort()}
+        }).sort((a,b)=> (a.name > b.name ? 1 : -1));
 
     function validateStage1() {
         console.log(id)
@@ -134,7 +141,7 @@ export default function ({ navigation, route }) {
     const part1 =
         <SafeScrollView bg="gray.100">
             <FormControl px="4" mb="5">
-                <FormControl.Label>Typ</FormControl.Label>
+                 
                 <Radio.Group name="type" value={type} onChange={nextValue => {
                     setType(nextValue);
                 }}>
@@ -300,7 +307,7 @@ export default function ({ navigation, route }) {
                     borderColor="#ff7e1a"
                     borderWidth={1}
                     _selectedItem={{ bg: "brand.300", endIcon: <CheckIcon size={4} /> }}>
-                    {counties.map(({ code, name }) => <Select.Item key={code} label={name} value={code} />)}
+                    {myData.map(({ code, name }) => <Select.Item key={code} label={name} value={code} />)}
                 </Select>
             </FormControl>
             <FormControl px="4" mb="5">
@@ -312,7 +319,7 @@ export default function ({ navigation, route }) {
                     borderColor="#ff7e1a"
                     borderWidth={1}
                     _selectedItem={{ bg: "brand.300", endIcon: <CheckIcon size={4} /> }}>
-                    {counties.find(c => c.code === county).cities.map((city, i) => {
+                    {myData.find(c => c.code === county).cities.map((city, i) => {
                         return <Select.Item key={i} label={city} value={city} />;
                     })}
                 </Select>
@@ -391,7 +398,7 @@ export default function ({ navigation, route }) {
                         {
                             stage === 1
                                 ? <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Nästa</Button>
-                                : <Button flex={1} py="4" variant="ghost" onPress={validateStage2} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>
+                                : <Button flex={1} py="4" colorScheme='secondary' backgroundColor='orange.400' onPress={validateStage2} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>
                         }
                     </HStack>
                 </VStack>

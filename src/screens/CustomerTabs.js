@@ -92,7 +92,7 @@ export default function ({ navigation }) {
         })}
       // listeners={({navigation}) => ({ tabPress: e => { navigation.navigate("Services")}})}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Browse"
         component={BrowseStack}
         options={options("Leverantörer", "search")}
@@ -101,7 +101,7 @@ export default function ({ navigation }) {
             navigation.navigate("Browse", { screen: "ProviderList" });
           },
         })}
-      />
+      /> */}
       <Tab.Screen
         name="Job"
         component={JobStack}

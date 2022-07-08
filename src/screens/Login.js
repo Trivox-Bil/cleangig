@@ -25,6 +25,7 @@ import { resetRoute } from "../helpers";
 import { login } from "../actions/user";
 import { FontAwesome } from '@expo/vector-icons';
 import * as Google from "expo-google-app-auth"
+import { TouchableOpacity, View } from 'react-native';
 
 export default function ({ navigation }) {
     const loggedInStatus = useSelector(state => state.user.loggedInStatus);
@@ -211,7 +212,6 @@ export default function ({ navigation }) {
                                         color="#bdbcb9" />}
                                 />
                             </FormControl>
-
                             <Collapse isOpen={showError && [LOGIN_ERROR_NOT_FOUND, LOGIN_ERROR].some(x => x === loggedInStatus)}>
                                 <Alert status="error">
                                     <HStack space={4} flexWrap="wrap">
@@ -225,15 +225,21 @@ export default function ({ navigation }) {
                                     </HStack>
                                 </Alert>
                             </Collapse>
+                            <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal:20, paddingTop:10}}>
 
+                            <TouchableOpacity onPress={openSignUpPage}><Text style={{color:'darkorange'}}>Skapa konto</Text></TouchableOpacity>
+                            <TouchableOpacity ><Text style={{color:'darkorange'}}>Glömt lösenord</Text></TouchableOpacity>
+                            </View>
                         </VStack>
                         <VStack>
+                        <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Apple Sign In</Button>
+                        <Button mx="4" my='4' variant="outline" onPress={handleGoogleSignIn}>Facebook Sign In</Button>
                             <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Google Sign In</Button>
 
                             {/* <Button py="3" alignSelf="center" width={100} _text={{color: 'white', fontWeight: 600, fontSize: 15}}>Log In</Button> */}
                             <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">
                                 <Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} variant="ghost" onPress={submit}>Logga in</Button>
-                                <Button flex={1} py="4" variant="ghost" onPress={openSignUpPage}>Skapa konto</Button>
+                                {/* <Button flex={1} py="4" variant="ghost" onPress={openSignUpPage}>Skapa konto</Button> */}
                             </HStack>
                         </VStack>
                     </VStack>

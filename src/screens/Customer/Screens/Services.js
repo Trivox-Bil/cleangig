@@ -57,7 +57,7 @@ export default function ({navigation}) {
                         {/* </ScrollView> */}
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="ghost" colorScheme="brand" onPress={toNewJob}>Lägg till jobb</Button>
+                        <Button variant="ghost" colorScheme="brand" onPress={toNewJob}>Skapa förfrågan</Button>
                     </Modal.Footer>
                 </Modal.Content>
             )}
