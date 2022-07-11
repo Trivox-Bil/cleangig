@@ -74,6 +74,14 @@ export default function ({ navigation }) {
             navigation.navigate('ProviderSignUp', params);
         }
     }
+    const openForgotPage = () => {
+        if (userType === 'private') {
+            navigation.navigate('Forgot');
+        } 
+        else{
+            navigation.navigate('Forgot');
+        }
+    }
 
     const handleGoogleSignIn = () => {
         // 1071325411415-fsg5q3ms0bflgih4rn4bslvk4sso46r3.apps.googleusercontent.com
@@ -225,15 +233,14 @@ export default function ({ navigation }) {
                                     </HStack>
                                 </Alert>
                             </Collapse>
-                            <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal:20, paddingTop:10}}>
-
-                            <TouchableOpacity onPress={openSignUpPage}><Text style={{color:'darkorange'}}>Skapa konto</Text></TouchableOpacity>
-                            <TouchableOpacity ><Text style={{color:'darkorange'}}>Glömt lösenord</Text></TouchableOpacity>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginTop:10}}>
+                                <TouchableOpacity onPress={openSignUpPage} style={{ padding:5, borderRadius:5, borderColor:'darkorange', borderWidth:1, paddingHorizontal:10}}><Text style={{ color: '#FF4500' }}>Skapa konto</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={openForgotPage} style={{ padding:5}}><Text style={{ color: '#FF4500' }}>Glömt lösenord</Text></TouchableOpacity>
                             </View>
                         </VStack>
                         <VStack>
-                        <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Apple Sign In</Button>
-                        <Button mx="4" my='4' variant="outline" onPress={handleGoogleSignIn}>Facebook Sign In</Button>
+                            <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Apple Sign In</Button>
+                            <Button mx="4" my='4' variant="outline" onPress={handleGoogleSignIn}>Facebook Sign In</Button>
                             <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Google Sign In</Button>
 
                             {/* <Button py="3" alignSelf="center" width={100} _text={{color: 'white', fontWeight: 600, fontSize: 15}}>Log In</Button> */}

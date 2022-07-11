@@ -325,6 +325,17 @@ export default function ({ route, navigation }) {
 
               <FormControl isRequired mb="5">
                 <FormControl.Label>Beskrivande text</FormControl.Label>
+                <Radio.Group name="type" mb={4}>
+                  <Radio value="1" my={1} >
+                    Flyttstädning
+                  </Radio>
+                  <Radio value="2" my={1}>
+                    Storstädning
+                  </Radio>
+                  <Radio value="3" my={1} >
+                    Fönsterputsning
+                  </Radio>
+                </Radio.Group>
                 <TextArea
                   ref={descInput}
                   value={description}

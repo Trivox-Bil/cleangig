@@ -32,8 +32,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../actions/user";
 import { resetRoute } from "../helpers";
 import { FontAwesome } from '@expo/vector-icons';
-import { getLocal } from "../storage";
-import { Item } from 'native-base/src/components/primitives/Select/SelectItem';
+// import { getLocal } from "../storage";
+// import { Item } from 'native-base/src/components/primitives/Select/SelectItem';
 
 export default function ({ navigation, route }) {
     const pushToken = useSelector(state => state.notification.pushToken);
@@ -77,9 +77,11 @@ export default function ({ navigation, route }) {
             setStage1Error('Vänligen ange alla obligatoriska fält');
         } else if (!validator.isEmail(email)) {
             setStage1Error('Ange en giltig e-postadress');
+            console.log(stage1Error);
         } else if (id === '') {
             if (password.trim() === '') {
                 setStage1Error('Vänligen ange alla obligatoriska fält');
+                console.log(stage1Error);
             } else {
                 setStage(2);
             }

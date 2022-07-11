@@ -35,6 +35,7 @@ import ProviderTabs from "./src/screens/ProviderTabs";
 import config from "./src/config";
 import { cleangigApi } from './src/network';
 import IntroSlides from './src/screens/IntroSlides';
+import Forgot from './src/screens/Forgot';
 
 const Stack = createNativeStackNavigator();
 
@@ -100,6 +101,7 @@ export default function App() {
                         <Stack.Screen name="ProviderSignUp" component={ProviderSignUp}/>
                         <Stack.Screen name="Customer" component={CustomerTabs}/>
                         <Stack.Screen name="Provider" component={ProviderTabs}/>
+                        <Stack.Screen name="Forgot" component={Forgot}/>
                     </Stack.Navigator>
                 </NavigationContainer>
             </NativeBaseProvider>
