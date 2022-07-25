@@ -391,15 +391,15 @@ export default function ({ navigation, route }) {
                 </VStack>
                 {stage === 1 ? part1 : part2}
                 <VStack >
-                    <HStack borderColor="#ff7e1a" borderBottomWidth={1} borderTopWidth={1} mt="5">
+                    <HStack  mt="5">
                         {
                             stage === 1
-                                ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
-                                : <Button flex={1} py="4" variant="ghost" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => setStage(1)} >Tillbaka</Button>
+                                ? < Button flex={1} py="4" borderColor="#ff7e1a" borderWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
+                                : <Button flex={1} py="4" variant="ghost" borderColor="#ff7e1a" borderWidth={1} onPress={() => setStage(1)} >Tillbaka</Button>
                         }
                         {
                             stage === 1
-                                ? <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Nästa</Button>
+                                ? <Button flex={1} py="4" colorScheme='secondary' backgroundColor='orange.400' onPress={validateStage1} >Nästa</Button>
                                 : <Button flex={1} py="4" colorScheme='secondary' backgroundColor='orange.400' onPress={validateStage2} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>
                         }
                     </HStack>

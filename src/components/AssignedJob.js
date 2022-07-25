@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Button, Heading, HStack, Text, VStack} from "native-base";
 import counties from "../data/counties";
-import {formatDate} from "../helpers";
+import {CLEANING_TYPES, formatDate} from "../helpers";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
 import FetchContent from "./FetchContent";
@@ -40,7 +40,10 @@ export default function ({job, onDelete, pictures, navigation, isProvider = fals
         <Text color="dark.400">{job.street}, {job.city}, {counties.find(c => c.code === job.county_code).name}</Text>
         <Text color="dark.400">Publicerad ons {formatDate(job.created_at)}</Text>
         <Text color="dark.400">Deadline {formatDate(job.deadline)}</Text>
-
+        {
+            job?.service_id === "4" && 
+            <Text color="dark.400" style={{ marginBottom: 2 }}>{CLEANING_TYPES[job.cleaning_type]}</Text>
+        }
         {
             job?.service_id === "3"
                 ? <>

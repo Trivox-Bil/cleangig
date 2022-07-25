@@ -23,7 +23,7 @@ import {
   AlertDialog, Popover, Box
 } from "native-base";
 import mime from "mime";
-import { askForCamera } from "../../../helpers";
+import { askForCamera, CLEANING_TYPES } from "../../../helpers";
 import { useSelector } from "react-redux";
 import counties, { county } from "../../../data/counties";
 import addDays from "date-fns/addDays";
@@ -77,6 +77,7 @@ export default function ({ route, navigation }) {
   const [bookType, setBookType] = useState('1')
   const [dangerousMaterial, setDangerousMaterial] = useState(false)
   const [sizes, setSizes] = useState([])
+  const [cleaningType, setCleaningType] = useState(null)
   const titleInput = useRef(null);
   const descInput = useRef(null);
   function choosePictures() {
@@ -150,7 +151,8 @@ export default function ({ route, navigation }) {
         posted_for: Object.keys(selectedProviders).join(),
         book_type: bookType,
         size: sizes.join(),
-        dangerous_material: dangerousMaterial ? 1 : 0
+        dangerous_material: dangerousMaterial ? 1 : 0,
+        cleaning_type: cleaningType
       };
       const resp = await fetch("https://cleangig.se/api/jobs", {
         method: "POST",
@@ -324,8 +326,14 @@ export default function ({ route, navigation }) {
               }
 
               <FormControl isRequired mb="5">
-                <FormControl.Label>Beskrivande text</FormControl.Label>
-                <Radio.Group name="type" mb={4}>
+                <Radio.Group name="type" mb={4} onChange={setCleaningType} value={cleaningType}>
+                  {CLEANING_TYPES.map((type, index) => (
+                      <Radio value={index} my={1}>
+                        {type}
+                      </Radio>
+                  ))}
+                </Radio.Group>
+                {/* <Radio.Group name="type" mb={4}>
                   <Radio value="1" my={1} >
                     Flyttstädning
                   </Radio>
@@ -335,7 +343,8 @@ export default function ({ route, navigation }) {
                   <Radio value="3" my={1} >
                     Fönsterputsning
                   </Radio>
-                </Radio.Group>
+                </Radio.Group> */}
+                <FormControl.Label>Beskrivande text</FormControl.Label>
                 <TextArea
                   ref={descInput}
                   value={description}

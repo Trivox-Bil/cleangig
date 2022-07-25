@@ -239,8 +239,8 @@ export default function ({ navigation }) {
                             </View>
                         </VStack>
                         <VStack>
-                            <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Apple Sign In</Button>
-                            <Button mx="4" my='4' variant="outline" onPress={handleGoogleSignIn}>Facebook Sign In</Button>
+                            {/* <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Apple Sign In</Button>
+                            <Button mx="4" my='4' variant="outline" onPress={handleGoogleSignIn}>Facebook Sign In</Button> */}
                             <Button mx="4" variant="outline" onPress={handleGoogleSignIn}>Google Sign In</Button>
 
                             {/* <Button py="3" alignSelf="center" width={100} _text={{color: 'white', fontWeight: 600, fontSize: 15}}>Log In</Button> */}

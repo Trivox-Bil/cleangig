@@ -439,9 +439,9 @@ export default function ({ navigation, route }) {
                                 ? < Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} onPress={() => navigation.goBack()} variant="ghost">Logga in</Button>
                                 : <Button flex={1} py="4" borderRightColor="#ff7e1a" borderRightWidth={1} variant="ghost" onPress={() => setStage(stage - 1)} >Tillbaka</Button>
                         }
-                        {stage === 1 && <Button flex={1} py="4" variant="ghost" onPress={validateStage1} >Nästa</Button>}
-                        {stage === 2 && <Button flex={1} py="4" variant="ghost" onPress={validateStage2} >Nästa</Button>}
-                        {stage === 3 && <Button flex={1} py="4" variant="ghost" onPress={validateStage3} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>}
+                        {stage === 1 && <Button flex={1} py="4" colorScheme='secondary' backgroundColor='orange.400' onPress={validateStage1} >Nästa</Button>}
+                        {stage === 2 && <Button flex={1} py="4" colorScheme='secondary' backgroundColor='orange.400' onPress={validateStage2} >Nästa</Button>}
+                        {stage === 3 && <Button flex={1} py="4" colorScheme='secondary' backgroundColor='orange.400' onPress={validateStage3} isLoading={submitting} isLoadingText="Laddar, vänta..." >Skapa konto</Button>}
                     </HStack>
                 </VStack>
             </VStack>

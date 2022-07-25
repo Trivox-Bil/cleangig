@@ -16,6 +16,8 @@ export const colors = {
     gray: '#cacaca',
 };
 
+export const CLEANING_TYPES = ['Flyttstädning', 'Storstädning', 'Fönsterputsning']
+
 export default function askForPicture() {
     return ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
