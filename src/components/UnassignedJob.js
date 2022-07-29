@@ -1,21 +1,35 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button, Center, Heading, HStack, Text, VStack } from "native-base";
 import counties from "../data/counties";
-import { CLEANING_TYPES, formatDate } from "../helpers";
+import {CLEANING_TYPES, formatDate, providerCountyName} from "../helpers";
 import ImageCarousel from "./ImageCarousel";
 import WarningDialog from "./WarningDialog";
 import { cleangigApi, sotApi } from "../network";
 import FetchContent from "./FetchContent";
 import Proposal from "./Proposal";
+import {Image} from "react-native";
+import {ListItem} from "react-native-elements";
 
 export default function ({ job, onDelete, pictures, navigation }) {
     const [warnDelete, setWarnDelete] = useState(false);
     const [proposals, setProposals] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
 
     const fetchProposals = async (id) => {
         const { data: result } = await sotApi.get(`proposals/get_all?job=${job.id}`);
         result.success && setProposals(result.proposals);
     };
+
+    const fetchSuppliers = async (id) => {
+        const { data } = await cleangigApi.get(`jobs/${job.id}/suppliers/window_cleaning`);
+        setSuppliers(data.suppliers);
+    };
+
+    useEffect(function () {
+        if (job.cleaning_type == 2) {
+            fetchSuppliers();
+        }
+    }, []);
 
     const assignJob = async (proposal) => {
         const formData = new FormData();
@@ -103,6 +117,24 @@ export default function ({ job, onDelete, pictures, navigation }) {
                 )}
             </VStack>
         </FetchContent>
+
+        {suppliers.length > 0 && <>
+            <VStack>
+                <Heading size="sm">Tillgängliga leverantörer</Heading>
+                {suppliers.map(supplier => {
+                    return <ListItem key={supplier.provider_id}
+                                     onPress={() => navigation.push('ProviderProfile', {provider: supplier.provider_id})}>
+                        <Image
+                            source={{uri: supplier.picture}}
+                            style={{width: 50, height: 50, borderRadius: 25, marginHorizontal: 10}}/>
+                        <ListItem.Content>
+                            <ListItem.Title>{supplier.name}</ListItem.Title>
+                            <ListItem.Subtitle>Kosta: {supplier.rate * job.item_count}</ListItem.Subtitle>
+                        </ListItem.Content>
+                    </ListItem>;
+                })}
+            </VStack>
+        </>}
 
         <Button colorScheme="red" onPress={() => setWarnDelete(true)} my={4}>Ta bort jobb</Button>
         <WarningDialog isVisible={warnDelete} action={onDelete} onCancel={() => setWarnDelete(false)}

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import AppBar from "../../../components/AppBar";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -77,6 +77,9 @@ export default function ({ route, navigation }) {
   const [bookType, setBookType] = useState('1')
   const [dangerousMaterial, setDangerousMaterial] = useState(false)
   const [sizes, setSizes] = useState([])
+  const [itemCount, setItemCount] = useState('0');
+  const [isComplicated, setIsComplicated] = useState('0');
+  const [cleaningStyle, setCleaningStyle] = useState([]);
   const [cleaningType, setCleaningType] = useState(null)
   const titleInput = useRef(null);
   const descInput = useRef(null);
@@ -152,7 +155,10 @@ export default function ({ route, navigation }) {
         book_type: bookType,
         size: sizes.join(),
         dangerous_material: dangerousMaterial ? 1 : 0,
-        cleaning_type: cleaningType
+        cleaning_type: cleaningType,
+        item_count: itemCount,
+        complicated_window: isComplicated,
+        cleaning_style: cleaningStyle.join(),
       };
       const resp = await fetch("https://cleangig.se/api/jobs", {
         method: "POST",
@@ -328,11 +334,35 @@ export default function ({ route, navigation }) {
               <FormControl isRequired mb="5">
                 <Radio.Group name="type" mb={4} onChange={setCleaningType} value={cleaningType}>
                   {CLEANING_TYPES.map((type, index) => (
-                      <Radio value={index} my={1}>
+                      <Radio value={index} my={1} key={index}>
                         {type}
                       </Radio>
                   ))}
                 </Radio.Group>
+                {service.name === 'Städning' && cleaningType == '2' && <>
+                  <FormControl isRequired mb="3">
+                    <FormControl.Label>Antal fönster</FormControl.Label>
+                    <Input value={itemCount} onChangeText={setItemCount}/>
+                  </FormControl>
+                  <FormControl isRequired mb="3">
+                    <FormControl.Label>Krångliga fönster (spröjs mm / stege kommer att behövas)</FormControl.Label>
+                    <Radio.Group onChange={setIsComplicated} value={isComplicated}>
+                      <HStack space={3}>
+                        <Radio value="0">Nej</Radio>
+                        <Radio value="1">Ja</Radio>
+                      </HStack>
+                    </Radio.Group>
+                  </FormControl>
+                  <FormControl isRequired mb="3">
+                    <Checkbox.Group onChange={setCleaningStyle} value={cleaningStyle}>
+                      <Checkbox value="Invändigt">Invändigt</Checkbox>
+                      <Checkbox value="Ut">Ut</Checkbox>
+                      <Checkbox value="Mellan">Mellan</Checkbox>
+                    </Checkbox.Group>
+                  </FormControl>
+
+                </>
+                }
                 {/* <Radio.Group name="type" mb={4}>
                   <Radio value="1" my={1} >
                     Flyttstädning

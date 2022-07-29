@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../apiv2/.idea/apiv2.iml" filepath="$PROJECT_DIR$/../apiv2/.idea/apiv2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../cleangig-admin/.idea/cleangig-admin.iml" filepath="$PROJECT_DIR$/../cleangig-admin/.idea/cleangig-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../cleangig-web/.idea/cleangig-web.iml" filepath="$PROJECT_DIR$/../cleangig-web/.idea/cleangig-web.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/mobile.iml" filepath="$PROJECT_DIR$/.idea/mobile.iml" />
     </modules>
   </component>
