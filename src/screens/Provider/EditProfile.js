@@ -2,7 +2,20 @@ import React, { useState, useEffect } from 'react';
 import AppBar from "../../components/AppBar";
 import { useDispatch, useSelector } from "react-redux";
 import { Image } from "react-native";
-import { Button, Heading, HStack, Pressable, Text, VStack, Radio } from "native-base";
+import {
+    Button,
+    Heading,
+    HStack,
+    Pressable,
+    Text,
+    VStack,
+    Radio,
+    Center,
+    Modal,
+    FormControl,
+    Box,
+    Stack, Input, IconButton
+} from "native-base";
 import counties from "../../data/counties";
 import { logOut } from "../../actions/user";
 import * as ImagePicker from 'expo-image-picker';
@@ -20,6 +33,7 @@ import HoshiMultiSelectControl from '../../components/HoshiMultiSelectControl';
 import { StyleSheet } from 'react-native'
 import { colors } from '../../helpers';
 import mime from "mime";
+import {MaterialIcons} from "@expo/vector-icons";
 
 export default function ({ navigation }) {
     const user = useSelector(state => state.user.data);
@@ -35,6 +49,8 @@ export default function ({ navigation }) {
     const [offeredServices, setOfferedServices] = useState([]);
     const [addedServices, setAddedServices] = useState([]);
     const [removedServices, setRemovedServices] = useState([]);
+    const [wcModalVisible, setWcModalVisible] = useState(false);
+    const [pricePerWindow, setPricePerWindow] = React.useState('10');
     const [offeredServicesNames, setOfferedServicesName] = useState('');
     const [saveIcon, setSaveIcon] = useState('save');
     const [activeTab, setActiveTab] = useState('profile');
@@ -43,16 +59,21 @@ export default function ({ navigation }) {
     // console.log(user)
 
     useEffect(() => {
-        fetchServices();
+        fetchProviderServices();
     }, []);
 
-    async function fetchServices() {
+    async function fetchProviderServices() {
+        const { data } = await cleangigApi.get(`providers/${user.id}/services`);
+        setOfferedServices(data.services.map(s => ({...s, service: services.find(it => it.id === s.service_id)})));
+    }
+
+    /*async function fetchServices() {
         const { data } = await sotApi.get(`services/get_all?provider=${user.id}`);
         let serviceName = [];
         data.services.map(service => serviceName.push(service.name));
         setOfferedServicesName(serviceName.join(", "))
         setOfferedServices(data.services);
-    }
+    }*/
 
     async function logOut() {
         dispatch({ type: LOGOUT });
@@ -81,7 +102,26 @@ export default function ({ navigation }) {
         });
     }
 
-    function deleteService(service) {
+    async function addService(type, id) {
+        if (pricePerWindow.length === 0 || isNaN(pricePerWindow)) {
+            alert("Ange ett giltigt nummer");
+        } else {
+            setWcModalVisible(false);
+            const formdata = new FormData();
+            formdata.append('service', id);
+            formdata.append('type', type);
+            formdata.append('rate', pricePerWindow);
+            await cleangigApi.post(`providers/${user.id}/services`, formdata);
+            await fetchProviderServices();
+        }
+    }
+
+    async function removeService(type) {
+        await cleangigApi.delete(`providers/${user.id}/services/${type}`);
+        await fetchProviderServices();
+    }
+
+    /*function deleteService(service) {
         let tempOServices = offeredServices.filter(s => s.id !== service.id);
         setOfferedServices(tempOServices);
         setRemovedServices([...removedServices, service]);
@@ -91,7 +131,7 @@ export default function ({ navigation }) {
         if (!addedServices.some(s => s.id === id)) {
             setAddedServices([...addedServices, services.find(s => s.id === id)]);
         }
-    }
+    }*/
 
     async function saveAll() {
         setSaveIcon('circle-notch');
@@ -158,7 +198,9 @@ export default function ({ navigation }) {
 
             </VStack>
 
-            <FetchContent fetch={fetchServices}>
+
+
+            {/*<FetchContent fetch={fetchServices}>
                 <VStack>
                     <Heading size="sm">Tjänster</Heading>
                     <VStack style={{ marginVertical: 10 }}>
@@ -199,7 +241,30 @@ export default function ({ navigation }) {
                         ))
                     }
                 </VStack>
-            </FetchContent>
+            </FetchContent>*/}
+
+            <VStack mt={5}>
+                <Heading size="sm">Tjänster</Heading>
+                {offeredServices.length > 0 && (
+                    <HStack pl={2} space={3}>
+                        {offeredServices.map(o => {
+                            return <HStack key={o.service_id } pl={2} minW={70} minH={30} bg="dark.700" rounded="lg" alignItems="center">
+                                <Text>{o.service.name}</Text>
+                                <IconButton size="sm" variant="ghost" _icon={{as: MaterialIcons, name: "close"}}
+                                    onPress={() => removeService(o.service_type)}/>
+                            </HStack>
+                        })}
+                    </HStack>
+                )}
+
+                <VStack bgColor="dark.700" p={2} m={2} rounded="md">
+                    <Heading size="xs">Choose a service</Heading>
+                    <HStack space={2}>
+                        <Button variant="outline" onPress={() => setWcModalVisible(true)}>Städning (fönsterputsning)</Button>
+                    </HStack>
+                </VStack>
+            </VStack>
+
             <VStack mt={5}>
                 <Heading size="sm">Hur vill du få betalt</Heading>
                 <Radio.Group name="paidOption" value={paidOption} onChange={nextValue => {
@@ -233,6 +298,34 @@ export default function ({ navigation }) {
             <VStack style={{ alignItems: 'center', justifyContent: 'center', marginTop: 30 }} >
                 <Text fontWeight='bold' >version {Constants.manifest.version}</Text>
             </VStack>
+
+            <Modal isOpen={wcModalVisible} onClose={setWcModalVisible}>
+                <Modal.Content>
+                    <Modal.CloseButton />
+                    <Modal.Header>Fönsterputsning</Modal.Header>
+                    <Modal.Body>
+                        <Box alignItems="center">
+                            <Box w="100%" maxWidth="300px">
+                                <FormControl isRequired>
+                                    <Stack mx="4">
+                                        <FormControl.Label>Pris per fönster</FormControl.Label>
+                                        <Input value={pricePerWindow} onChangeText={setPricePerWindow}/>
+                                    </Stack>
+                                </FormControl>
+                            </Box>
+                        </Box>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button.Group space={2}>
+                            <Button variant="ghost" colorScheme="blueGray"
+                                    onPress={() => setWcModalVisible(false)}>
+                                Avbryt
+                            </Button>
+                            <Button onPress={async () => await addService('window_cleaning', 4)}>Lägg till</Button>
+                        </Button.Group>
+                    </Modal.Footer>
+                </Modal.Content>
+            </Modal>
         </SafeScrollView>
     </>;
 };

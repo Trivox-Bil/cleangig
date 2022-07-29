@@ -6,5 +6,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="apiv2" />
     <orderEntry type="module" module-name="apiv2" />
+    <orderEntry type="module" module-name="cleangig-admin" />
+    <orderEntry type="module" module-name="cleangig-web" />
   </component>
 </module>
